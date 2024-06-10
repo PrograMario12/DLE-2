@@ -1,3 +1,90 @@
 @import "normalize.css";
+@import url('https://cdn-uicons.flaticon.com/2.4.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
+@import url('https://cdn-uicons.flaticon.com/2.4.0/uicons-solid-rounded/css/uicons-solid-rounded.css');
 
+.card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    min-width: 300px;
+    margin-bottom: 10px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
 
+.card-title {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.card-description {
+    font-size: 14px;
+    color: #666666;
+}
+
+.card-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #ffffff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.card-button:hover {
+    background-color: #0056b3;
+}
+
+.menu {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+h3 {
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    margin-top: 0;
+}
+
+a{
+    text-decoration: none;
+    color: #000000;
+}
+
+.texto-de-botones {
+    display: flex;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.card p {
+    margin: 0;
+    font-size: 20px;
+    margin: 0 1vw;
+}
+
+.cancel-button{
+    background-color: #dc3545;
+    color: #000;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    min-height: 50px;
+    margin-right: 20px;
+}
+
+.cancel-button:hover {
+    background-color: #c82333;
+}
+}

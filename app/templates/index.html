@@ -7,11 +7,11 @@
   <title>Document</title>
 </head>
 <body>
-  <form method="get" action="/menu" id="login-form" class="login-form" autocomplete="off" role="main">
+  <form method="get" action="/menuLinea" id="login-form" class="login-form" autocomplete="off" role="main">
     <h1 class="a11y-hidden">Login Form</h1>
     <div>
       <label class="label-email">
-        <input type="number" class="text" name="email" placeholder="Número de empleado" tabindex="1" required />
+        <input type="number" class="text" name="numeroempleado" placeholder="Número de empleado" tabindex="1" required autofocus />
         <span class="required">Número de tarjeta de empleado</span>
       </label>
     </div>
@@ -28,7 +28,7 @@
       <div class="shirt-2"></div>
     </figure>
     <script>
-      const emailInput = document.querySelector('input[name="email"]');
+      const emailInput = document.querySelector('input[name="numeroempleado"]');
       emailInput.addEventListener('input', function() {
       if (this.value.length === 4) {
         document.getElementById('login-form').submit();

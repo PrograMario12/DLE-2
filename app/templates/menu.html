@@ -4,27 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menú</title>
-    <link rel="stylesheet" href=" {{static_url}} ">
+    <link rel="stylesheet" href=" {{ css_file }} ">
 </head>
 <body>
     <div class="header">
-        <h1 style="text-align: center;">Selecciona tu {{ context.tipo_seleccion }}</h1>
+        <h1 style="text-align: center;">Selecciona tu {{ tipo_seleccion }}</h1>
     </div>
     <div class="menu">
-        {% if context.tipo_seleccion == 'línea' %}
-            {% for i  in range (context.num_cards) %}
-                {% if context.lineas_capacidad_operadores[i][1] == context.lineas_capacidad_operadores[i][2] %}
-                    <a href="/menuEstacion?linea={{context.lineas_capacidad_operadores[i][0]}}"><div class="card " style="background-color: yellow;">
+        {% if tipo_seleccion == 'línea' %}
+            {% for i  in range (num_cards) %}
+                {% if lineas_capacidad_operadores[i][1] == lineas_capacidad_operadores[i][2] %}
+                    <a href="/menuEstacion?linea={{lineas_capacidad_operadores[i][0]}}"><div class="card " style="background-color: yellow;">
                 {% else %}
-                    <a href="/menuEstacion?linea={{context.lineas_capacidad_operadores[i][0]}}"><div class="card " style="background-color: red;">
+                    <a href="/menuEstacion?linea={{lineas_capacidad_operadores[i][0]}}"><div class="card " style="background-color: red;">
                 {% endif %}
-                <h3>Línea {{ context.lineas_capacidad_operadores[i][0] }}</h3>
+                <h3>Línea {{ lineas_capacidad_operadores[i][0] }}</h3>
                 <div class="texto-de-botones">
                     <p>
-                        <i class="fi fi-rr-user"></i> {{ context.lineas_capacidad_operadores[i][1] }}
+                        <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][1] }}
                     </p> 
                     <p>
-                       <i class="fi fi-sr-user"></i> {{ context.lineas_capacidad_operadores[i][2] }}
+                       <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                     </p>
                 </div>
                 
@@ -34,19 +34,19 @@
 
         {% else %}
 
-            {% for i  in range (context.num_cards) %}
+            {% for i  in range (num_cards) %}
                 <div class="card " 
-                {% if context.lineas_capacidad_operadores[i][1] == context.lineas_capacidad_operadores[i][2] and context.lineas_capacidad_operadores[i][3] == context.lineas_capacidad_operadores[i][4] %}
+                {% if lineas_capacidad_operadores[i][1] == lineas_capacidad_operadores[i][2] and lineas_capacidad_operadores[i][3] == lineas_capacidad_operadores[i][4] %}
                     style="background-color: yellow;"
                 {% else %}
                     style="background-color: red;"
                 {% endif %}
                 >
                
-                <h3>Estación {{ context.lineas[i] }}</h3>
+                <h3>Estación {{ lineas[i] }}</h3>
                 <div class="texto-de-botones">
-                    <a href="/exito?estacion={{context.lineas_capacidad_operadores[i][0]}} LH"><div class="lado"
-                    {% if context.lineas_capacidad_operadores[i][1] == context.lineas_capacidad_operadores[i][2] %}
+                    <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} LH"><div class="lado"
+                    {% if lineas_capacidad_operadores[i][1] == lineas_capacidad_operadores[i][2] %}
                         style="background-color: yellow;"
                     {% else %}
                         style="background-color: red;"
@@ -56,12 +56,12 @@
                             LH
                         </p>
                         <p>
-                            <i class="fi fi-rr-user"></i> {{ context.lineas_capacidad_operadores[i][1] }}
-                            <i class="fi fi-sr-user"></i> {{ context.lineas_capacidad_operadores[i][2] }}
+                            <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][1] }}
+                            <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                         </p>
                 </div></a>
-                <a href="/exito?estacion={{context.lineas_capacidad_operadores[i][0]}} RH"><div class="lado"
-                   {% if context.lineas_capacidad_operadores[i][3] == context.lineas_capacidad_operadores[i][4] %}
+                <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado"
+                   {% if lineas_capacidad_operadores[i][3] == lineas_capacidad_operadores[i][4] %}
                         style="background-color: yellow;"
                     {% else %}
                         style="background-color: red;"
@@ -71,8 +71,8 @@
                             RH
                         </p>
                         <p>
-                            <i class="fi fi-rr-user"></i> {{ context.lineas_capacidad_operadores[i][3] }}
-                            <i class="fi fi-sr-user"></i> {{ context.lineas_capacidad_operadores[i][4] }}
+                            <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][3] }}
+                            <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][4] }}
                         </p>
                 </div></a>
                 </div>

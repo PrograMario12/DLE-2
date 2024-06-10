@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@flaticon/flaticon-uicons": "^3.2.1",
     "flask": "^0.2.10",
     "normalize.css": "^8.0.1"
   }
