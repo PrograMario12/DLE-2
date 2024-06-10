@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú</title>
+    <link rel="stylesheet" href=" {{static_url}} ">
+</head>
+<body>
+    <div class="header">
+        <h1 style="text-align: center;">Selecciona tu {{ context.tipo_seleccion }}</h1>
+    </div>
+    <div class="menu">
+        {% if context.tipo_seleccion == 'línea' %}
+            {% for i  in range (context.num_cards) %}
+                {% if context.lineas_capacidad_operadores[i][1] == context.lineas_capacidad_operadores[i][2] %}
+                    <a href="/menuEstacion?linea={{context.lineas_capacidad_operadores[i][0]}}"><div class="card " style="background-color: yellow;">
+                {% else %}
+                    <a href="/menuEstacion?linea={{context.lineas_capacidad_operadores[i][0]}}"><div class="card " style="background-color: red;">
+                {% endif %}
+                <h3>Línea {{ context.lineas_capacidad_operadores[i][0] }}</h3>
+                <div class="texto-de-botones">
+                    <p>
+                        <i class="fi fi-rr-user"></i> {{ context.lineas_capacidad_operadores[i][1] }}
+                    </p> 
+                    <p>
+                       <i class="fi fi-sr-user"></i> {{ context.lineas_capacidad_operadores[i][2] }}
+                    </p>
+                </div>
+                
+            </div></a>
+            {% endfor %}
+
+
+        {% else %}
+
+            {% for i  in range (context.num_cards) %}
+                <div class="card " 
+                {% if context.lineas_capacidad_operadores[i][1] == context.lineas_capacidad_operadores[i][2] and context.lineas_capacidad_operadores[i][3] == context.lineas_capacidad_operadores[i][4] %}
+                    style="background-color: yellow;"
+                {% else %}
+                    style="background-color: red;"
+                {% endif %}
+                >
+               
+                <h3>Estación {{ context.lineas[i] }}</h3>
+                <div class="texto-de-botones">
+                    <a href="/exito?estacion={{context.lineas_capacidad_operadores[i][0]}} LH"><div class="lado"
+                    {% if context.lineas_capacidad_operadores[i][1] == context.lineas_capacidad_operadores[i][2] %}
+                        style="background-color: yellow;"
+                    {% else %}
+                        style="background-color: red;"
+                    {% endif %}
+                    >
+                        <p>
+                            LH
+                        </p>
+                        <p>
+                            <i class="fi fi-rr-user"></i> {{ context.lineas_capacidad_operadores[i][1] }}
+                            <i class="fi fi-sr-user"></i> {{ context.lineas_capacidad_operadores[i][2] }}
+                        </p>
+                </div></a>
+                <a href="/exito?estacion={{context.lineas_capacidad_operadores[i][0]}} RH"><div class="lado"
+                   {% if context.lineas_capacidad_operadores[i][3] == context.lineas_capacidad_operadores[i][4] %}
+                        style="background-color: yellow;"
+                    {% else %}
+                        style="background-color: red;"
+                    {% endif %}
+                   >
+                        <p>
+                            RH
+                        </p>
+                        <p>
+                            <i class="fi fi-rr-user"></i> {{ context.lineas_capacidad_operadores[i][3] }}
+                            <i class="fi fi-sr-user"></i> {{ context.lineas_capacidad_operadores[i][4] }}
+                        </p>
+                </div></a>
+                </div>
+                
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        
+    </div>
+
+    <div>
+        <button onclick="history.back()" class="cancel-button" style="float: right;">Cancelar</button>
+    </div>
+
+    
+</body>
+</html>
