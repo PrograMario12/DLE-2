@@ -1,3 +1,0 @@
-class Config:
-    SECRET_KEY = 'tu_clave_secreta_aqui'
-    # Otras configuraciones aquí
