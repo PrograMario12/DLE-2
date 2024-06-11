@@ -1,4 +1,5 @@
 import psycopg2
+from config import Config
 
 class Usuario:
     def __init__(self, numero_empleado, hora, linea):
@@ -21,10 +22,10 @@ class Usuario:
 def execute_query(query):
     # Establecer la conexión con la base de datos
     conn = psycopg2.connect(
-        host="localhost",
-        database="directlaborefficency",
-        user="postgres",
-        password="admin"
+        host=Config.DATABASE_HOST,
+        database= Config.DATABASE_NAME,
+        user=Config.DATABASE_USER,
+        password=Config.DATABASE_PASSWORD
     )
 
     # Crear un cursor para ejecutar consultas
@@ -46,10 +47,10 @@ def execute_query(query):
 def insertar_bd(query):
     # Establecer la conexión con la base de datos
     conn = psycopg2.connect(
-        host="localhost",
-        database="directlaborefficency",
-        user="postgres",
-        password="admin"
+        host=Config.DATABASE_HOST,
+        database= Config.DATABASE_NAME,
+        user=Config.DATABASE_USER,
+        password=Config.DATABASE_PASSWORD
     )
 
     # Crear un cursor para ejecutar consultas
