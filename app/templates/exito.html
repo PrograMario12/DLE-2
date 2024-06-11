@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuario logeado</title>
+    <link rel="stylesheet" href="{{ css_file }}">
+</head>
+<body>
+    <div class="exito-final" 
+        {% if tipo == 'entrada' %}
+            style="background-color: hsl(122, 100%, 50%);"
+        {% else %}
+            style="background-color: #ff7b00;"
+        {% endif %
+    >
+        <p>{{ tipo }} registrada para</p>
+        <p class="exito-principales">{{ usuario }}</p>
+        <p>en la estación</p>
+        <p class="exito-principales">{{ estacion }}</p>
+        <p>en la línea</p>
+        <p class="exito-principales">{{ linea }}</p>
+        <p>con el horario</p>
+        <p class="exito-principales">{{ horario }}</p>
+        <p class="exito-principales">¡Gracias por tu colaboración!</p>
+    </div>
+</body>
+
+<script>
+    setTimeout(function() {
+        window.location.href = "/";
+    }, 5000);
+</script>
+</html>

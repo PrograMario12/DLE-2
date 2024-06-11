@@ -1,7 +1,11 @@
 from app import app, functions
 from flask import redirect
 from app import app
-from flask import redirect, render_template
+from flask import redirect, render_template, request
+from datetime import datetime
+
+
+user = functions.Usuario(0, 0, 0)
 
 @app.route("/")
 def home():
@@ -10,6 +14,14 @@ def home():
 
 @app.route('/menuLinea')
 def menuLinea():
+    numeroempleado = request.args.get('numeroempleado')
+    user.set_numero_empleado(numeroempleado)
+
+    tipo = functions.obtener_tipo_registro(user.numero_empleado)
+    print("El tipo de registro es: ", tipo)
+    if tipo == 'Salida':
+        return redirect('/exito')
+
     resultados = functions.obtener_lineas()
     numero_lineas = len(resultados)
     empleados_por_linea = functions.obtener_empleados_por_linea()
@@ -35,7 +47,63 @@ def menuLinea():
 
     return render_template('menu.html', **context)
 
+@app.route('/menuEstacion')
+def menuEstacion():
+    linea = request.args.get('linea')
+    user.set_linea(linea)
 
-# @app.route('/index')
-# def index():
-#     return "Hello, World!"
+    resultados = functions.obtener_estaciones(linea)
+    numero_estaciones = len(set([resultado[4] for resultado in resultados]))
+    empleados_por_estacion = functions.obtener_empleados_por_estacion()
+    empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
+    estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
+
+    
+
+    estaciones = [] # [estacion, capacidad, operadores]
+    for i in range(0, len(resultados), 2):
+        estacion = resultados[i][4]
+        capacidadLH = resultados[i][2]
+        operadoresLH = empleados_por_estacion.get(str(estacion) + " LH", 0)
+        capacidadRH = resultados[i + 1][2]
+        operadoresRH = empleados_por_estacion.get(str(estacion) + " RH", 0)
+        estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH])
+
+    print("Las estaciones son: ", estaciones)
+
+    context = {
+        'css_file': 'static/css/styles.css',
+        'tipo_seleccion': 'estación',
+        'num_cards': numero_estaciones,
+        'lineas_capacidad_operadores': estaciones,
+        'lineas': estacionesList
+    }
+
+    return render_template('menu.html', **context)
+
+@app.route('/exito')
+def exito():
+    estacion = request.args.get('estacion')
+    hora = datetime.now()
+    user.set_hora(hora)
+
+    tipo = functions.obtener_tipo_registro(user.numero_empleado)
+
+    if tipo == 'Entrada':
+        functions.registar_entrada_salida(user.numero_empleado, user.linea, estacion, tipo, hora)
+        linea = user.linea
+    else:
+        linea_res = functions.obtener_valores_salida(user.numero_empleado)
+        estacion = linea_res[1]
+        linea = linea_res[0]
+        functions.registar_entrada_salida(user.numero_empleado, linea, estacion, tipo, hora)
+
+    context = {
+        'css_file': 'static/css/styles.css',
+        'usuario': user.numero_empleado,
+        'horario': hora,
+        'linea': linea,
+        'estacion': estacion,
+        'tipo': tipo
+    }
+    return render_template('exito.html', **context)

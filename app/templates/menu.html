@@ -13,12 +13,17 @@
     <div class="menu">
         {% if tipo_seleccion == 'línea' %}
             {% for i  in range (num_cards) %}
+            <a href="/menuEstacion?linea={{lineas_capacidad_operadores[i][0]}}"><div class="card">
+                <h3 
                 {% if lineas_capacidad_operadores[i][1] == lineas_capacidad_operadores[i][2] %}
-                    <a href="/menuEstacion?linea={{lineas_capacidad_operadores[i][0]}}"><div class="card " style="background-color: yellow;">
+                    style="background-color: yellow;"
                 {% else %}
-                    <a href="/menuEstacion?linea={{lineas_capacidad_operadores[i][0]}}"><div class="card " style="background-color: red;">
+                    style="background-color: red;"
                 {% endif %}
-                <h3>Línea {{ lineas_capacidad_operadores[i][0] }}</h3>
+                >
+                    Línea {{ lineas_capacidad_operadores[i][0] }}
+                </h3>
+
                 <div class="texto-de-botones">
                     <p>
                         <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][1] }}
@@ -30,7 +35,6 @@
                 
             </div></a>
             {% endfor %}
-
 
         {% else %}
 
