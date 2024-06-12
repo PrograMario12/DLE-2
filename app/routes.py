@@ -26,6 +26,7 @@ def menuLinea():
     numero_lineas = len(resultados)
     empleados_por_linea = functions.obtener_empleados_por_linea()
     empleados_por_linea = {int(linea[0]): linea[1] for linea in empleados_por_linea}
+    print("Los empleados por línea son: ", empleados_por_linea)
     no_hay_lineas = []
 
     lineas = []
@@ -54,7 +55,7 @@ def menuEstacion():
 
     resultados = functions.obtener_estaciones(linea)
     numero_estaciones = len(set([resultado[4] for resultado in resultados]))
-    empleados_por_estacion = functions.obtener_empleados_por_estacion()
+    empleados_por_estacion = functions.obtener_empleados_por_estacion(linea)
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
     estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
 
@@ -76,7 +77,8 @@ def menuEstacion():
         'tipo_seleccion': 'estación',
         'num_cards': numero_estaciones,
         'lineas_capacidad_operadores': estaciones,
-        'lineas': estacionesList
+        'lineas': estacionesList,
+        'lineaseleccionada': linea
     }
 
     return render_template('menu.html', **context)

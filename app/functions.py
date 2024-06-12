@@ -72,14 +72,14 @@ def obtener_lineas():
 
 def obtener_empleados_por_linea():
     query = """
-    SELECT linea, COUNT(DISTINCT user_id) 
-    FROM register 
-    WHERE tipo = 'Entrada' AND user_id NOT IN (
-        SELECT user_id 
-        FROM register 
-        WHERE tipo = 'Salida' 
-    )
-    GROUP BY linea
+    SELECT linea, COUNT(user_id) AS total_users
+        FROM register
+        WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
+            SELECT MAX(id_register), user_id
+            FROM register
+            GROUP BY user_id
+        ))
+        GROUP BY linea;
     """
     return execute_query(query)
 
@@ -87,17 +87,18 @@ def obtener_estaciones(linea):
     query = "SELECT * FROM stations WHERE line_id = {} ORDER BY station_number, posicion".format(linea)
     return execute_query(query)
 
-def obtener_empleados_por_estacion():
+def obtener_empleados_por_estacion(linea):
     query = """
-    SELECT estacion, COUNT(DISTINCT user_id) 
-    FROM register 
-    WHERE tipo = 'Entrada' AND user_id NOT IN (
-        SELECT user_id 
-        FROM register 
-        WHERE tipo = 'Salida' 
-    )
-    GROUP BY estacion
-    """
+    SELECT estacion, COUNT(user_id) AS total_users
+        FROM register
+        WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
+            SELECT MAX(id_register), user_id
+            FROM register
+            GROUP BY user_id
+        ))
+        AND linea = '{}'
+        GROUP BY estacion;
+    """.format(linea)
     return execute_query(query)
 
 def registar_entrada_salida(user_id, linea, estacion, tipo, marca):
@@ -117,3 +118,16 @@ def obtener_valores_salida(user_id):
     query = "SELECT linea, estacion FROM register WHERE user_id = {} ORDER BY marca DESC LIMIT 1".format(user_id)
     results = execute_query(query)
     return results[0] if results else None
+
+def obtener_empleados_en_la_estacion():
+    query = """
+    SELECT user_id
+    FROM register
+    WHERE tipo = 'Entrada' AND linea = 16 AND user_id NOT IN (
+        SELECT user_id 
+        FROM register 
+        WHERE tipo = 'Salida' 
+    )
+    GROUP BY user_id
+    """
+    return execute_query(query)

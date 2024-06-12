@@ -120,3 +120,13 @@ a{
     font-size: 40px;
     font-weight: bold;
 }
+
+.lado{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    min-width: 100px;
+    min-height: 100px;
+    margin: 0 25px;
+}

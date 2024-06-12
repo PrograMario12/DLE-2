@@ -8,19 +8,16 @@
 </head>
 <body>
     <div class="header">
-        <h1 style="text-align: center;">Selecciona tu {{ tipo_seleccion }}</h1>
+        {% if lineaseleccionada  %}
+        <h1 style="text-align: center;">Línea {{ lineaseleccionada }}</h1>
+        {% endif %}
+        <h2 style="text-align: center;">Selecciona tu {{ tipo_seleccion }}</h2>
     </div>
     <div class="menu">
         {% if tipo_seleccion == 'línea' %}
             {% for i  in range (num_cards) %}
             <a href="/menuEstacion?linea={{lineas_capacidad_operadores[i][0]}}"><div class="card">
-                <h3 
-                {% if lineas_capacidad_operadores[i][1] == lineas_capacidad_operadores[i][2] %}
-                    style="background-color: yellow;"
-                {% else %}
-                    style="background-color: red;"
-                {% endif %}
-                >
+                <h3>
                     Línea {{ lineas_capacidad_operadores[i][0] }}
                 </h3>
 
@@ -37,25 +34,11 @@
             {% endfor %}
 
         {% else %}
-
             {% for i  in range (num_cards) %}
-                <div class="card " 
-                {% if lineas_capacidad_operadores[i][1] == lineas_capacidad_operadores[i][2] and lineas_capacidad_operadores[i][3] == lineas_capacidad_operadores[i][4] %}
-                    style="background-color: yellow;"
-                {% else %}
-                    style="background-color: red;"
-                {% endif %}
-                >
-               
+                <div class="card ">
                 <h3>Estación {{ lineas[i] }}</h3>
                 <div class="texto-de-botones">
-                    <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} LH"><div class="lado"
-                    {% if lineas_capacidad_operadores[i][1] == lineas_capacidad_operadores[i][2] %}
-                        style="background-color: yellow;"
-                    {% else %}
-                        style="background-color: red;"
-                    {% endif %}
-                    >
+                    <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} LH"><div class="lado">             
                         <p>
                             LH
                         </p>
@@ -64,13 +47,7 @@
                             <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                         </p>
                 </div></a>
-                <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado"
-                   {% if lineas_capacidad_operadores[i][3] == lineas_capacidad_operadores[i][4] %}
-                        style="background-color: yellow;"
-                    {% else %}
-                        style="background-color: red;"
-                    {% endif %}
-                   >
+                <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado">
                         <p>
                             RH
                         </p>
@@ -89,8 +66,8 @@
     </div>
 
     <div>
-        <button onclick="history.back()" class="cancel-button" style="float: right;">Cancelar</button>
-    </div>
+        <button onclick="window.location.href='/'" class="cancel-button" style="float: right;">Cancelar</button>
+        </div>
 
     
 </body>
