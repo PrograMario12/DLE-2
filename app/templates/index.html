@@ -7,11 +7,17 @@
   <title>Registro de entrada</title>
 </head>
 <body>
+  <section>
+		<div class="reloj">
+			<span id="tiempo">00 : 00</span>
+		</div>
+	</section>
+  <div class="personaje">
   <form method="get" action="/menuLinea" id="login-form" class="login-form" autocomplete="off" role="main">
     <h1 class="a11y-hidden">Login Form</h1>
     <div>
       <label class="label-email">
-        <input type="number" class="text" name="numeroempleado" placeholder="Número de empleado" tabindex="1" required autofocus />
+        <input type="number" class="text" name="numeroempleado" placeholder="Escanea tu tarjeta" tabindex="1" required autofocus />
         <span class="required">Número de tarjeta de empleado</span>
       </label>
     </div>
@@ -35,6 +41,8 @@
       }
       });
     </script>
+    <script src="{{ js_file }}"></script>
   </form>
+  </div>
 </body>
 </html>

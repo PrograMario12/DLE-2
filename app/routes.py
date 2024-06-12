@@ -9,7 +9,7 @@ user = functions.Usuario(0, 0, 0)
 
 @app.route("/")
 def home():
-    return render_template('index.html', css_file='static/css/stylesinicio.css')
+    return render_template('index.html', css_file='static/css/stylesinicio.css', js_file='static/js/reloj.js')
 
 
 @app.route('/menuLinea')

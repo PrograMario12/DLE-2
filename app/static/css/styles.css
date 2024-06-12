@@ -5,7 +5,7 @@
 .card {
     background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
     padding: 16px;
     min-width: 300px;
     margin-bottom: 10px;
@@ -125,7 +125,7 @@ a{
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
     min-width: 100px;
     min-height: 100px;
     margin: 0 25px;
