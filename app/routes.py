@@ -30,12 +30,21 @@ def menuLinea():
     no_hay_lineas = []
 
     lineas = []
+    '''
+        resultado[0] es igual al id de la línea
+        resultado[2] es igual a la capacidad de la línea
+    '''
     for resultado in resultados:
         linea = [resultado[0], resultado[2]]
         if resultado[0] in empleados_por_linea:
             linea.append(empleados_por_linea[resultado[0]])
         else:
             linea.append(0)
+
+        #Aquí se calcula la cantidad de operadores disponibles
+        linea[1] = int(linea[1]) - int(linea[2])
+
+        #Aquí se agrega la línea a la lista de lineas
         lineas.append(linea)
 
     context = {
@@ -68,9 +77,13 @@ def menuEstacion():
         operadoresLH = empleados_por_estacion.get(str(estacion) + " LH", 0)
         capacidadRH = resultados[i + 1][2]
         operadoresRH = empleados_por_estacion.get(str(estacion) + " RH", 0)
+        
+        capacidadLH = int(capacidadLH) - int(operadoresLH)
+        capacidadRH = int(capacidadRH) - int(operadoresRH)
+
+        #Aquí se calcula la cantidad de operadores disponibles
         estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH])
 
-    print("Las estaciones son: ", estaciones)
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -89,6 +102,11 @@ def exito():
     hora = datetime.now()
     user.set_hora(hora)
 
+
+    usuario = functions.obtener_usuario(user.numero_empleado)
+    if not usuario:
+        usuario = 'Error'
+
     tipo = functions.obtener_tipo_registro(user.numero_empleado)
 
     if tipo == 'Entrada':
@@ -102,7 +120,7 @@ def exito():
 
     context = {
         'css_file': 'static/css/styles.css',
-        'usuario': user.numero_empleado,
+        'usuario': usuario,
         'horario': hora,
         'linea': linea,
         'estacion': estacion,

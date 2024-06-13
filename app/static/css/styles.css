@@ -2,13 +2,42 @@
 @import url('https://cdn-uicons.flaticon.com/2.4.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
 @import url('https://cdn-uicons.flaticon.com/2.4.0/uicons-solid-rounded/css/uicons-solid-rounded.css');
 
+* {
+    box-sizing: border-box;
+
+}
+
+.body-center{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+
+}
+
+.menu {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    height: 50%;
+    width: 100%;
+    align-items: center;
+}
+
+.a-estilos{
+    width: 45%;
+}
+
 .card {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-    padding: 16px;
-    min-width: 300px;
-    margin-bottom: 10px;
+    padding: 16px 0;
+    width: 100%;
+    margin-bottom: 1vh;
     align-items: center;
     justify-content: center;
     display: flex;
@@ -16,8 +45,13 @@
     text-align: center;
 }
 
+.card-mitad{
+    width: 45%;
+}
+
 .card h3{
     margin: 0;
+    padding: 0;
     width: 100%;
     height: 30px;
 }
@@ -48,11 +82,20 @@
     background-color: #0056b3;
 }
 
-.menu {
-    display: flex;
-    justify-content: space-around;
+h1 {
+    font-size: 50px;
+    font-weight: bold;
     margin-bottom: 16px;
-    flex-wrap: wrap;
+    margin-top: 0;
+    text-align: center;
+}
+
+h2 {
+    font-size: 35px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    margin-top: 0;
+    text-align: center;
 }
 
 h3 {
@@ -67,16 +110,32 @@ a{
     color: #000000;
 }
 
+.card p {
+    margin: 0;
+    font-size: 20px;
+    margin: 0 1vw;
+}
+
 .texto-de-botones {
     display: flex;
     font-size: 20px;
     font-weight: bold;
 }
 
-.card p {
-    margin: 0;
-    font-size: 20px;
-    margin: 0 1vw;
+.lado{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
+    min-width: 150px;
+    min-height: 150px;
+    margin: 0 25px;
+}
+
+.div-button-cancel{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .cancel-button{
@@ -94,9 +153,20 @@ a{
     background-color: #c82333;
 }
 
+.empleado-ok{
+    background-color: #008000;
+}
 
+.empleado-nook{
+    background-color: #FF0000;
+}
+
+.empleado-warning{
+    background-color: yellow;
+}
+
+/*  ESTILOS PARA LA PANTALLA FINAL */
 .exito-final {
-    background-color: #00fa3a;
     color: #000;
     border-radius: 4px;
     text-decoration: none;
@@ -107,8 +177,8 @@ a{
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100vh;
+    justify-content: space-between;
+    height: 60vh;
     width: 100%;
 }
 
@@ -117,16 +187,6 @@ a{
 }
 
 .exito-principales{
-    font-size: 40px;
+    font-size: 60px;
     font-weight: bold;
-}
-
-.lado{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 1);
-    min-width: 100px;
-    min-height: 100px;
-    margin: 0 25px;
 }

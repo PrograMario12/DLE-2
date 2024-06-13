@@ -131,3 +131,12 @@ def obtener_empleados_en_la_estacion():
     GROUP BY user_id
     """
     return execute_query(query)
+
+def obtener_usuario(user_id):
+    query = "SELECT nombre_empleado, apellidos_empleado FROM table_empleados_tarjeta WHERE numero_tarjeta = {}".format(user_id)
+    results = execute_query(query)
+    print(results)
+
+    # Devolver el primer resultado si existen resultados, de lo contrario devolver None
+    #Concatena el nombre y los apellidos
+    return results[0][0] + " " + results[0][1] if results else None

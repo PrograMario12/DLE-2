@@ -6,13 +6,13 @@
     <title>Usuario registrado</title>
     <link rel="stylesheet" href="{{ css_file }}">
 </head>
-<body>
-    <div class="exito-final" 
-        {% if tipo == 'Entrada' %}
-            style="background-color: yellow;"
-        {% else %}
-            style="background-color: red;"
-        {% endif %}
+<body class="body-center"
+{% if tipo == 'Entrada' %}
+style="background-color: yellow;"
+{% else %}
+style="background-color: red;"
+{% endif %}>
+    <div class="exito-final"
     >
         <p>{{ tipo }} registrada para</p>
         <p class="exito-principales">{{ usuario }}</p>
@@ -20,8 +20,6 @@
         <p class="exito-principales">{{ estacion }}</p>
         <p>en la línea</p>
         <p class="exito-principales">{{ linea }}</p>
-        <p>con el horario</p>
-        <p class="exito-principales">{{ horario }}</p>
         <p class="exito-principales">¡Gracias por tu colaboración!</p>
     </div>
 </body>
