@@ -17,7 +17,7 @@ style="background-color: red;"
         <p>{{ tipo }} registrada para</p>
         <picture>
             <source srcset="{{ imagen }}" type="image/webp">
-            <img src="{{ imagen }}" alt="Imagen de usuario">
+            <img src="{{ imagen }}" alt="Imagen de usuario" loading="lazy">
         </picture>
         <p class="exito-principales">{{ usuario }}</p>
         <p>en la estación</p>

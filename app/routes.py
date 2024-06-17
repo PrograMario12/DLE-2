@@ -9,11 +9,31 @@ user = functions.Usuario(0, 0, 0)
 
 @app.route("/")
 def home():
+    """
+    Renders the home page.
+
+    Returns:
+        The rendered template for the home page with the specified CSS and JavaScript files.
+    """
     return render_template('index.html', css_file='static/css/stylesinicio.css', js_file='static/js/reloj.js')
 
 
 @app.route('/menuLinea')
 def menuLinea():
+    """
+    Renders the menu page for selecting a line.
+
+    This function retrieves the employee number from the request arguments,
+    sets it in the user object, and then obtains the type of registration
+    for the employee. If the type is 'Salida', it redirects to the '/exito'
+    page. Otherwise, it retrieves the lines and the number of employees per
+    line. It calculates the number of available operators for each line and
+    constructs a list of lines with their capacity and available operators.
+    Finally, it renders the 'menu.html' template with the necessary context.
+
+    Returns:
+        The rendered 'menu.html' template with the context.
+    """
     numeroempleado = request.args.get('numeroempleado')
     user.set_numero_empleado(numeroempleado)
 

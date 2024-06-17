@@ -147,3 +147,17 @@ def obtener_imagen(user_id):
 
     # Devolver el primer resultado si existen resultados, de lo contrario devolver None
     return results[0][0] if results else None
+
+#Genera un diccionario con la cantidad de empleados en cada estación
+def obtener_empleados_por_estacion():
+    query = """
+    SELECT estacion, COUNT(user_id) AS total_users
+        FROM register
+        WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
+            SELECT MAX(id_register), user_id
+            FROM register
+            GROUP BY user_id
+        ))
+        GROUP BY estacion;
+    """
+    return execute_query(query)
