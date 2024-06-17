@@ -102,8 +102,11 @@ def exito():
     hora = datetime.now()
     user.set_hora(hora)
 
-
     usuario = functions.obtener_usuario(user.numero_empleado)
+    imagen = functions.obtener_imagen(user.numero_empleado)
+    imagen = 'static/img/media/' + str(imagen) + '.png'
+    print("La imagen es: ", imagen)
+
     if not usuario:
         usuario = 'Error'
 
@@ -124,6 +127,7 @@ def exito():
         'horario': hora,
         'linea': linea,
         'estacion': estacion,
-        'tipo': tipo
+        'tipo': tipo,
+        'imagen': imagen
     }
     return render_template('exito.html', **context)

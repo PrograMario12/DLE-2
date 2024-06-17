@@ -140,3 +140,10 @@ def obtener_usuario(user_id):
     # Devolver el primer resultado si existen resultados, de lo contrario devolver None
     #Concatena el nombre y los apellidos
     return results[0][0] + " " + results[0][1] if results else None
+
+def obtener_imagen(user_id):
+    query = "SELECT id_empleado FROM table_empleados_tarjeta WHERE numero_tarjeta = {}".format(user_id)
+    results = execute_query(query)
+
+    # Devolver el primer resultado si existen resultados, de lo contrario devolver None
+    return results[0][0] if results else None
