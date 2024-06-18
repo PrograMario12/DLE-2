@@ -1,48 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ css_file }}">
-  <title>Registro de entrada</title>
-</head>
-<body>
-  <section>
-		<div class="reloj">
-			<span id="tiempo">00 : 00</span>
-		</div>
-	</section>
-  <div class="personaje">
-  <form method="get" action="/menuLinea" id="login-form" class="login-form" autocomplete="off" role="main">
-    <h1 class="a11y-hidden">Login Form</h1>
-    <div>
-      <label class="label-email">
-        <input type="number" class="text" name="numeroempleado" placeholder="Escanea tu tarjeta" tabindex="1" required autofocus />
-        <span class="required">Número de tarjeta de empleado</span>
-      </label>
-    </div>
-    <figure aria-hidden="true">
-      <div class="person-body"></div>
-      <div class="neck skin"></div>
-      <div class="head skin">
-        <div class="eyes"></div>
-        <div class="mouth"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ css_file }}" />
+    <title>Registro de entrada</title>
+  </head>
+  <body>
+    <section>
+      <div class="reloj">
+        <span id="tiempo">00 : 00</span>
       </div>
-      <div class="hair"></div>
-      <div class="ears"></div>
-      <div class="shirt-1"></div>
-      <div class="shirt-2"></div>
-    </figure>
-    <script>
-      const emailInput = document.querySelector('input[name="numeroempleado"]');
-      emailInput.addEventListener('input', function() {
-      if (this.value.length === 10) {
-        document.getElementById('login-form').submit();
-      }
-      });
-    </script>
-    <script src="{{ js_file }}"></script>
-  </form>
-  </div>
-</body>
+    </section>
+    <div class="personaje">
+      <form
+        method="get"
+        action="/menuLinea"
+        id="login-form"
+        class="login-form"
+        autocomplete="off"
+        role="main"
+      >
+        <h1 class="a11y-hidden">Login Form</h1>
+        <div>
+          <label class="label-email">
+            <input
+              type="number"
+              class="text"
+              name="numeroempleado"
+              tabindex="1"
+              required
+              autofocus
+            />
+            <span class="required">Escanea tu tarjeta</span>
+          </label>
+        </div>
+        <figure aria-hidden="true">
+          <div class="person-body"></div>
+          <div class="neck skin"></div>
+          <div class="head skin">
+            <div class="eyes"></div>
+            <div class="mouth"></div>
+          </div>
+          <div class="hair"></div>
+          <div class="ears"></div>
+          <div class="shirt-1"></div>
+          <div class="shirt-2"></div>
+        </figure>
+        <script>
+          const emailInput = document.querySelector(
+            'input[name="numeroempleado"]'
+          );
+          emailInput.addEventListener("input", function () {
+            if (this.value.length === 10) {
+              document.getElementById("login-form").submit();
+            }
+          });
+        </script>
+        <script src="{{ js_file }}"></script>
+      </form>
+    </div>
+  </body>
 </html>

@@ -67,7 +67,7 @@ def insertar_bd(query):
     conn.close()
 
 def obtener_lineas():
-    query = "SELECT * FROM lines"
+    query = "SELECT * FROM lines order by line_id"
     return execute_query(query)
 
 def obtener_empleados_por_linea():
@@ -160,4 +160,53 @@ def obtener_empleados_por_estacion():
         ))
         GROUP BY estacion;
     """
+    return execute_query(query)
+
+'''
+    Migración de la función obtener_empleados_por_estacion
+'''
+
+def obtener_empleados_por_estacion():
+    query = """
+    SELECT estacion, COUNT(user_id) AS total_users
+        FROM register
+        WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
+            SELECT MAX(id_register), user_id
+            FROM register
+            GROUP BY user_id
+        ))
+        GROUP BY estacion;
+    """
+    return execute_query(query)
+
+def obtener_empleados_por_estacion(linea):
+    query = """
+    SELECT estacion, COUNT(user_id) AS total_users
+        FROM register
+        WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
+            SELECT MAX(id_register), user_id
+            FROM register
+            GROUP BY user_id
+        ))
+        AND linea = '{}'
+        GROUP BY estacion;
+    """.format(linea)
+    return execute_query(query)
+
+def obtener_suma_horas():
+    query = """
+    SELECT user_id, SUM(horas) AS total_hours
+        FROM register
+        WHERE tipo = 'Salida'
+        GROUP BY user_id;
+    """
+    return execute_query(query)
+
+def calcular_dle(user_id):
+    query = """
+    SELECT user_id, SUM(horas) AS total_hours
+        FROM register
+        WHERE tipo = 'Salida' AND user_id = {}
+        GROUP BY user_id;
+    """.format(user_id)
     return execute_query(query)
