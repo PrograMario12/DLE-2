@@ -6,6 +6,10 @@
     box-sizing: border-box;
 }
 
+html{
+    font-family: Arial, Helvetica, sans-serif;
+}
+
 a {
     text-decoration: none;
     color: #000000;
@@ -159,6 +163,17 @@ img {
 
 .empleado-warning {
     background-color: yellow;
+}
+
+.empleado-disabled{
+    background-color: #808080;
+}
+
+a.disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    background-color: #fff;
+
 }
 
 /*  ESTILOS PARA LA PANTALLA FINAL */

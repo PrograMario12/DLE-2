@@ -1,6 +1,4 @@
 from app import app, functions
-from flask import redirect
-from app import app
 from flask import redirect, render_template, request
 from datetime import datetime
 
@@ -15,7 +13,15 @@ def home():
     Returns:
         The rendered template for the home page with the specified CSS and JavaScript files.
     """
-    return render_template('index.html', css_file='static/css/stylesinicio.css', js_file='static/js/reloj.js')
+
+    context = {
+        'css_file': 'static/css/stylesinicio.css',
+        'js_file': 'static/js/reloj.js',
+        'img_file': 'static/img/magna-logo.png'
+    }
+    
+
+    return render_template('index.html', **context)
 
 
 @app.route('/menuLinea')
@@ -38,7 +44,6 @@ def menuLinea():
     user.set_numero_empleado(numeroempleado)
 
     tipo = functions.obtener_tipo_registro(user.numero_empleado)
-    print("El tipo de registro es: ", tipo)
     if tipo == 'Salida':
         return redirect('/exito')
 
@@ -46,13 +51,12 @@ def menuLinea():
     numero_lineas = len(resultados)
     empleados_por_linea = functions.obtener_empleados_por_linea()
     empleados_por_linea = {int(linea[0]): linea[1] for linea in empleados_por_linea}
-    print("Los empleados por línea son: ", empleados_por_linea)
     no_hay_lineas = []
 
     lineas = []
     '''
-        resultado[0] es igual al id de la línea
-        resultado[2] es igual a la capacidad de la línea
+        resultado[0] is equal to the line id
+        resultado[2] is equal to the line capacity
     '''
     for resultado in resultados:
         linea = [resultado[0], resultado[2]]
@@ -61,10 +65,10 @@ def menuLinea():
         else:
             linea.append(0)
 
-        #Aquí se calcula la cantidad de operadores disponibles
+        #Here we calculate the number of available operators
         linea[1] = int(linea[1]) - int(linea[2])
 
-        #Aquí se agrega la línea a la lista de lineas
+        #Here we check if the line has available operators
         lineas.append(linea)
 
     context = {
@@ -79,6 +83,17 @@ def menuLinea():
 
 @app.route('/menuEstacion')
 def menuEstacion():
+    """
+    Renders the menu page for a specific station.
+
+    Retrieves the selected line from the request arguments and sets it for the user.
+    Obtains the stations and their information for the selected line.
+    Calculates the number of stations, employees per station, and available operators for each station.
+    Constructs the context for rendering the menu page.
+    
+    Returns:
+        The rendered menu page with the constructed context.
+    """
     linea = request.args.get('linea')
     user.set_linea(linea)
 
@@ -88,9 +103,7 @@ def menuEstacion():
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
     estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
 
-    
-
-    estaciones = [] # [estacion, capacidad, operadores]
+    estaciones = [] 
     for i in range(0, len(resultados), 2):
         estacion = resultados[i][4]
         capacidadLH = resultados[i][2]
@@ -101,9 +114,7 @@ def menuEstacion():
         capacidadLH = int(capacidadLH) - int(operadoresLH)
         capacidadRH = int(capacidadRH) - int(operadoresRH)
 
-        #Aquí se calcula la cantidad de operadores disponibles
         estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH])
-
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -118,6 +129,18 @@ def menuEstacion():
 
 @app.route('/exito')
 def exito():
+    """
+    This function is the route handler for the '/exito' endpoint.
+    It retrieves the 'estacion' parameter from the request arguments and the current time.
+    It sets the current time as the user's hora attribute.
+    It then retrieves the usuario and imagen based on the user's numero_empleado.
+    The imagen is converted to a file path.
+    If the usuario is not found, it sets it to 'Error'.
+    It retrieves the tipo of registro for the user.
+    If the tipo is 'Entrada', it registers an entrada_salida with the user's information.
+    Otherwise, it retrieves the linea and estacion from the previous salida and registers an entrada_salida with the updated information.
+    Finally, it prepares the context with various variables and renders the 'exito.html' template with the context.
+    """
     estacion = request.args.get('estacion')
     hora = datetime.now()
     user.set_hora(hora)

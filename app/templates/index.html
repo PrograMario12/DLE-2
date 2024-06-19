@@ -12,7 +12,7 @@
         <span id="tiempo">00 : 00</span>
       </div>
     </section>
-    <div class="personaje">
+
       <form
         method="get"
         action="/menuLinea"
@@ -21,32 +21,27 @@
         autocomplete="off"
         role="main"
       >
-        <h1 class="a11y-hidden">Login Form</h1>
+      <picture>
+        <source
+          srcset="{{ img_file }}"
+        />
+        <img src="{{ img_file }}" alt="Logo" class="img" />
+      </picture>
         <div>
           <label class="label-email">
             <input
-              type="number"
+              type="password"
               class="text"
               name="numeroempleado"
               tabindex="1"
               required
               autofocus
+              autocomplete="new-password"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             />
             <span class="required">Escanea tu tarjeta</span>
           </label>
         </div>
-        <figure aria-hidden="true">
-          <div class="person-body"></div>
-          <div class="neck skin"></div>
-          <div class="head skin">
-            <div class="eyes"></div>
-            <div class="mouth"></div>
-          </div>
-          <div class="hair"></div>
-          <div class="ears"></div>
-          <div class="shirt-1"></div>
-          <div class="shirt-2"></div>
-        </figure>
         <script>
           const emailInput = document.querySelector(
             'input[name="numeroempleado"]'
@@ -59,6 +54,5 @@
         </script>
         <script src="{{ js_file }}"></script>
       </form>
-    </div>
   </body>
 </html>
