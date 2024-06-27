@@ -1,9 +1,40 @@
 from app import app, functions
 from flask import redirect, render_template, request
 from datetime import datetime
+import flask_login
+import flask
 
+login_manager = flask_login.LoginManager()
+login_manager.init_app(app)
 
-user = functions.Usuario(0, 0, 0)
+admins = {'admin': {'password': 'admin'}}
+
+class Admin(flask_login.UserMixin):
+    pass
+
+@login_manager.user_loader
+def user_loader(username):
+    if username not in admins:
+        return
+
+    user = Admin()
+    user.id = username
+    return user
+
+@login_manager.request_loader
+def request_loader(request):
+    username = request.form.get('username')
+    if username not in admins:
+        return
+
+    user = Admin()
+    user.id = username
+
+    user.is_authenticated = request.form['password'] == admins[username]['password']
+
+    return user
+
+user = functions.Usuario(0, 0, 16)
 
 @app.route("/")
 def home():
@@ -26,20 +57,6 @@ def home():
 
 @app.route('/menuLinea')
 def menuLinea():
-    """
-    Renders the menu page for selecting a line.
-
-    This function retrieves the employee number from the request arguments,
-    sets it in the user object, and then obtains the type of registration
-    for the employee. If the type is 'Salida', it redirects to the '/exito'
-    page. Otherwise, it retrieves the lines and the number of employees per
-    line. It calculates the number of available operators for each line and
-    constructs a list of lines with their capacity and available operators.
-    Finally, it renders the 'menu.html' template with the necessary context.
-
-    Returns:
-        The rendered 'menu.html' template with the context.
-    """
     numeroempleado = request.args.get('numeroempleado')
     user.set_numero_empleado(numeroempleado)
 
@@ -50,7 +67,7 @@ def menuLinea():
     resultados = functions.obtener_lineas()
     numero_lineas = len(resultados)
     empleados_por_linea = functions.obtener_empleados_por_linea()
-    empleados_por_linea = {int(linea[0]): linea[1] for linea in empleados_por_linea}
+    empleados_por_linea = {linea[0]: linea[1] for linea in empleados_por_linea}
     no_hay_lineas = []
 
     lineas = []
@@ -58,10 +75,11 @@ def menuLinea():
         resultado[0] is equal to the line id
         resultado[2] is equal to the line capacity
     '''
+    print("Los resultados son: ", resultados ,"\n y los empleados por linea son: ", empleados_por_linea)
     for resultado in resultados:
-        linea = [resultado[0], resultado[2]]
-        if resultado[0] in empleados_por_linea:
-            linea.append(empleados_por_linea[resultado[0]])
+        linea = [resultado[1], resultado[2]]
+        if resultado[1] in empleados_por_linea:
+            linea.append(empleados_por_linea[resultado[1]])
         else:
             linea.append(0)
 
@@ -83,21 +101,18 @@ def menuLinea():
 
 @app.route('/menuEstacion')
 def menuEstacion():
-    """
-    Renders the menu page for a specific station.
+    numeroempleado = request.args.get('numeroempleado')
+    user.set_numero_empleado(numeroempleado)
 
-    Retrieves the selected line from the request arguments and sets it for the user.
-    Obtains the stations and their information for the selected line.
-    Calculates the number of stations, employees per station, and available operators for each station.
-    Constructs the context for rendering the menu page.
-    
-    Returns:
-        The rendered menu page with the constructed context.
-    """
-    linea = request.args.get('linea')
+    tipo = functions.obtener_tipo_registro(user.numero_empleado)
+    if tipo == 'Salida':
+        return redirect('/exito')
+
+    linea = user.linea
+    lineaname = functions.get_line_id(linea)
     user.set_linea(linea)
 
-    resultados = functions.obtener_estaciones(linea)
+    resultados = functions.obtener_estaciones(lineaname)
     numero_estaciones = len(set([resultado[4] for resultado in resultados]))
     empleados_por_estacion = functions.obtener_empleados_por_estacion(linea)
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
@@ -174,3 +189,126 @@ def exito():
         'imagen': imagen
     }
     return render_template('exito.html', **context)
+
+@app.route('/ajustes')
+@flask_login.login_required
+def ajustes():
+    lineas = functions.obtener_lineas()
+    lineas_capacidad = [linea[1] for linea in lineas]
+    print("Las lineas son: ", lineas_capacidad)
+
+    context = {
+        'css_file': 'static/css/styles.css',
+        'num_botones': len(lineas_capacidad),
+        'lineas': lineas_capacidad
+    }
+
+    return render_template('ajustes.html', **context)
+
+@app.route('/visualizaciones')
+def visualizaciones():
+
+    resultados = functions.obtener_lineas()
+    numero_lineas = len(resultados)
+    empleados_por_linea = functions.obtener_empleados_por_linea()
+    empleados_por_linea = {linea[0]: linea[1] for linea in empleados_por_linea}
+    no_hay_lineas = []
+
+    lineas = []
+    '''
+        resultado[0] is equal to the line id
+        resultado[2] is equal to the line capacity
+    '''
+    print("Los resultados son: ", resultados ,"\n y los empleados por linea son: ", empleados_por_linea)
+    for resultado in resultados:
+        linea = [resultado[1], resultado[2]]
+        if resultado[1] in empleados_por_linea:
+            linea.append(empleados_por_linea[resultado[1]])
+        else:
+            linea.append(0)
+
+        #Here we calculate the number of available operators
+        linea[1] = int(linea[1]) - int(linea[2])
+
+        #Here we check if the line has available operators
+        lineas.append(linea)
+
+    context = {
+        'css_file': 'static/css/styles.css',
+        'tipo_seleccion': 'línea',
+        'num_cards': numero_lineas,
+        'lineas_capacidad_operadores': lineas,
+        'lineas': no_hay_lineas
+    }
+
+    return render_template('visualizaciones.html', **context)
+
+@app.route('/visualizacionesEstacion')
+def visualizacionesEstacion():
+    linea = request.args.get('linea')
+    print ("La linea es: ", linea)
+    lineaname = functions.get_line_id(linea)
+    resultados = functions.obtener_estaciones(lineaname)
+    numero_estaciones = len(set([resultado[4] for resultado in resultados]))
+    empleados_por_estacion = functions.obtener_empleados_por_estacion(linea)
+    empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
+    estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
+
+    estaciones = [] 
+    for i in range(0, len(resultados), 2):
+        estacion = resultados[i][4]
+        capacidadLH = resultados[i][2]
+        operadoresLH = empleados_por_estacion.get(str(estacion) + " LH", 0)
+        capacidadRH = resultados[i + 1][2]
+        operadoresRH = empleados_por_estacion.get(str(estacion) + " RH", 0)
+        
+        capacidadLH = int(capacidadLH) - int(operadoresLH)
+        capacidadRH = int(capacidadRH) - int(operadoresRH)
+
+        estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH])
+
+    context = {
+        'css_file': 'static/css/styles.css',
+        'tipo_seleccion': 'estación',
+        'num_cards': numero_estaciones,
+        'lineas_capacidad_operadores': estaciones,
+        'lineas': estacionesList,
+        'lineaseleccionada': linea
+    }
+
+    return render_template('visualizaciones.html', **context)
+
+@app.route('/changeLine')
+def changeLine():
+    line = request.args.get('line')
+    user.set_linea(line)
+    return redirect('/logout')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if flask.request.method == 'GET':
+        context = {
+            'css_file': 'static/css/styles.css'
+        }
+        return render_template('login.html', **context)
+
+    username = flask.request.form['username']
+    if username in admins and flask.request.form['password'] == admins[username]['password']:
+        admin = Admin()
+        admin.id = username
+        flask_login.login_user(admin)
+        return flask.redirect(flask.url_for('ajustes'))
+
+    return 'Bad login'
+
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return redirect('/')
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    context = {
+        'css_file': 'static/css/styles.css'
+    }
+    return render_template('unauthorized.html', **context)

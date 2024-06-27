@@ -1,30 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú</title>
-    <link rel="stylesheet" href=" {{ css_file }} ">
+    <link rel="stylesheet" href=" {{ css_file }}">
+    <title>Visualizaciones</title>
 </head>
-<body class="body-center">
-    <div class="header">
-        {% if lineaseleccionada  %}
-        <h1 class="uppercase">Línea {{ lineaseleccionada }}</h1>
+<body>
+    <div class="header-ajustes">
+        <h1>Resumen actual</h1>
+        {% if tipo_seleccion == 'línea' %}
+        <button class="button-4 button-4-small" onclick="window.location.href = '/'">Inicio</button>
+        {% else %}
+        <div class="botones">
+            <button class="button-4 button-4-half" onclick="window.location.href = '/visualizaciones'">Regresar</button>
+            <button class="button-4 button-4-half" onclick="window.location.href = '/'">Inicio</button>
+        </div>
+        
         {% endif %}
-        <h2 class="uppercase">Selecciona tu {{ tipo_seleccion }}</h2>
     </div>
         {% if tipo_seleccion == 'línea' %}
         <div class="menu ">
             {% for i  in range (num_cards) %}
-            <a href="/menuEstacion?linea={{lineas_capacidad_operadores[i][0]}}" class="a-estilos {% if lineas_capacidad_operadores[i][1] == -1%}
+            <a href="/visualizacionesEstacion?linea={{lineas_capacidad_operadores[i][0]}}" class="a-estilos {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0   %}
             disabled    
         {% endif %}"><div class="card 
                 {% if lineas_capacidad_operadores[i][1] == 0%}
                     empleado-ok 
-                {% else %}
+                {% elif lineas_capacidad_operadores[i][1] > 0 %}
                     empleado-nook 
+                {% else %}
+                    empleado-warning
                 {% endif %}
-                {% if lineas_capacidad_operadores[i][1] == -1%}
+                {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0 %}
                     empleado-disabled
                 {% endif %}
                 ">
@@ -50,7 +58,7 @@
                 <div class="card card-mitad">
                 <h3>Estación {{ lineas[i] }}</h3>
                 <div class="texto-de-botones">
-                    <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} LH"><div class="lado
+                    <a href="#"><div class="lado
                     {% if lineas_capacidad_operadores[i][1] == 0 %}
                         empleado-ok
                     {% elif lineas_capacidad_operadores[i][1] > 0 %}
@@ -67,7 +75,7 @@
                             <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                         </p>
                 </div></a>
-                <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado
+                <a href="#"><div class="lado
                     {% if lineas_capacidad_operadores[i][3] == 0 %}
                         empleado-ok
                     {% elif lineas_capacidad_operadores[i][3] > 0 %}
@@ -90,10 +98,5 @@
             </div>
             {% endfor %}
         {% endif %}
-    </div>
-
-    <div class="div-button-cancel">
-        <button onclick="window.location.href='/'" class="cancel-button">Cancelar</button>
-    </div>
 </body>
 </html>

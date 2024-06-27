@@ -44,8 +44,11 @@ img {
 }
 
 .a-estilos {
-    width: 45%;
+    width: 100%;
+    min-width: 400px;
+    margin: 10px;
     flex: 1;
+    height: 10vh
 }
 
 .body-center {
@@ -59,7 +62,7 @@ img {
 
 .menu {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: space-around;
     margin-bottom: 16px;
     flex-wrap: wrap;
@@ -70,6 +73,10 @@ img {
 
 .direction-row{
     flex-direction: row;
+}
+
+.direction-column{
+    flex-direction: column;
 }
 
 .card {
@@ -158,11 +165,11 @@ img {
 }
 
 .empleado-nook {
-    background-color: #FF0000;
+    background-color: yellow;
 }
 
 .empleado-warning {
-    background-color: yellow;
+    background-color: #FF0000;
 }
 
 .empleado-disabled{
@@ -172,7 +179,6 @@ img {
 a.disabled {
     pointer-events: none;
     cursor: not-allowed;
-    background-color: #fff;
 
 }
 
@@ -204,4 +210,152 @@ a.disabled {
 
 .uppercase{
     text-transform: uppercase;
+}
+
+
+/* CSS botones ajustes */
+.header-ajustes {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #24292E;
+    color: #ffffff;
+}
+
+
+.button-4 {
+    appearance: none;
+    background-color: #FAFBFC;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+    box-sizing: border-box;
+    color: #24292E;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 20px;
+    list-style: none;
+    padding: 6px 16px;
+    position: relative;
+    transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
+    word-wrap: break-word;
+    width: 40%;
+    height: 10vh;
   }
+
+  .button-4-small{
+    width: 10%;
+    height: 100%;
+  }
+
+  .button-4-half{
+    width: 45%;
+    height: 50px;
+  }
+  
+  .button-4:hover {
+    background-color: #F3F4F6;
+    text-decoration: none;
+    transition-duration: 0.1s;
+  }
+  
+  .button-4:disabled {
+    background-color: #FAFBFC;
+    border-color: rgba(27, 31, 35, 0.15);
+    color: #959DA5;
+    cursor: default;
+  }
+  
+  .button-4:active {
+    background-color: #EDEFF2;
+    box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
+    transition: none 0s;
+  }
+  
+  .button-4:focus {
+    outline: 1px transparent;
+  }
+  
+  .button-4:before {
+    display: none;
+  }
+  
+  .button-4:-webkit-details-marker {
+    display: none;
+  }
+
+  .botones{
+    width: 30%;
+  }
+
+  /* EStilos para la página unauthorized */
+.unauthorized {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+/* Estilos para el formulario */
+form {
+    min-width: 400px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.center-height-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}

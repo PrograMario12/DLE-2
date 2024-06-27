@@ -15,7 +15,7 @@
 
       <form
         method="get"
-        action="/menuLinea"
+        action="/menuEstacion"
         id="login-form"
         class="login-form"
         autocomplete="off"
@@ -39,7 +39,7 @@
               autocomplete="new-password"
               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             />
-            <span class="required">Escanea tu tarjeta</span>
+            <span class="required">Escanea tu credencial</span>
           </label>
         </div>
         <script>
@@ -54,5 +54,10 @@
         </script>
         <script src="{{ js_file }}"></script>
       </form>
+
+      <div class="botones-esquina">
+        <button class="boton" onclick="location.href='/ajustes'"><i class="fi fi-sr-settings"></i></button>
+        <button class="boton" onclick="location.href='/visualizaciones'"><i class="fi fi-sr-users-alt"></i></button>
+      </div>
   </body>
 </html>

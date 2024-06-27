@@ -8,19 +8,18 @@
 </head>
 <body class="body-center"
 {% if tipo == 'Entrada' %}
-style="background-color: yellow;"
+style="background-color: #008000;"
 {% else %}
 style="background-color: red;"
 {% endif %}>
     <div class="exito-final"
     >
-        <p>{{ tipo }} registrada para</p>
+        <p class="exito-principales">{{ tipo }} registrada para</p>
         <picture>
             <source srcset="{{ imagen }}" type="image/webp">
             <img src="{{ imagen }}" alt="Imagen de usuario" loading="lazy">
         </picture>
         <p class="exito-principales">{{ usuario }}</p>
-        <p>en</p>
         <p class="exito-principales">Línea {{ linea }} Estación {{ estacion }}</p>
     </div>
 </body>

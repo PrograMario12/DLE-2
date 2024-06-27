@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ css_file }}">
+    <title>Ajustes de línea</title>
+</head>
+<body>
+    <div class="header-ajustes">
+        <p>Selecciona la línea que quieres establecer para los registros</p>
+        <button class="button-4 button-4-small" onclick="window.location.href = '/'">Regresar</button>
+    </div>
+        
+    <div class="menu direction-column">
+        {% for num in range(num_botones) %}
+            <button class="button-4" type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">Línea {{ lineas[num] }}</button>
+        {% endfor %}
+    </div>
+</body>
+</html>
