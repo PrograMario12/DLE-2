@@ -359,3 +359,11 @@ button:hover {
     height: 100vh;
     width: 100%;
 }
+
+.separate-h3{
+    margin-right: 33vw;
+}
+
+.h3-contexto{
+    display: flex;
+}

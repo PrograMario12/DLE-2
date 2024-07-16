@@ -2,20 +2,20 @@ import psycopg2
 from config import Config
 
 '''
-Funciones para interactuar con la base de datos.
-- execute_query(query): Ejecuta una consulta en la base de datos.
-- insertar_bd(query): Inserta datos en la base de datos.
-- obtener_lineas(): Obtiene todas las líneas.
-- obtener_empleados_por_linea(): Obtiene el número total de empleados por línea.
-- obtener_estaciones(linea): Obtiene todas las estaciones de una línea.
-- obtener_empleados_por_estacion(linea): Obtiene el número total de empleados por estación de una línea.
-- registar_entrada_salida(user_id, linea, estacion, tipo, marca): Registra la entrada o salida de un empleado en una estación.
-- obtener_tipo_registro(user_id): Obtiene el tipo de registro (Entrada o Salida) más reciente de un empleado.
-- obtener_valores_salida(user_id): Obtiene la línea y estación de salida más reciente de un empleado.
-- obtener_empleados_en_la_estacion(): Obtiene los empleados que se encuentran en una estación sin haber registrado su salida.
-- obtener_usuario(user_id): Obtiene el nombre completo de un usuario a partir de su ID.
-- obtener_imagen(user_id): Obtiene la imagen de un usuario a partir de su ID.
-- get_line_id(linea): Obtiene el ID de una línea a partir de su nombre.
+Functions to interact with the database.
+- execute_query(query): Executes a query in the database.
+- insertar_bd(query): Inserts data into the database.
+- obtener_lineas(): Retrieves all the lines.
+- obtener_empleados_por_linea(): Retrieves the total number of employees per line.
+- obtener_estaciones(linea): Retrieves all the stations of a line.
+- obtener_empleados_por_estacion(linea): Retrieves the total number of employees per station of a line.
+- registar_entrada_salida(user_id, linea, estacion, tipo, marca): Registers the entry or exit of an employee at a station.
+- obtener_tipo_registro(user_id): Retrieves the most recent type of registration (Entry or Exit) for an employee.
+- obtener_valores_salida(user_id): Retrieves the most recent line and station of exit for an employee.
+- obtener_empleados_en_la_estacion(): Retrieves the employees who are in a station without having registered their exit.
+- obtener_usuario(user_id): Retrieves the full name of a user based on their ID.
+- obtener_imagen(user_id): Retrieves the image of a user based on their ID.
+- get_line_id(linea): Retrieves the ID of a line based on its name.
 '''
 
 class Usuario:
@@ -79,8 +79,6 @@ def execute_query(query):
     - list: Resultados de la consulta.
     """
     # Establecer la conexión con la base de datos
-    print('Entré a la función')
-    print(query)
     try:
         conn = psycopg2.connect(
             host=Config.DATABASE_HOST,
@@ -154,23 +152,40 @@ def obtener_lineas():
             """
     return execute_query(query)
 
-def obtener_empleados_por_linea():
+
+def obtener_empleados_por_linea(linea=None):
     """
     Obtiene el número total de empleados por línea.
+
+    Args:
+    - linea (str): Línea (opcional).
 
     Returns:
     - list: Resultados de la consulta.
     """
-    query = """
-    SELECT linea, COUNT(user_id) AS total_users
-        FROM register
-        WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
-            SELECT MAX(id_register), user_id
+    if linea:
+        query = """
+        SELECT linea, COUNT(user_id) AS total_users
             FROM register
-            GROUP BY user_id
-        ))
-        GROUP BY linea;
-    """
+            WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
+                SELECT MAX(id_register), user_id
+                FROM register
+                GROUP BY user_id
+            ))
+            AND linea = '{}'
+            GROUP BY linea;
+        """.format(linea)
+    else:
+        query = """
+        SELECT linea, COUNT(user_id) AS total_users
+            FROM register
+            WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
+                SELECT MAX(id_register), user_id
+                FROM register
+                GROUP BY user_id
+            ))
+            GROUP BY linea;
+        """
     return execute_query(query)
 
 def obtener_estaciones(linea):
@@ -260,7 +275,7 @@ def obtener_empleados_en_la_estacion():
     Obtiene los empleados que se encuentran en una estación sin haber registrado su salida.
 
     Returns:
-    - list: Resultados de la consulta.
+    list: Resultados de la consulta.
     """
     query = """
     SELECT user_id
@@ -279,10 +294,10 @@ def obtener_usuario(user_id):
     Obtiene el nombre completo de un usuario a partir de su ID.
 
     Args:
-    - user_id (int): ID del usuario.
+    user_id (int): ID del usuario.
 
     Returns:
-    - str: Nombre completo del usuario.
+    str: Nombre completo del usuario.
     """
     query = "SELECT nombre_empleado, apellidos_empleado FROM table_empleados_tarjeta WHERE numero_tarjeta = {}".format(user_id)
     results = execute_query(query)

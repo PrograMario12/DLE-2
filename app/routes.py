@@ -75,7 +75,6 @@ def menuLinea():
         resultado[0] is equal to the line id
         resultado[2] is equal to the line capacity
     '''
-    print("Los resultados son: ", resultados ,"\n y los empleados por linea son: ", empleados_por_linea)
     for resultado in resultados:
         linea = [resultado[1], resultado[2]]
         if resultado[1] in empleados_por_linea:
@@ -101,6 +100,23 @@ def menuLinea():
 
 @app.route('/menuEstacion')
 def menuEstacion():
+    """
+    Renders the menu page for selecting a station.
+
+    Retrieves the employee number from the request arguments and sets it in the user object.
+    Obtains the type of registration for the employee and redirects to the success page if the type is 'Salida'.
+    Retrieves the line name from the user object and obtains the line ID.
+    Sets the line name in the user object.
+    Retrieves the stations for the line and calculates the number of stations.
+    Retrieves the number of employees per station and creates a dictionary with station names as keys and employee counts as values.
+    Sorts the list of station names and initializes an empty list for storing station information.
+    Iterates over the results and extracts the station name, LH capacity, LH operators, RH capacity, and RH operators.
+    Calculates the available LH and RH capacities by subtracting the number of LH and RH operators from the respective capacities.
+    Appends the station information to the list of stations.
+    Creates a context dictionary with CSS file path, selection type, number of stations, station capacities and operators, line names, and selected line.
+    Renders the menu.html template with the context.
+    """
+    
     numeroempleado = request.args.get('numeroempleado')
     user.set_numero_empleado(numeroempleado)
 
@@ -163,7 +179,6 @@ def exito():
     usuario = functions.obtener_usuario(user.numero_empleado)
     imagen = functions.obtener_imagen(user.numero_empleado)
     imagen = 'static/img/media/' + str(imagen) + '.png'
-    print("La imagen es: ", imagen)
 
     if not usuario:
         usuario = 'Error'
@@ -195,7 +210,6 @@ def exito():
 def ajustes():
     lineas = functions.obtener_lineas()
     lineas_capacidad = [linea[1] for linea in lineas]
-    print("Las lineas son: ", lineas_capacidad)
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -219,7 +233,6 @@ def visualizaciones():
         resultado[0] is equal to the line id
         resultado[2] is equal to the line capacity
     '''
-    print("Los resultados son: ", resultados ,"\n y los empleados por linea son: ", empleados_por_linea)
     for resultado in resultados:
         linea = [resultado[1], resultado[2]]
         if resultado[1] in empleados_por_linea:
@@ -246,7 +259,6 @@ def visualizaciones():
 @app.route('/visualizacionesEstacion')
 def visualizacionesEstacion():
     linea = request.args.get('linea')
-    print ("La linea es: ", linea)
     lineaname = functions.get_line_id(linea)
     resultados = functions.obtener_estaciones(lineaname)
     numero_estaciones = len(set([resultado[4] for resultado in resultados]))

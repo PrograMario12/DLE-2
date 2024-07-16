@@ -1,15 +1,15 @@
-## Acerca del proyecto
+## Aboute the project
 
-El proyecto DLE2 es una aplicación web diseñada para facilitar la gestión de datos y la generación de informes en entornos empresariales. Con una interfaz intuitiva y funcionalidades avanzadas, DLE2 permite a los usuarios almacenar, organizar y analizar grandes volúmenes de datos de manera eficiente.
+The DLE2 project is a web application designed to facilitate data management and report generation in business environments. With an intuitive interface and advanced functionalities, DLE2 allows users to store, organize, and analyze large volumes of data efficiently.
 
-Entre las características principales del proyecto se incluyen:
+Some of the main features of the project include:
 
-- **Almacenamiento seguro de datos**: DLE2 utiliza una base de datos encriptada para garantizar la confidencialidad y la integridad de la información almacenada.
+- **Secure data storage**: DLE2 uses an encrypted database to ensure the confidentiality and integrity of stored information.
 
-- **Generación de informes personalizados**: Los usuarios pueden crear informes personalizados utilizando una variedad de plantillas y filtros para obtener información relevante de manera rápida y precisa.
+- **Custom report generation**: Users can create custom reports using a variety of templates and filters to quickly and accurately obtain relevant information.
 
-- **Colaboración en tiempo real**: DLE2 permite a los usuarios trabajar de forma colaborativa en proyectos, facilitando la comunicación y la coordinación entre los miembros del equipo.
+- **Real-time collaboration**: DLE2 allows users to work collaboratively on projects, facilitating communication and coordination among team members.
 
-- **Integración con otras herramientas**: El proyecto se integra con diversas herramientas y servicios, como sistemas de gestión de bases de datos, servicios de almacenamiento en la nube y APIs de terceros, para ofrecer una experiencia completa y personalizada.
+- **Integration with other tools**: The project integrates with various tools and services, such as database management systems, cloud storage services, and third-party APIs, to offer a complete and personalized experience.
 
-En resumen, el proyecto DLE2 es una solución completa y eficiente para la gestión de datos y la generación de informes en entornos empresariales. Con su interfaz intuitiva y sus funcionalidades avanzadas, DLE2 ayuda a los usuarios a optimizar sus procesos y tomar decisiones informadas basadas en datos sólidos.
+In summary, the DLE2 project is a comprehensive and efficient solution for data management and report generation in business environments. With its intuitive interface and advanced functionalities, DLE2 helps users optimize their processes and make informed decisions based on solid data.
