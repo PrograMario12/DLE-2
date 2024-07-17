@@ -66,7 +66,7 @@ def menuLinea():
 
     resultados = functions.obtener_lineas()
     numero_lineas = len(resultados)
-    empleados_por_linea = functions.obtener_empleados_por_linea()
+    empleados_por_linea = functions.get_employees_for_line()
     empleados_por_linea = {linea[0]: linea[1] for linea in empleados_por_linea}
     no_hay_lineas = []
 
@@ -116,7 +116,7 @@ def menuEstacion():
     Creates a context dictionary with CSS file path, selection type, number of stations, station capacities and operators, line names, and selected line.
     Renders the menu.html template with the context.
     """
-    
+
     numeroempleado = request.args.get('numeroempleado')
     user.set_numero_empleado(numeroempleado)
 
@@ -133,6 +133,9 @@ def menuEstacion():
     empleados_por_estacion = functions.obtener_empleados_por_estacion(linea)
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
     estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
+
+    employees_for_line = int(functions.get_employees_for_line(user.linea)[0][1])
+    employees_necessary = functions.get_employees_necesary_for_line(user.linea)[0][0]
 
     estaciones = [] 
     for i in range(0, len(resultados), 2):
@@ -153,7 +156,9 @@ def menuEstacion():
         'num_cards': numero_estaciones,
         'lineas_capacidad_operadores': estaciones,
         'lineas': estacionesList,
-        'lineaseleccionada': linea
+        'lineaseleccionada': linea,
+        'employees_for_line': employees_for_line,
+        'employees_necessary': employees_necessary
     }
 
     return render_template('menu.html', **context)
@@ -224,7 +229,7 @@ def visualizaciones():
 
     resultados = functions.obtener_lineas()
     numero_lineas = len(resultados)
-    empleados_por_linea = functions.obtener_empleados_por_linea()
+    empleados_por_linea = functions.get_employees_for_line()
     empleados_por_linea = {linea[0]: linea[1] for linea in empleados_por_linea}
     no_hay_lineas = []
 
@@ -265,6 +270,8 @@ def visualizacionesEstacion():
     empleados_por_estacion = functions.obtener_empleados_por_estacion(linea)
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
     estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
+
+    
 
     estaciones = [] 
     for i in range(0, len(resultados), 2):

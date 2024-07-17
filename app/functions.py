@@ -153,7 +153,7 @@ def obtener_lineas():
     return execute_query(query)
 
 
-def obtener_empleados_por_linea(linea=None):
+def get_employees_for_line(linea=None):
     """
     Obtiene el número total de empleados por línea.
 
@@ -335,3 +335,19 @@ def get_line_id(linea):
     query = "SELECT line_id FROM lines WHERE name = '{}'".format(linea)
     results = execute_query(query)
     return results[0][0] if results else None
+
+def get_employees_necesary_for_line(line):
+    """
+    Obtiene el número total de empleados necesarios por estación de una línea.
+
+    Args:
+    - line (str): Line.
+
+    Returns:
+    - list: Resultados de la consulta.
+    """
+    query = """
+    SELECT employee_capacity FROM lines
+    WHERE name = '{}'
+    """.format(line)
+    return execute_query(query)
