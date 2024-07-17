@@ -1,38 +1,9 @@
 from app import app, functions
 from flask import redirect, render_template, request
 from datetime import datetime
-import flask_login
 import flask
 
-login_manager = flask_login.LoginManager()
-login_manager.init_app(app)
 
-admins = {'admin': {'password': 'admin'}}
-
-class Admin(flask_login.UserMixin):
-    pass
-
-@login_manager.user_loader
-def user_loader(username):
-    if username not in admins:
-        return
-
-    user = Admin()
-    user.id = username
-    return user
-
-@login_manager.request_loader
-def request_loader(request):
-    username = request.form.get('username')
-    if username not in admins:
-        return
-
-    user = Admin()
-    user.id = username
-
-    user.is_authenticated = request.form['password'] == admins[username]['password']
-
-    return user
 
 user = functions.Usuario(0, 0, 16)
 
@@ -211,7 +182,6 @@ def exito():
     return render_template('exito.html', **context)
 
 @app.route('/ajustes')
-@flask_login.login_required
 def ajustes():
     lineas = functions.obtener_lineas()
     lineas_capacidad = [linea[1] for linea in lineas]
@@ -301,33 +271,4 @@ def visualizacionesEstacion():
 def changeLine():
     line = request.args.get('line')
     user.set_linea(line)
-    return redirect('/logout')
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if flask.request.method == 'GET':
-        context = {
-            'css_file': 'static/css/styles.css'
-        }
-        return render_template('login.html', **context)
-
-    username = flask.request.form['username']
-    if username in admins and flask.request.form['password'] == admins[username]['password']:
-        admin = Admin()
-        admin.id = username
-        flask_login.login_user(admin)
-        return flask.redirect(flask.url_for('ajustes'))
-
-    return 'Bad login'
-
-@app.route('/logout')
-def logout():
-    flask_login.logout_user()
     return redirect('/')
-
-@login_manager.unauthorized_handler
-def unauthorized_handler():
-    context = {
-        'css_file': 'static/css/styles.css'
-    }
-    return render_template('unauthorized.html', **context)
