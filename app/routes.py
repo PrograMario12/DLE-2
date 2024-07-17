@@ -105,8 +105,8 @@ def menuEstacion():
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
     estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
 
-    employees_for_line = functions.get_employees_for_line(user.linea) or 0
-    employees_necessary = functions.get_employees_necesary_for_line(user.linea)[0][0]
+    employees_for_line = functions.get_employees_for_line(user.linea)[0][1] or 0
+    employees_necessary = int(functions.get_employees_necesary_for_line(user.linea)[0][0])
 
     estaciones = [] 
     for i in range(0, len(resultados), 2):
