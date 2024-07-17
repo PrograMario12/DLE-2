@@ -1,5 +1,6 @@
 import psycopg2
 from config import Config
+from datetime import datetime
 
 '''
 Functions to interact with the database.
@@ -152,42 +153,6 @@ def obtener_lineas():
             """
     return execute_query(query)
 
-
-def get_employees_for_line(linea=None):
-    """
-    Obtiene el número total de empleados por línea.
-
-    Args:
-    - linea (str): Línea (opcional).
-
-    Returns:
-    - list: Resultados de la consulta.
-    """
-    if linea:
-        query = """
-        SELECT linea, COUNT(user_id) AS total_users
-            FROM register
-            WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
-                SELECT MAX(id_register), user_id
-                FROM register
-                GROUP BY user_id
-            ))
-            AND linea = '{}'
-            GROUP BY linea;
-        """.format(linea)
-    else:
-        query = """
-        SELECT linea, COUNT(user_id) AS total_users
-            FROM register
-            WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
-                SELECT MAX(id_register), user_id
-                FROM register
-                GROUP BY user_id
-            ))
-            GROUP BY linea;
-        """
-    return execute_query(query)
-
 def obtener_estaciones(linea):
     """
     Obtiene todas las estaciones de una línea.
@@ -201,7 +166,34 @@ def obtener_estaciones(linea):
     query = "SELECT * FROM stations WHERE line_id = {} ORDER BY station_number, posicion".format(linea)
     return execute_query(query)
 
-def obtener_empleados_por_estacion(linea):
+def get_employees_for_line(linea=None):
+    """
+    Obtiene el número total de empleados por línea.
+
+    Args:
+    - linea (str): Línea (opcional).
+
+    Returns:
+    - list: Resultados de la consulta.
+    """
+    if linea:
+        query = """
+        SELECT production_line, count(id_employee) AS employees_working
+        FROM registers
+        WHERE entry_hour IS NOT NULL and exit_hour is NULL AND
+        production_line = '{}'
+        GROUP BY production_line
+        """.format(linea)
+    else:
+        query = """
+        SELECT production_line, count(id_employee) AS employees_working
+        FROM registers
+        WHERE entry_hour IS NOT NULL and exit_hour is NULL
+        GROUP BY production_line
+        """
+    return execute_query(query)
+
+def get_employees_for_station(linea):
     """
     Obtiene el número total de empleados por estación de una línea.
 
@@ -212,51 +204,55 @@ def obtener_empleados_por_estacion(linea):
     - list: Resultados de la consulta.
     """
     query = """
-    SELECT estacion, COUNT(user_id) AS total_users
-        FROM register
-        WHERE (tipo = 'Entrada' AND (id_register, user_id) IN (
-            SELECT MAX(id_register), user_id
-            FROM register
-            GROUP BY user_id
-        ))
-        AND linea = '{}'
-        GROUP BY estacion;
+    SELECT production_station, COUNT(*) AS empleados_trabajando
+    FROM registers
+    WHERE entry_hour IS NOT NULL AND exit_hour IS NULL AND
+    production_line = '{}'
+    GROUP BY production_station;
     """.format(linea)
     return execute_query(query)
 
-def registar_entrada_salida(user_id, linea, estacion, tipo, marca):
+def register_entry(user_id, linea, estacion, marca):
     """
-    Registra la entrada o salida de un empleado en una estación.
+    Registra la entrada de un empleado en una estación.
 
     Args:
-    - user_id (int): ID del empleado.
-    - linea (str): Línea.
-    - estacion (str): Estación.
-    - tipo (str): Tipo de registro (Entrada o Salida).
-    - marca (str): Marca de tiempo.
-    """
-    query = "INSERT INTO register (user_id, linea, estacion, tipo, marca) VALUES ({}, '{}', '{}', '{}', '{}')".format(user_id, linea, estacion, tipo, marca)
-    insertar_bd(query)
-
-def obtener_tipo_registro(user_id):
-    """
-    Obtiene el tipo de registro (Entrada o Salida) más reciente de un empleado.
-
-    Args:
-    - user_id (int): ID del empleado.
+        user_id (int): ID del empleado.
+        linea (str): Línea.
+        estacion (str): Estación.
+        marca (str): Marca de tiempo.
 
     Returns:
-    - str: Tipo de registro.
+        None
     """
-    query = "SELECT tipo FROM register WHERE user_id = {} ORDER BY marca DESC LIMIT 1".format(user_id)
-    results = execute_query(query)
-    results = results[0][0] if results else None
-    if results == "Entrada":
-        return "Salida"
+    fecha_actual = datetime.now().strftime("%Y-%m-%d")
+    query = "INSERT INTO registers (id_employee, date_register, production_line, production_station, entry_hour) VALUES ({}, '{}', '{}', '{}', '{}')".format(user_id, fecha_actual, linea, estacion, marca)
+    insertar_bd(query)
+
+def register_exit(user_id, marca):
+    """
+    Registra la salida de un empleado en una estación.
+
+    Args:
+        user_id (int): ID del empleado.
+        marca (str): Marca de tiempo.
+
+    Returns:
+        None
+    """
+    query = "UPDATE registers SET exit_hour = '{}' WHERE id_employee = {} AND exit_hour IS NULL".format(marca, user_id)
+    insertar_bd(query)
+
+def get_last_register_type(user_id):
+    query = "SELECT exit_hour FROM registers WHERE id_employee = {} ORDER BY id_register DESC LIMIT 1".format(user_id)
+    result = execute_query(query)
+    print('El resultado es ', result)
+    if result and result[0][0] == None:
+        return 'Exit'
     else:
-        return "Entrada"
+        return 'Entry'
     
-def obtener_valores_salida(user_id):
+def get_values_for_exit(user_id):
     """
     Obtiene la línea y estación de salida más reciente de un empleado.
 
@@ -266,7 +262,9 @@ def obtener_valores_salida(user_id):
     Returns:
     - tuple: Línea y estación de salida.
     """
-    query = "SELECT linea, estacion FROM register WHERE user_id = {} ORDER BY marca DESC LIMIT 1".format(user_id)
+    query = """
+    SELECT production_line, production_station FROM registers WHERE id_employee = {} ORDER BY entry_hour DESC LIMIT 1
+    """.format(user_id)
     results = execute_query(query)
     return results[0] if results else None
 

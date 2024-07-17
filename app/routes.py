@@ -31,13 +31,13 @@ def menuLinea():
     numeroempleado = request.args.get('numeroempleado')
     user.set_numero_empleado(numeroempleado)
 
-    tipo = functions.obtener_tipo_registro(user.numero_empleado)
-    if tipo == 'Salida':
+    tipo = functions.get_last_register_type(user.numero_empleado)
+    if tipo == 'Exit':
         return redirect('/exito')
 
     resultados = functions.obtener_lineas()
     numero_lineas = len(resultados)
-    empleados_por_linea = functions.get_employees_for_line()
+    empleados_por_linea = functions.get_employees_for_line() or 0
     empleados_por_linea = {linea[0]: linea[1] for linea in empleados_por_linea}
     no_hay_lineas = []
 
@@ -91,8 +91,8 @@ def menuEstacion():
     numeroempleado = request.args.get('numeroempleado')
     user.set_numero_empleado(numeroempleado)
 
-    tipo = functions.obtener_tipo_registro(user.numero_empleado)
-    if tipo == 'Salida':
+    tipo = functions.get_last_register_type(user.numero_empleado)
+    if tipo == 'Exit':
         return redirect('/exito')
 
     linea = user.linea
@@ -101,11 +101,11 @@ def menuEstacion():
 
     resultados = functions.obtener_estaciones(lineaname)
     numero_estaciones = len(set([resultado[4] for resultado in resultados]))
-    empleados_por_estacion = functions.obtener_empleados_por_estacion(linea)
+    empleados_por_estacion = functions.get_employees_for_station(linea)
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
     estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
 
-    employees_for_line = int(functions.get_employees_for_line(user.linea)[0][1])
+    employees_for_line = functions.get_employees_for_line(user.linea) or 0
     employees_necessary = functions.get_employees_necesary_for_line(user.linea)[0][0]
 
     estaciones = [] 
@@ -159,16 +159,18 @@ def exito():
     if not usuario:
         usuario = 'Error'
 
-    tipo = functions.obtener_tipo_registro(user.numero_empleado)
+    tipo = functions.get_last_register_type(user.numero_empleado)
+    print("El tipo de registro ea: ", tipo)
 
-    if tipo == 'Entrada':
-        functions.registar_entrada_salida(user.numero_empleado, user.linea, estacion, tipo, hora)
+    if tipo == 'Entry':
+        functions.register_entry(user.numero_empleado, user.linea, estacion, hora)
         linea = user.linea
+        tipo = 'Entrada'
     else:
-        linea_res = functions.obtener_valores_salida(user.numero_empleado)
-        estacion = linea_res[1]
-        linea = linea_res[0]
-        functions.registar_entrada_salida(user.numero_empleado, linea, estacion, tipo, hora)
+        functions.register_exit(user.numero_empleado, hora)
+        tipo = 'Salida'
+        linea = functions.get_values_for_exit(user.numero_empleado)[0]
+        estacion = functions.get_values_for_exit(user.numero_empleado)[1]
 
     context = {
         'css_file': 'static/css/styles.css',
