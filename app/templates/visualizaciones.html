@@ -7,52 +7,82 @@
     <title>Visualizaciones</title>
 </head>
 <body>
-    <div class="header-ajustes">
-        <h1>Resumen actual</h1>
+    <div class="header-ajustes"> <!-- Div de Header ajustes -->
+        <h1>Resumen actual (Gente)</h1>
         {% if tipo_seleccion == 'línea' %}
-        <button class="button-4 button-4-small" onclick="window.location.href = '/'">Inicio</button>
+            <button class="button-4 button-4-small" onclick="window.location.href = '/'">Inicio</button>
         {% else %}
-        <div class="botones">
+        <div class="botones"> <!-- Div de botones -->
             <button class="button-4 button-4-half" onclick="window.location.href = '/visualizaciones'">Regresar</button>
             <button class="button-4 button-4-half" onclick="window.location.href = '/'">Inicio</button>
-        </div>
+        </div> <!-- Fin de Div de botones -->
         
         {% endif %}
+    </div> <!-- Fin de Div de Header ajustes -->
+    
+    <div class="header">
+        {% if lineaseleccionada  %}
+        
+        <div class="h3-contexto">
+            <h3 class="separate-h3">Estándar: {{ employees_necessary }}</h3>
+            <h3 class="separate-h3"><i class="fi fi-sr-user "></i> Real: {{employees_for_line}} </h3>
+            <h3><i class="fi fi-rr-user"></i> 
+                Fuera de estándar: 
+
+                {% if employees_necessary - employees_for_line < 0 %} 
+                    {{ employees_for_line - employees_necessary }}
+                {% else %} 
+                    {{ employees_necessary - employees_for_line }}
+                {% endif %}
+               </h3>
+        </div>
+
+        <h1 class="uppercase">Línea {{ lineaseleccionada }}</h1>
+
+        {% endif %}
     </div>
-        {% if tipo_seleccion == 'línea' %}
-        <div class="menu ">
-            {% for i  in range (num_cards) %}
-            <a href="/visualizacionesEstacion?linea={{lineas_capacidad_operadores[i][0]}}" class="a-estilos {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0   %}
+
+
+
+    {% if tipo_seleccion == 'línea' %}
+        <div class="menu "> <!-- Div de menu -->
+        {% for i  in range (num_cards) %}
+            <a href="/visualizacionesEstacion?linea={{lineas_capacidad_operadores[i][0]}}" class="a-estilos 
+            {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0   %}
             disabled    
-        {% endif %}"><div class="card 
-                {% if lineas_capacidad_operadores[i][1] == 0%}
+            {% endif %}"><div class="card card-high-height
+                {% if (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) == 100 %}
                     empleado-ok 
-                {% elif lineas_capacidad_operadores[i][1] > 0 %}
+                {% elif (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) <= 101 %}
                     empleado-nook 
                 {% else %}
                     empleado-warning
                 {% endif %}
                 {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0 %}
-                    empleado-disabled
+                    empleado-disabled 
                 {% endif %}
-                ">
-                <h3 >
+                "> <!-- Div de card -->
+                <h3>
                     Línea {{ lineas_capacidad_operadores[i][0] }}
                 </h3>
 
                 <div class="texto-de-botones">
-                    <p>
-                        <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][1] }}
-                    </p> 
-                    <p>
-                       <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
+                    <p class="big-text">
+                        {{ (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) | round(2) }}% 
                     </p>
+                    
                 </div>
                 
             </div></a>
             {% endfor %}
         </div>
+
+
+
         {% else %}
+
+
+        
         <div class="menu direction-row">
             {% for i  in range (num_cards) %}
                 <div class="card card-mitad">
@@ -71,7 +101,7 @@
                             LH
                         </p>
                         <p>
-                            <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][1] }}
+                            <i class="fi fi-rr-user"></i> {% if lineas_capacidad_operadores[i][1] < 0 %} 0 {% else %} {{ lineas_capacidad_operadores[i][1] }} {% endif %}
                             <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                         </p>
                 </div></a>
@@ -89,14 +119,15 @@
                             RH
                         </p>
                         <p>
-                            <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][3] }}
+                            <i class="fi fi-rr-user"></i> {% if lineas_capacidad_operadores[i][3] < 0 %} 0 {% else %} {{ lineas_capacidad_operadores[i][3] }} {% endif %}
                             <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][4] }}
                         </p>
                 </div></a>
                 </div>
-                
-            </div>
+        </div>
             {% endfor %}
+        </div>
         {% endif %}
 </body>
+
 </html>

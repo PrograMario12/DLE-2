@@ -245,7 +245,6 @@ def register_exit(user_id, marca):
 
 def get_last_register_type(user_id):
     query = "SELECT exit_hour FROM registers WHERE id_employee = {} ORDER BY id_register DESC LIMIT 1".format(user_id)
-    print('La query es ', query)
     result = execute_query(query)
     print('El resultado es ', result)
     if result and result[0][0] == None:

@@ -237,7 +237,7 @@ def visualizaciones():
             linea.append(0)
 
         #Here we calculate the number of available operators
-        linea[1] = int(linea[1]) - int(linea[2])
+        # linea[1] = int(linea[1]) - int(linea[2])
 
         #Here we check if the line has available operators
         lineas.append(linea)
@@ -275,13 +275,20 @@ def visualizacionesEstacion():
 
         estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH])
 
+    employees_for_line = functions.get_employees_for_line(linea)
+    employees_for_line = int(employees_for_line[0][1]) if employees_for_line else 0
+
+    employees_necessary = int(functions.get_employees_necesary_for_line(linea)[0][0])
+
     context = {
         'css_file': 'static/css/styles.css',
         'tipo_seleccion': 'estación',
         'num_cards': numero_estaciones,
         'lineas_capacidad_operadores': estaciones,
         'lineas': estacionesList,
-        'lineaseleccionada': linea
+        'lineaseleccionada': linea,
+        'employees_for_line': employees_for_line,
+        'employees_necessary': employees_necessary
     }
 
     return render_template('visualizaciones.html', **context)

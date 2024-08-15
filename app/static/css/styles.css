@@ -69,7 +69,7 @@ img {
     flex-wrap: wrap;
     width: 100%;
     height: 80vh;
-    align-items: center;
+    /* align-items: center; */
 }
 
 .direction-row{
@@ -80,6 +80,7 @@ img {
     flex-direction: column;
 }
 
+/* Estilos para card */
 .card {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
@@ -92,6 +93,10 @@ img {
     display: flex;
     flex-direction: column;
     text-align: center;
+}
+
+.card-high-height {
+    height: 200px;
 }
 
 .card-mitad {
@@ -366,9 +371,24 @@ button:hover {
 }
 
 .separate-h3{
-    margin-right: 33vw;
+    margin-right: 20vw;
 }
 
 .h3-contexto{
     display: flex;
+    width: 100vw;
+    justify-content: center;
+    align-items: center;
+    background-color: #c9c7c7cb;
+    border-radius: 5px;
+    padding-top: 10px;
+}
+
+.texto-de-botones .big-text{
+    font-size: 80px;
+    font-weight: bold;
+}
+
+.header .uppercase {
+    margin-top: 10px;
 }
