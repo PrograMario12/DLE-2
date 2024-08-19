@@ -349,3 +349,36 @@ def get_employees_necesary_for_line(line):
     WHERE name = '{}'
     """.format(line)
     return execute_query(query)
+
+def get_names_operators(estacion, linea, posicion):
+    """
+    Obtiene el nombre de los operadores de una estación.
+
+    Args:
+    - estacion (str): Estación.
+    - linea (str): Línea.
+    - posicion (str): Posición.
+
+    Returns:
+    - list: Resultados de la consulta.
+    """
+
+    estacion_final = str(estacion) + ' ' + posicion
+    
+    query = """
+    SELECT id_employee FROM registers
+    WHERE production_station = '{}' AND production_line = '{}' AND exit_hour IS NULL
+    """.format(estacion_final, linea)
+
+    names = []
+    for row in execute_query(query):
+        query = """
+        SELECT nombre_empleado, apellidos_empleado FROM table_empleados_tarjeta
+        WHERE numero_tarjeta = '{}'
+        """.format(row[0])
+
+        names += execute_query(query)
+
+    print(names)
+
+    return names

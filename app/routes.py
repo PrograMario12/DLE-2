@@ -262,18 +262,22 @@ def visualizacionesEstacion():
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
     estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
 
-    estaciones = [] 
+    estaciones = []
     for i in range(0, len(resultados), 2):
         estacion = resultados[i][4]
         capacidadLH = resultados[i][2]
         operadoresLH = empleados_por_estacion.get(str(estacion) + " LH", 0)
         capacidadRH = resultados[i + 1][2]
         operadoresRH = empleados_por_estacion.get(str(estacion) + " RH", 0)
+        nombre_operadores_LH = functions.get_names_operators(estacion, linea, 'LH')
+        nombre_operadores_RH = functions.get_names_operators(estacion, linea, 'RH')
         
         capacidadLH = int(capacidadLH) - int(operadoresLH)
         capacidadRH = int(capacidadRH) - int(operadoresRH)
 
-        estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH])
+        estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH, nombre_operadores_LH, nombre_operadores_RH])
+
+    print (estaciones)
 
     employees_for_line = functions.get_employees_for_line(linea)
     employees_for_line = int(employees_for_line[0][1]) if employees_for_line else 0
@@ -300,3 +304,4 @@ def changeLine():
     response = flask.make_response(redirect('/'))
     response.set_cookie('linea', line)
     return response
+

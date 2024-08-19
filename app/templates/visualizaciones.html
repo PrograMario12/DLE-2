@@ -5,7 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href=" {{ css_file }}">
     <title>Visualizaciones</title>
+
+
+
+    <script>
+        function showPopup(content) {
+            // Crear el contenedor del popup
+            var popupContainer = document.createElement('div');
+            popupContainer.id = 'popupContainer';
+            popupContainer.style.position = 'fixed';
+            popupContainer.style.top = '0';
+            popupContainer.style.left = '0';
+            popupContainer.style.width = '100%';
+            popupContainer.style.height = '100%';
+            popupContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            popupContainer.style.display = 'flex';
+            popupContainer.style.justifyContent = 'center';
+            popupContainer.style.alignItems = 'center';
+            popupContainer.style.zIndex = '1000';
+        
+            // Crear el contenido del popup
+            var popupContent = document.createElement('div');
+            popupContent.style.backgroundColor = 'white';
+            popupContent.style.padding = '20px';
+            popupContent.style.borderRadius = '5px';
+            popupContent.innerHTML = '<p> Operadores activos: </p> <p>' + content.join('<br>') + '</p><button onclick="closePopup()">Cerrar</button>';
+            // popupContent.innerHTML = '<p> Operadores activos: </p> <p>' + content + '</p><button onclick="closePopup()">Cerrar</button>';
+        
+            // Añadir el contenido al contenedor
+            popupContainer.appendChild(popupContent);
+        
+            // Añadir el contenedor al cuerpo del documento
+            document.body.appendChild(popupContainer);
+        }
+        
+        function closePopup() {
+            var popupContainer = document.getElementById('popupContainer');
+            if (popupContainer) {
+                document.body.removeChild(popupContainer);
+            }
+        }
+    </script>
 </head>
+
 <body>
     <div class="header-ajustes"> <!-- Div de Header ajustes -->
         <h1>Resumen actual (Gente)</h1>
@@ -78,9 +120,7 @@
         </div>
 
 
-
         {% else %}
-
 
         
         <div class="menu direction-row">
@@ -88,7 +128,7 @@
                 <div class="card card-mitad">
                 <h3>Estación {{ lineas[i] }}</h3>
                 <div class="texto-de-botones">
-                    <a href="#"><div class="lado
+                    <div onclick="showPopup({{lineas_capacidad_operadores[i][5]}})" class="lado
                     {% if lineas_capacidad_operadores[i][1] == 0 %}
                         empleado-ok
                     {% elif lineas_capacidad_operadores[i][1] > 0 %}
@@ -104,8 +144,10 @@
                             <i class="fi fi-rr-user"></i> {% if lineas_capacidad_operadores[i][1] < 0 %} 0 {% else %} {{ lineas_capacidad_operadores[i][1] }} {% endif %}
                             <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                         </p>
-                </div></a>
-                <a href="#"><div class="lado
+                </div>
+
+            
+                <div onclick="showPopup({{lineas_capacidad_operadores[i][6]}})" class="lado
                     {% if lineas_capacidad_operadores[i][3] == 0 %}
                         empleado-ok
                     {% elif lineas_capacidad_operadores[i][3] > 0 %}
@@ -122,12 +164,11 @@
                             <i class="fi fi-rr-user"></i> {% if lineas_capacidad_operadores[i][3] < 0 %} 0 {% else %} {{ lineas_capacidad_operadores[i][3] }} {% endif %}
                             <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][4] }}
                         </p>
-                </div></a>
+                </div>
                 </div>
         </div>
             {% endfor %}
         </div>
         {% endif %}
 </body>
-
 </html>
