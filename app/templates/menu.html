@@ -25,7 +25,6 @@ Date: [2024-07-16]
             <h3 class="separate-h3"><i class="fi fi-sr-user "></i> Real: {{employees_for_line}} </h3>
             <h3><i class="fi fi-rr-user"></i> Fuera de estándar: {{employees_necessary - employees_for_line }} </h3>
         </div>
-
     </div>
 
     <!-- Debemos añadir un color gris cuando de ambos lados sea 0 -->
@@ -61,7 +60,11 @@ Date: [2024-07-16]
             </div></a>
             {% endfor %}
         </div>
+
+        
         {% else %}
+
+
         <div class="menu direction-row">
             {% for i  in range (num_cards) %}
                 <div class="card card-mitad">

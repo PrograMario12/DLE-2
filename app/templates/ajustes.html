@@ -12,7 +12,7 @@
         <button class="button-4 button-4-small" onclick="window.location.href = '/'">Regresar</button>
     </div>
         
-    <div class="menu direction-column">
+    <div class="menu centrar-objetos direction-column">
         {% for num in range(num_botones) %}
             <button class="button-4" type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">Línea {{ lineas[num] }}</button>
         {% endfor %}

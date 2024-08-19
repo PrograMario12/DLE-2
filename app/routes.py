@@ -36,7 +36,6 @@ def menuLinea():
 
     tipo = functions.get_last_register_type(user.numero_empleado)
     if tipo == 'Exit':
-        print("El tipo de registro es salida")
         return redirect('/exito')
 
     resultados = functions.obtener_lineas()
@@ -97,12 +96,9 @@ def menuEstacion():
         return redirect('/ajustes')
 
     numeroempleado = request.args.get('numeroempleado')
-    print("Numero de empleado en Menú estación: " + numeroempleado)
-
     user.set_numero_empleado(numeroempleado)
 
     tipo = functions.get_last_register_type(user.numero_empleado)
-    print("El tipo de registro es: " + tipo)
     if tipo == 'Exit':
         response = flask.make_response(redirect('/exito'))
         response.set_cookie('numeroempleado', numeroempleado)
@@ -147,7 +143,6 @@ def menuEstacion():
 
     response = flask.make_response(render_template('menu.html', **context))
     response.set_cookie('numeroempleado', str(numeroempleado))
-    print("Numero de empleado en menuEstacion: " + request.cookies.get('numeroempleado'))
 
     return response
 
@@ -169,8 +164,6 @@ def exito():
     estacion = request.args.get('estacion')
     hora = datetime.now()
     user.set_hora(hora)
-
-    print("Numero de empleado en éxito: " + request.cookies.get('numeroempleado'))
 
     usuario = functions.obtener_usuario(request.cookies.get('numeroempleado'))
     imagen = functions.obtener_imagen(request.cookies.get('numeroempleado'))
@@ -276,8 +269,6 @@ def visualizacionesEstacion():
         capacidadRH = int(capacidadRH) - int(operadoresRH)
 
         estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH, nombre_operadores_LH, nombre_operadores_RH])
-
-    print (estaciones)
 
     employees_for_line = functions.get_employees_for_line(linea)
     employees_for_line = int(employees_for_line[0][1]) if employees_for_line else 0

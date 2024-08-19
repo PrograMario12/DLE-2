@@ -57,7 +57,6 @@ img {
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    height: 100vh;
     width: 100%;
 }
 
@@ -68,8 +67,11 @@ img {
     margin-bottom: 16px;
     flex-wrap: wrap;
     width: 100%;
-    height: 80vh;
     /* align-items: center; */
+}
+
+.centrar-objetos {
+    align-items: center;
 }
 
 .direction-row{
@@ -145,8 +147,8 @@ img {
 }
 
 .div-button-cancel {
-    display: flex;
-    justify-content: center;
+    /* display: flex; */
+    /* justify-content: center; */
     align-items: center;
 }
 
@@ -158,7 +160,6 @@ img {
     font-weight: bold;
     transition: background-color 0.3s ease;
     min-height: 50px;
-    margin-right: 20px;
 }
 
 .cancel-button:hover {
