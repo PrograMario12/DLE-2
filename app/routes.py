@@ -73,25 +73,8 @@ def menuLinea():
 
     return render_template('menu.html', **context)
 
-@app.route('/menuEstacion')
-def menuEstacion():
-    """
-    Renders the menu page for selecting a station.
-
-    Retrieves the employee number from the request arguments and sets it in the user object.
-    Obtains the type of registration for the employee and redirects to the success page if the type is 'Salida'.
-    Retrieves the line name from the user object and obtains the line ID.
-    Sets the line name in the user object.
-    Retrieves the stations for the line and calculates the number of stations.
-    Retrieves the number of employees per station and creates a dictionary with station names as keys and employee counts as values.
-    Sorts the list of station names and initializes an empty list for storing station information.
-    Iterates over the results and extracts the station name, LH capacity, LH operators, RH capacity, and RH operators.
-    Calculates the available LH and RH capacities by subtracting the number of LH and RH operators from the respective capacities.
-    Appends the station information to the list of stations.
-    Creates a context dictionary with CSS file path, selection type, number of stations, station capacities and operators, line names, and selected line.
-    Renders the menu.html template with the context.
-    """
-
+@app.route('/menuStation')
+def menuStation():
     if 'linea' not in request.cookies:
         return redirect('/ajustes')
 
