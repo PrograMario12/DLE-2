@@ -79,7 +79,7 @@
                 </h3>
             </div>
 
-            <h1 class="uppercase">Línea {{ lineaseleccionada }}</h1>
+            <h1 class="uppercase"> {{ lineaseleccionada }}</h1>
 
             {% endif %}
         </div>
@@ -126,7 +126,13 @@
             <div class="menu direction-row">
                 {% for i  in range (num_cards) %}
                     <div class="card card-mitad">
-                    <h3>Estación {{ lineas[i] }}</h3>
+
+                    {% if lineaseleccionada == 'inyectoras' %}
+                        <h3>Inyectora {{ lineas[i] }}</h3>
+                    {% else %}
+                        <h3>Estación {{ lineas[i] }}</h3>
+                    {% endif %}
+
                     <div class="texto-de-botones">
                         <div onclick="showPopup({{lineas_capacidad_operadores[i][5]}})" class="lado
                         {% if lineas_capacidad_operadores[i][1] == 0 %}
@@ -136,10 +142,14 @@
                         {% else %}
                             empleado-warning
                         {% endif %}
-                        ">             
+                        ">        
+                        
+                        {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
                             <p>
                                 LH
                             </p>
+                        {% endif %}
+
                             <p>
                                 <i class="fi fi-rr-user"></i> {% if lineas_capacidad_operadores[i][1] < 0 %} 0 {% else %} {{ lineas_capacidad_operadores[i][1] }} {% endif %}
                                 <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
@@ -147,6 +157,7 @@
                     </div>
 
                 
+                    {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
                     <div onclick="showPopup({{lineas_capacidad_operadores[i][6]}})" class="lado
                         {% if lineas_capacidad_operadores[i][3] == 0 %}
                             empleado-ok
@@ -165,6 +176,7 @@
                                 <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][4] }}
                             </p>
                     </div>
+                    {% endif %}
                     </div>
             </div>
                 {% endfor %}

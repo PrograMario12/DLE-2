@@ -38,7 +38,7 @@ def menuLinea():
     if tipo == 'Exit':
         return redirect('/exito')
 
-    resultados = functions.obtener_lineas()
+    resultados = functions.get_lines()
     numero_lineas = len(resultados)
     employees_for_line = functions.get_employees_for_line(request.cookies.get('linea'))
     empleados_por_linea = employees_for_line[0][1] if employees_for_line else 0
@@ -91,27 +91,36 @@ def menuStation():
     lineaname = functions.get_line_id(linea)
     user.set_linea(linea)
 
-    resultados = functions.obtener_estaciones(lineaname)
-    numero_estaciones = len(set([resultado[4] for resultado in resultados]))
+    resultados = functions.get_stations(lineaname)
+    print('Los resultados son: ', resultados)
+    numero_estaciones = len(resultados)
+    print('El número de estaciones es: ', numero_estaciones)
+
     empleados_por_estacion = functions.get_employees_for_station(linea)
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
-    estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
+    estacionesList = sorted(list(set([resultado[0] for resultado in resultados])))
 
-    employees_for_line = functions.get_employees_for_line(request.cookies.get('linea'))[0][1] if functions.get_employees_for_line(user.linea) else 0
-    employees_necessary = int(functions.get_employees_necesary_for_line(user.linea)[0][0])
-
-    estaciones = [] 
-    for i in range(0, len(resultados), 2):
-        estacion = resultados[i][4]
-        capacidadLH = resultados[i][2]
+    estaciones = []
+    for resultado in resultados:
+        estacion = resultado[0]
+        capacidadLH = resultado[1]
         operadoresLH = empleados_por_estacion.get(str(estacion) + " LH", 0)
-        capacidadRH = resultados[i + 1][2]
+        capacidadRH = resultado[2]
         operadoresRH = empleados_por_estacion.get(str(estacion) + " RH", 0)
+        nombre_operadores_LH = functions.get_names_operators(estacion, linea, 'LH')
+        nombre_operadores_RH = functions.get_names_operators(estacion, linea, 'RH')
         
         capacidadLH = int(capacidadLH) - int(operadoresLH)
         capacidadRH = int(capacidadRH) - int(operadoresRH)
 
-        estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH])
+        estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH, nombre_operadores_LH, nombre_operadores_RH])
+
+    employees_for_line = functions.get_employees_for_line(linea)
+    employees_for_line = int(employees_for_line[0][1]) if employees_for_line else 0
+
+    employees_necessary = int(functions.get_employees_necesary_for_line(linea)[0][0])
+
+    print('Las estaciones son:', estaciones)
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -180,7 +189,7 @@ def exito():
 
 @app.route('/ajustes')
 def ajustes():
-    lineas = functions.obtener_lineas()
+    lineas = functions.get_lines()
     lineas_capacidad = [linea[1] for linea in lineas]
 
     context = {
@@ -194,7 +203,7 @@ def ajustes():
 @app.route('/visualizaciones')
 def visualizaciones():
 
-    resultados = functions.obtener_lineas()
+    resultados = functions.get_lines()
     numero_lineas = len(resultados)
     empleados_por_linea = functions.get_employees_for_line()
     empleados_por_linea = {linea[0]: linea[1] for linea in empleados_por_linea}
@@ -232,18 +241,23 @@ def visualizaciones():
 def visualizacionesEstacion():
     linea = request.args.get('linea')
     lineaname = functions.get_line_id(linea)
-    resultados = functions.obtener_estaciones(lineaname)
-    numero_estaciones = len(set([resultado[4] for resultado in resultados]))
+
+    resultados = functions.get_stations(lineaname)
+    print('Los resultados son: ', resultados)
+    numero_estaciones = len(resultados)
+    print('El número de estaciones es: ', numero_estaciones)
+
     empleados_por_estacion = functions.get_employees_for_station(linea)
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
-    estacionesList = sorted(list(set([resultado[4] for resultado in resultados])))
+    estacionesList = sorted(list(set([resultado[0] for resultado in resultados])))
 
     estaciones = []
-    for i in range(0, len(resultados), 2):
-        estacion = resultados[i][4]
-        capacidadLH = resultados[i][2]
+    for resultado in resultados:
+        estacion = resultado[0]
+        print ('La estación es: ', estacion)
+        capacidadLH = resultado[1]
         operadoresLH = empleados_por_estacion.get(str(estacion) + " LH", 0)
-        capacidadRH = resultados[i + 1][2]
+        capacidadRH = resultado[2]
         operadoresRH = empleados_por_estacion.get(str(estacion) + " RH", 0)
         nombre_operadores_LH = functions.get_names_operators(estacion, linea, 'LH')
         nombre_operadores_RH = functions.get_names_operators(estacion, linea, 'RH')
@@ -257,6 +271,8 @@ def visualizacionesEstacion():
     employees_for_line = int(employees_for_line[0][1]) if employees_for_line else 0
 
     employees_necessary = int(functions.get_employees_necesary_for_line(linea)[0][0])
+
+    print('Las estaciones son:', estaciones)
 
     context = {
         'css_file': 'static/css/styles.css',

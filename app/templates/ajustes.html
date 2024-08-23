@@ -14,7 +14,7 @@
         
     <div class="menu centrar-objetos direction-column">
         {% for num in range(num_botones) %}
-            <button class="button-4" type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">Línea {{ lineas[num] }}</button>
+            <button class="button-4" type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">{{ lineas[num] }}</button>
         {% endfor %}
     </div>
 </body>

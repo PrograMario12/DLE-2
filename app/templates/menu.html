@@ -80,15 +80,19 @@ Date: [2024-07-16]
                         {% else %}
                             empleado-warning
                         {% endif %}
-                        ">             
+                        ">           
+                        {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %} 
                             <p>
                                 LH
                             </p>
+                        {% endif %}
                             <p>
                                 <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][1] }}
                                 <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                             </p>
                     </div></a>
+
+                    {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
                     <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado
                         {% if lineas_capacidad_operadores[i][3] == 0 and lineas_capacidad_operadores[i][4] == 0 %}
                             employee-no-necessary
@@ -108,6 +112,7 @@ Date: [2024-07-16]
                                 <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][4] }}
                             </p>
                     </div></a>
+                    {% endif %}
                     </div>
                     
                 </div>

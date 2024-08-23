@@ -139,31 +139,27 @@ def insertar_bd(query):
     cursor.close()
     conn.close()
 
-def obtener_lineas():
-    """
-    Obtiene todas las líneas.
-
-    Returns:
-    - list: Resultados de la consulta.
-    """
+def get_lines():
     query = """
-            SELECT * 
-            FROM lines 
-            ORDER BY CAST(SUBSTRING(name, 1, 2) AS INTEGER) DESC;
-            """
+        SELECT *
+        FROM lines
+        ORDER BY CASE 
+            WHEN name ~ '[0-9]' THEN CAST(SUBSTRING(name, '^[0-9]+') AS INTEGER)
+            ELSE 0
+        END DESC;
+        """
     return execute_query(query)
 
-def obtener_estaciones(linea):
-    """
-    Obtiene todas las estaciones de una línea.
-
-    Args:
-    - linea (str): Línea.
-
-    Returns:
-    - list: Resultados de la consulta.
-    """
-    query = "SELECT * FROM stations WHERE line_id = {} ORDER BY station_number, posicion".format(linea)
+def get_stations(line):
+    query = """
+        SELECT position_name,
+            MAX(CASE WHEN side IN ('LH', 'BP') THEN employee_capacity END) AS employee_capacity_lh_or_bp,
+            COALESCE(MAX(CASE WHEN side = 'RH' THEN employee_capacity END), 0) AS employee_capacity_rh
+        FROM positions
+        WHERE line_id = {}
+        GROUP BY position_name
+        ORDER BY position_name;
+        """.format(line)
     return execute_query(query)
 
 def get_employees_for_line(linea=None):
