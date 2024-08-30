@@ -8,44 +8,46 @@
 
 
 
-        <script>
-            function showPopup(content) {
-                // Crear el contenedor del popup
-                var popupContainer = document.createElement('div');
-                popupContainer.id = 'popupContainer';
-                popupContainer.style.position = 'fixed';
-                popupContainer.style.top = '0';
-                popupContainer.style.left = '0';
-                popupContainer.style.width = '100%';
-                popupContainer.style.height = '100%';
-                popupContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                popupContainer.style.display = 'flex';
-                popupContainer.style.justifyContent = 'center';
-                popupContainer.style.alignItems = 'center';
-                popupContainer.style.zIndex = '1000';
+    <script>
+    function showPopup(content) {
+        // Create the popup container
+        console.log('El contenido que estoy recibiendo es: ' + content);
+
+        var popupContainer = document.createElement('div');
+        popupContainer.id = 'popupContainer';
+        popupContainer.style.position = 'fixed';
+        popupContainer.style.top = '0';
+        popupContainer.style.left = '0';
+        popupContainer.style.width = '100%';
+        popupContainer.style.height = '100%';
+        popupContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        popupContainer.style.display = 'flex';
+        popupContainer.style.justifyContent = 'center';
+        popupContainer.style.alignItems = 'center';
+        popupContainer.style.zIndex = '1000';
+
+        // Create the popup content
+        var popupContent = document.createElement('div');
+        popupContent.style.backgroundColor = 'white';
+        popupContent.style.padding = '20px';
+        popupContent.style.borderRadius = '5px';
+        popupContent.innerHTML = '<p> Operadores activos: </p> <p>' + content.join('<br>') + '</p><button onclick="closePopup()">Cerrar</button>';
+
+        // Add the content to the container
+        popupContainer.appendChild(popupContent);
+
+        // Add the container to the document body
+        document.body.appendChild(popupContainer);
+    }
+
+    function closePopup() {
+        var popupContainer = document.getElementById('popupContainer');
+        if (popupContainer) {
+            document.body.removeChild(popupContainer);
+        }
+    }
+    </script>
             
-                // Crear el contenido del popup
-                var popupContent = document.createElement('div');
-                popupContent.style.backgroundColor = 'white';
-                popupContent.style.padding = '20px';
-                popupContent.style.borderRadius = '5px';
-                popupContent.innerHTML = '<p> Operadores activos: </p> <p>' + content.join('<br>') + '</p><button onclick="closePopup()">Cerrar</button>';
-                // popupContent.innerHTML = '<p> Operadores activos: </p> <p>' + content + '</p><button onclick="closePopup()">Cerrar</button>';
-            
-                // Añadir el contenido al contenedor
-                popupContainer.appendChild(popupContent);
-            
-                // Añadir el contenedor al cuerpo del documento
-                document.body.appendChild(popupContainer);
-            }
-            
-            function closePopup() {
-                var popupContainer = document.getElementById('popupContainer');
-                if (popupContainer) {
-                    document.body.removeChild(popupContainer);
-                }
-            }
-        </script>
     </head>
 
     <body>
@@ -134,7 +136,7 @@
                     {% endif %}
 
                     <div class="texto-de-botones">
-                        <div onclick="showPopup({{lineas_capacidad_operadores[i][5]}})" class="lado
+                        <div onclick="showPopup({{ lineas_capacidad_operadores[i][5] }})" class="lado 
                         {% if lineas_capacidad_operadores[i][1] == 0 %}
                             empleado-ok
                         {% elif lineas_capacidad_operadores[i][1] > 0 %}
@@ -142,7 +144,7 @@
                         {% else %}
                             empleado-warning
                         {% endif %}
-                        ">        
+                        ">
                         
                         {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
                             <p>
@@ -158,16 +160,15 @@
 
                 
                     {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
-                    <div onclick="showPopup({{lineas_capacidad_operadores[i][6]}})" class="lado
-                        {% if lineas_capacidad_operadores[i][3] == 0 %}
-                            empleado-ok
-                        {% elif lineas_capacidad_operadores[i][3] > 0 %}
-                            
-                            empleado-nook
-                        {% else %}
-                            empleado-warning
-                        {% endif %}
-                    ">
+                    <div onclick="showPopup({{ lineas_capacidad_operadores[i][6] }})" class="lado 
+                    {% if lineas_capacidad_operadores[i][3] == 0 %}
+                        empleado-ok
+                    {% elif lineas_capacidad_operadores[i][3] > 0 %}
+                        empleado-nook
+                    {% else %}
+                        empleado-warning
+                    {% endif %}
+                ">
                             <p>
                                 RH
                             </p>

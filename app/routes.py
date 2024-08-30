@@ -141,18 +141,6 @@ def menuStation():
 
 @app.route('/exito')
 def exito():
-    """
-    This function is the route handler for the '/exito' endpoint.
-    It retrieves the 'estacion' parameter from the request arguments and the current time.
-    It sets the current time as the user's hora attribute.
-    It then retrieves the usuario and imagen based on the user's numero_empleado.
-    The imagen is converted to a file path.
-    If the usuario is not found, it sets it to 'Error'.
-    It retrieves the tipo of registro for the user.
-    If the tipo is 'Entrada', it registers an entrada_salida with the user's information.
-    Otherwise, it retrieves the linea and estacion from the previous salida and registers an entrada_salida with the updated information.
-    Finally, it prepares the context with various variables and renders the 'exito.html' template with the context.
-    """
     estacion = request.args.get('estacion')
     hora = datetime.now()
     user.set_hora(hora)
@@ -243,9 +231,9 @@ def visualizacionesEstacion():
     lineaname = functions.get_line_id(linea)
 
     resultados = functions.get_stations(lineaname)
-    print('Los resultados son: ', resultados)
+    # print('Los resultados son: ', resultados)
     numero_estaciones = len(resultados)
-    print('El número de estaciones es: ', numero_estaciones)
+    # print('El número de estaciones es: ', numero_estaciones)
 
     empleados_por_estacion = functions.get_employees_for_station(linea)
     empleados_por_estacion = {estacion[0]: estacion[1] for estacion in empleados_por_estacion}
@@ -259,8 +247,16 @@ def visualizacionesEstacion():
         operadoresLH = empleados_por_estacion.get(str(estacion) + " LH", 0)
         capacidadRH = resultado[2]
         operadoresRH = empleados_por_estacion.get(str(estacion) + " RH", 0)
+        
         nombre_operadores_LH = functions.get_names_operators(estacion, linea, 'LH')
+        # nombre_operadores_LH = ', '.join([f"{nombre[2]} {nombre[0]} {nombre[1]}" for nombre in nombre_operadores_LH]) if nombre_operadores_LH else 'Información no disponible'
+
         nombre_operadores_RH = functions.get_names_operators(estacion, linea, 'RH')
+        # nombre_operadores_RH = ', '.join([f"{nombre[2]} {nombre[0]} {nombre[1]}" for nombre in nombre_operadores_RH]) if nombre_operadores_RH else 'Información no disponible'
+
+
+
+        print ('Los operadores son: ', nombre_operadores_LH, nombre_operadores_RH, 'en la estación', estacion)
         
         capacidadLH = int(capacidadLH) - int(operadoresLH)
         capacidadRH = int(capacidadRH) - int(operadoresRH)

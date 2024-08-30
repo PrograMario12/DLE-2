@@ -4,6 +4,9 @@ __pycache__/
 env/
 img/
 
+
+/limpieza-datos-nomina/
+
 # Created by https://www.toptal.com/developers/gitignore/api/flask,python,pythonvanilla
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask,python,pythonvanilla
 

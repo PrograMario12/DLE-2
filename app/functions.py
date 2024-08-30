@@ -2,23 +2,6 @@ import psycopg2
 from config import Config
 from datetime import datetime
 
-'''
-Functions to interact with the database.
-- execute_query(query): Executes a query in the database.
-- insertar_bd(query): Inserts data into the database.
-- obtener_lineas(): Retrieves all the lines.
-- obtener_empleados_por_linea(): Retrieves the total number of employees per line.
-- obtener_estaciones(linea): Retrieves all the stations of a line.
-- obtener_empleados_por_estacion(linea): Retrieves the total number of employees per station of a line.
-- registar_entrada_salida(user_id, linea, estacion, tipo, marca): Registers the entry or exit of an employee at a station.
-- obtener_tipo_registro(user_id): Retrieves the most recent type of registration (Entry or Exit) for an employee.
-- obtener_valores_salida(user_id): Retrieves the most recent line and station of exit for an employee.
-- obtener_empleados_en_la_estacion(): Retrieves the employees who are in a station without having registered their exit.
-- obtener_usuario(user_id): Retrieves the full name of a user based on their ID.
-- obtener_imagen(user_id): Retrieves the image of a user based on their ID.
-- get_line_id(linea): Retrieves the ID of a line based on its name.
-'''
-
 class Usuario:
     def __init__(self, numero_empleado, hora, linea):
         """
@@ -347,34 +330,24 @@ def get_employees_necesary_for_line(line):
     return execute_query(query)
 
 def get_names_operators(estacion, linea, posicion):
-    """
-    Obtiene el nombre de los operadores de una estación.
-
-    Args:
-    - estacion (str): Estación.
-    - linea (str): Línea.
-    - posicion (str): Posición.
-
-    Returns:
-    - list: Resultados de la consulta.
-    """
-
     estacion_final = str(estacion) + ' ' + posicion
     
     query = """
-    SELECT id_employee FROM registers
-    WHERE production_station = '{}' AND production_line = '{}' AND exit_hour IS NULL
-    """.format(estacion_final, linea)
-
+    SELECT table_empleados_tarjeta.nombre_empleado, table_empleados_tarjeta.apellidos_empleado, table_empleados_tarjeta.id_empleado
+        FROM registers
+        join table_empleados_tarjeta on registers.id_employee = table_empleados_tarjeta.numero_tarjeta
+        WHERE registers.production_station = '{}' AND registers.production_line = '{}' AND exit_hour IS NULL
+        """.format(estacion_final, linea)
+    
     names = []
-    for row in execute_query(query):
-        query = """
-        SELECT nombre_empleado, apellidos_empleado FROM table_empleados_tarjeta
-        WHERE numero_tarjeta = '{}'
-        """.format(row[0])
+    results = execute_query(query)
 
-        names += execute_query(query)
-
-    print(names)
-
+    for result in results:
+        if result[0] and result[1] and result[2]:
+            full_name = '{} {} {}'.format(result[2], result[0], result[1])
+            names.append(full_name)
+        else:
+            names.append('Información de usuario aún no disponible')
+                         
+    print('Los nombres son: ', names)
     return names
