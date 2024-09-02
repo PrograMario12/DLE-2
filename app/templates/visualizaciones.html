@@ -47,7 +47,7 @@
         }
     }
     </script>
-            
+
     </head>
 
     <body>
@@ -60,22 +60,22 @@
                 <button class="button-4 button-4-half" onclick="window.location.href = '/visualizaciones'">Regresar</button>
                 <button class="button-4 button-4-half" onclick="window.location.href = '/'">Inicio</button>
             </div> <!-- Fin de Div de botones -->
-            
+
             {% endif %}
         </div> <!-- Fin de Div de Header ajustes -->
-        
+
         <div class="header">
             {% if lineaseleccionada  %}
-            
+
             <div class="h3-contexto">
                 <h3 class="separate-h3">Estándar: {{ employees_necessary }}</h3>
                 <h3 class="separate-h3"><i class="fi fi-sr-user "></i> Real: {{employees_for_line}} </h3>
-                <h3><i class="fi fi-rr-user"></i> 
-                    Fuera de estándar: 
+                <h3><i class="fi fi-rr-user"></i>
+                    Fuera de estándar:
 
                     {% if employees_necessary - employees_for_line < 0 %} 
                         {{ employees_for_line - employees_necessary }}
-                    {% else %} 
+                    {% else %}
                         {{ employees_necessary - employees_for_line }}
                     {% endif %}
                 </h3>
@@ -93,17 +93,17 @@
             {% for i  in range (num_cards) %}
                 <a href="/visualizacionesEstacion?linea={{lineas_capacidad_operadores[i][0]}}" class="a-estilos 
                 {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0   %}
-                disabled    
+                disabled
                 {% endif %}"><div class="card card-high-height
                     {% if (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) == 100 %}
-                        empleado-ok 
-                    {% elif (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) <= 101 %}
-                        empleado-nook 
+                        empleado-ok
+                    {% elif (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) >= 101 %}
+                        empleado-nook
                     {% else %}
                         empleado-warning
                     {% endif %}
                     {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0 %}
-                        empleado-disabled 
+                        empleado-disabled
                     {% endif %}
                     "> <!-- Div de card -->
                     <h3>
@@ -114,17 +114,17 @@
                         <p class="big-text">
                             {{ (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) | round(2) }}% 
                         </p>
-                        
                     </div>
-                    
                 </div></a>
                 {% endfor %}
             </div>
 
 
+
             {% else %}
 
-            
+
+
             <div class="menu direction-row">
                 {% for i  in range (num_cards) %}
                     <div class="card card-mitad">
@@ -136,7 +136,7 @@
                     {% endif %}
 
                     <div class="texto-de-botones">
-                        <div onclick="showPopup({{ lineas_capacidad_operadores[i][5] }})" class="lado 
+                        <div onclick="showPopup({{ lineas_capacidad_operadores[i][5] }})" class="lado
                         {% if lineas_capacidad_operadores[i][1] == 0 %}
                             empleado-ok
                         {% elif lineas_capacidad_operadores[i][1] > 0 %}
@@ -145,7 +145,6 @@
                             empleado-warning
                         {% endif %}
                         ">
-                        
                         {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
                             <p>
                                 LH
@@ -158,9 +157,8 @@
                             </p>
                     </div>
 
-                
                     {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
-                    <div onclick="showPopup({{ lineas_capacidad_operadores[i][6] }})" class="lado 
+                    <div onclick="showPopup({{ lineas_capacidad_operadores[i][6] }})" class="lado
                     {% if lineas_capacidad_operadores[i][3] == 0 %}
                         empleado-ok
                     {% elif lineas_capacidad_operadores[i][3] > 0 %}

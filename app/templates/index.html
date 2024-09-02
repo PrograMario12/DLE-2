@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+  
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{{ css_file }}" />
     <title>Registro de entrada</title>
   </head>
+
   <body>
     <section>
       <div class="reloj">
@@ -21,18 +23,19 @@
         autocomplete="off"
         role="main"
       >
-      <picture>
-        <source
-          srcset="{{ img_file }}"
-        />
-        <img src="{{ img_file }}" alt="Logo" class="img" />
-      </picture>
+        <picture>
+          <source
+            srcset="{{ img_file }}"
+          />
+          <img src="{{ img_file }}" alt="Logo" class="img" />
+        </picture>
+
         <div>
           <label class="label-email">
             <input
               type="password"
               class="text"
-              name="numeroempleado"
+              name="employee_number"
               tabindex="1"
               required
               autofocus
@@ -44,7 +47,7 @@
         </div>
         <script>
           const emailInput = document.querySelector(
-            'input[name="numeroempleado"]'
+            'input[name="employee_number"]'
           );
           emailInput.addEventListener("input", function () {
             if (this.value.length === 10) {
@@ -60,4 +63,5 @@
         <button class="boton" onclick="location.href='/visualizaciones'"><i class="fi fi-sr-users-alt"></i></button>
       </div>
   </body>
+
 </html>

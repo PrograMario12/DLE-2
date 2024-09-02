@@ -2,46 +2,29 @@ import psycopg2
 from config import Config
 from datetime import datetime
 
-class Usuario:
-    def __init__(self, numero_empleado, hora, linea):
-        """
-        Constructor de la clase Usuario.
+class User:
+    def __init__(self, employee_number, hour, line):
+        # User class constructor
+        self.employee_number = employee_number
+        self.hour = hour
+        self.line = line
 
-        Args:
-        - numero_empleado (int): Número de empleado.
-        - hora (str): Hora.
-        - linea (str): Línea.
-        """
-        self.numero_empleado = numero_empleado
-        self.hora = hora
-        self.linea = linea
+    def set_employee_number(self, employee_number):
+        # Set the employee number.
+        self.employee_number = employee_number
 
-    def set_numero_empleado(self, numero_empleado):
-        """
-        Establece el número de empleado.
+    def set_hour(self, hour):
+        # Set the hour. 
+        self.hour = hour
 
-        Args:
-        - numero_empleado (int): Número de empleado.
-        """
-        self.numero_empleado = numero_empleado
-
-    def set_hora(self, hora):
-        """
-        Establece la hora.
-
-        Args:
-        - hora (str): Hora.
-        """
-        self.hora = hora
-    
-    def set_linea(self, linea):
+    def set_line(self, line):
         """
         Establece la línea.
 
         Args:
-        - linea (str): Línea.
+        - line (str): Línea.
         """
-        self.linea = linea
+        self.line = line
 
     def __str__(self):
         """
@@ -50,7 +33,7 @@ class Usuario:
         Returns:
         - str: Representación en cadena del objeto Usuario.
         """
-        return "Número de empleado: {}, Hora: {}, Línea: {}".format(self.numero_empleado, self.hora, self.linea)
+        return "Número de empleado: {}, Hora: {}, Línea: {}".format(self.employee_number, self.hour, self.line)
 
 def execute_query(query):
     """
@@ -223,29 +206,35 @@ def register_exit(user_id, marca):
     insertar_bd(query)
 
 def get_last_register_type(user_id):
-    query = "SELECT exit_hour FROM registers WHERE id_employee = {} ORDER BY id_register DESC LIMIT 1".format(user_id)
+    query = """
+    SELECT exit_hour 
+        FROM registers
+        WHERE id_employee = {}
+        ORDER BY id_register DESC
+        LIMIT 1
+    """.format(user_id)
+
     result = execute_query(query)
-    print('El resultado es ', result)
+    print('El tipo de registro en fuction es ', result)
     if result and result[0][0] == None:
         return 'Exit'
     else:
         return 'Entry'
-    
+
+
+
 def get_values_for_exit(user_id):
-    """
-    Obtiene la línea y estación de salida más reciente de un empleado.
-
-    Args:
-    - user_id (int): ID del empleado.
-
-    Returns:
-    - tuple: Línea y estación de salida.
-    """
     query = """
-    SELECT production_line, production_station FROM registers WHERE id_employee = {} ORDER BY entry_hour DESC LIMIT 1
+    SELECT production_line, production_station 
+        FROM registers 
+        WHERE id_employee = {} 
+        ORDER BY entry_hour DESC 
+        LIMIT 1
     """.format(user_id)
     results = execute_query(query)
     return results[0] if results else None
+
+
 
 def obtener_empleados_en_la_estacion():
     """
@@ -331,14 +320,14 @@ def get_employees_necesary_for_line(line):
 
 def get_names_operators(estacion, linea, posicion):
     estacion_final = str(estacion) + ' ' + posicion
-    
+
     query = """
     SELECT table_empleados_tarjeta.nombre_empleado, table_empleados_tarjeta.apellidos_empleado, table_empleados_tarjeta.id_empleado
         FROM registers
         join table_empleados_tarjeta on registers.id_employee = table_empleados_tarjeta.numero_tarjeta
         WHERE registers.production_station = '{}' AND registers.production_line = '{}' AND exit_hour IS NULL
         """.format(estacion_final, linea)
-    
+
     names = []
     results = execute_query(query)
 
@@ -348,6 +337,6 @@ def get_names_operators(estacion, linea, posicion):
             names.append(full_name)
         else:
             names.append('Información de usuario aún no disponible')
-                         
+
     print('Los nombres son: ', names)
     return names

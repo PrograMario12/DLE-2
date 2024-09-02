@@ -70,7 +70,7 @@ Date: [2024-07-16]
                     <div class="card card-mitad">
                     <h3>Estación {{ lineas[i] }}</h3>
                     <div class="texto-de-botones">
-                        <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} LH"><div class="lado
+                        <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} LH"><div class="lado
                         {% if lineas_capacidad_operadores[i][1] == 0 and lineas_capacidad_operadores[i][2] == 0 %}
                             employee-no-necessary
                         {% elif lineas_capacidad_operadores[i][1] == 0 %}
@@ -93,7 +93,7 @@ Date: [2024-07-16]
                     </div></a>
 
                     {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
-                    <a href="/exito?estacion={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado
+                    <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado
                         {% if lineas_capacidad_operadores[i][3] == 0 and lineas_capacidad_operadores[i][4] == 0 %}
                             employee-no-necessary
                         {% elif lineas_capacidad_operadores[i][3] == 0 %}

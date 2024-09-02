@@ -65,5 +65,11 @@
             "bold": false,
             "italic": false
         }
+    ],
+    "cSpell.words": [
+        "pyfile"
+    ],
+    "cSpell.enableFiletypes": [
+        "!html"
     ]
 }
