@@ -14,5 +14,8 @@ configure_app()
 from . import main
 app.register_blueprint(main.main_bp)
 
+from . import dashboards
+app.register_blueprint(dashboards.dashboards_bp)
+
 # Import the routes module
 from app import routes

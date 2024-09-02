@@ -18,12 +18,24 @@ Date: [2024-07-16]
     <body class="body-center">
         <div class="header">
             {% if lineaseleccionada  %}
-            <h1 class="uppercase">Línea {{ lineaseleccionada }}</h1>
+                {% if lineaseleccionada == 'inyectoras' %}
+                    <h1 class="uppercase">
+                        Inyectoras
+                    </h1>
+                {% else %}
+                    <h1 class="uppercase">
+                        Línea {{ lineaseleccionada }}
+                    </h1>
+                {% endif %}
             {% endif %}
             <h2 class="uppercase">Selecciona tu {{ tipo_seleccion }}</h2>
             <div class="h3-contexto">
                 <h3 class="separate-h3"><i class="fi fi-sr-user "></i> Real: {{employees_for_line}} </h3>
-                <h3><i class="fi fi-rr-user"></i> Fuera de estándar: {{employees_necessary - employees_for_line }} </h3>
+                {% if employees_necessary > employees_for_line %}
+                    <h3><i class="fi fi-rr-user"></i> Fuera de estándar: {{ employees_necessary - employees_for_line }} </h3>
+                {% else %}
+                    <h3><i class="fi fi-rr-user"></i> Fuera de estándar: {{ employees_for_line - employees_necessary }} </h3>
+                {% endif %}
             </div>
         </div>
 
@@ -56,18 +68,21 @@ Date: [2024-07-16]
                         <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                         </p>
                     </div>
-                    
                 </div></a>
                 {% endfor %}
             </div>
 
-            
+
             {% else %}
 
 
             <div class="menu direction-row">
                 {% for i  in range (num_cards) %}
-                    <div class="card card-mitad">
+                    <div class="card card-mitad
+                    {% if lineaseleccionada == 'inyectoras' %}
+                        card-injectors
+                    {% endif %}
+                    ">
                     <h3>Estación {{ lineas[i] }}</h3>
                     <div class="texto-de-botones">
                         <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} LH"><div class="lado
@@ -99,7 +114,7 @@ Date: [2024-07-16]
                         {% elif lineas_capacidad_operadores[i][3] == 0 %}
                             empleado-ok
                         {% elif lineas_capacidad_operadores[i][3] > 0 %}
-                            empleado-nook   
+                            empleado-nook
                         {% else %}
                             empleado-warning
                         {% endif %}
@@ -114,7 +129,6 @@ Date: [2024-07-16]
                     </div></a>
                     {% endif %}
                     </div>
-                    
                 </div>
                 {% endfor %}
             {% endif %}

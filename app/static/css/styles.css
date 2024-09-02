@@ -104,6 +104,10 @@ img {
     height: auto;
 }
 
+.card-injectors {
+    width: 30%;
+}
+
 .card h3 {
     margin: 0;
     padding: 0;

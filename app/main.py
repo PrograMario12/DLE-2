@@ -13,12 +13,14 @@ user = functions.User(0, 0, 0);
 def home():
     # Renders the home page.
 
-    user.set_line(request.cookies.get('linea'))
+    actual_line = request.cookies.get('linea')
+    user.set_line(actual_line)
 
     context = {
         'css_file': 'static/css/init_styles.css',
         'js_file': 'static/js/clock.js',
-        'img_file': 'static/img/magna-logo.png'
+        'img_file': 'static/img/magna-logo.png',
+        'actual_line': actual_line
     }
 
     response = flask.make_response(render_template('index.html', **context))
