@@ -14,7 +14,17 @@
         
     <div class="menu centrar-objetos direction-column">
         {% for num in range(num_botones) %}
-            <button class="button-4" type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">{{ lineas[num] }}</button>
+            <button class="button-4
+                {% if lineas[num] == active_line %}
+                    button-4-select
+                {% endif %}
+            " type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">
+                {%if lineas[num] == 'inyectoras' %}
+                    Área de inyección
+                {% else %}
+                    Línea {{ lineas[num] }}
+                {% endif %}
+            </button>
         {% endfor %}
     </div>
 </body>

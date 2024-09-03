@@ -198,7 +198,7 @@ img {
 }
 
 .boton {
-  font-size: 0.5rem;
+  font-size: 1rem;
   display: inline-block;
   padding: 10px;
   border: none;
@@ -207,7 +207,7 @@ img {
 }
 
 .actual-line {
-  font-size: 36px;
+  font-size: 1rem;
   position: fixed;
   bottom: 20px;
   left: 20px;

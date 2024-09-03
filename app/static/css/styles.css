@@ -294,17 +294,21 @@ a.disabled {
     box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
     transition: none 0s;
   }
-  
+
   .button-4:focus {
     outline: 1px transparent;
   }
-  
+
   .button-4:before {
     display: none;
   }
-  
+
   .button-4:-webkit-details-marker {
     display: none;
+  }
+
+  .button-4-select{
+    background-color:#4E555B;
   }
 
   .botones{

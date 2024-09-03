@@ -16,6 +16,12 @@ def home():
     actual_line = request.cookies.get('linea')
     user.set_line(actual_line)
 
+    if actual_line == 'inyectoras':
+        actual_line = "Área inyeccción"
+    else:
+        actual_line = "Línea " + actual_line
+
+
     context = {
         'css_file': 'static/css/init_styles.css',
         'js_file': 'static/js/clock.js',

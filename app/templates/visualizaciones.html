@@ -83,7 +83,7 @@
 
                 {% if lineaseleccionada == 'inyectoras' %}
                     <h1 class="uppercase">
-                        Inyectoras
+                        Inyección
                     </h1>
                 {% else %}
                     <h1 class="uppercase">
@@ -114,9 +114,12 @@
                         empleado-disabled
                     {% endif %}
                     "> <!-- Div de card -->
-                    <h3>
-                        Línea {{ lineas_capacidad_operadores[i][0] }}
-                    </h3>
+
+                    {% if lineas_capacidad_operadores[i][0] == 'inyectoras' %}
+                        <h3> Inyección </h3>
+                    {% else %}
+                        <h3>Líneas {{ lineas_capacidad_operadores[i][0] }}</h3>
+                    {% endif %}
 
                     <div class="texto-de-botones">
                         <p class="big-text">
@@ -142,7 +145,7 @@
                     ">
 
                     {% if lineaseleccionada == 'inyectoras' %}
-                        <h3>Inyectora {{ lineas[i] }}</h3>
+                        <h3>INY-{{ lineas[i] }}</h3>
                     {% else %}
                         <h3>Estación {{ lineas[i] }}</h3>
                     {% endif %}

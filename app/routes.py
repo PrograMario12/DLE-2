@@ -11,7 +11,8 @@ def ajustes():
     context = {
         'css_file': 'static/css/styles.css',
         'num_botones': len(lineas_capacidad),
-        'lineas': lineas_capacidad
+        'lineas': lineas_capacidad,
+        'active_line': request.cookies.get('linea')
     }
 
     return render_template('ajustes.html', **context)
