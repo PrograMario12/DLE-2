@@ -228,7 +228,7 @@ def get_values_for_exit(user_id):
     SELECT production_line, production_station 
         FROM registers 
         WHERE id_employee = {} 
-        ORDER BY entry_hour DESC 
+        ORDER BY id_register DESC 
         LIMIT 1
     """.format(user_id)
     results = execute_query(query)

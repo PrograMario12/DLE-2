@@ -19,7 +19,7 @@ def home():
     if actual_line == 'inyectoras':
         actual_line = "Área inyeccción"
     else:
-        actual_line = "Línea " + actual_line
+        actual_line = "Línea " + str(actual_line)
 
 
     context = {
@@ -116,7 +116,6 @@ def successful():
         usuario = 'Error'
 
     tipo = functions.get_last_register_type(request.cookies.get('employee_number'))
-    print('El tipo de registro es: ', tipo)
 
     if tipo == 'Entry':
         functions.register_entry(request.cookies.get('employee_number'), request.cookies.get('linea'), estacion, hour)
