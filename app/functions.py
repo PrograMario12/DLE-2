@@ -76,7 +76,7 @@ def execute_query(query):
     # Devolver los resultados de la consulta
     return results
 
-def insertar_bd(query):
+def insert_bd(query):
     """
     Inserta datos en la base de datos.
 
@@ -189,7 +189,7 @@ def register_entry(user_id, linea, estacion, marca):
     """
     fecha_actual = datetime.now().strftime("%Y-%m-%d")
     query = "INSERT INTO registers (id_employee, date_register, production_line, production_station, entry_hour) VALUES ({}, '{}', '{}', '{}', '{}')".format(user_id, fecha_actual, linea, estacion, marca)
-    insertar_bd(query)
+    insert_bd(query)
 
 def register_exit(user_id, marca):
     """
@@ -203,7 +203,7 @@ def register_exit(user_id, marca):
         None
     """
     query = "UPDATE registers SET exit_hour = '{}' WHERE id_employee = {} AND exit_hour IS NULL".format(marca, user_id)
-    insertar_bd(query)
+    insert_bd(query)
 
 def get_last_register_type(user_id):
     query = """

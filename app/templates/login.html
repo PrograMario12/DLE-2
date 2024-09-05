@@ -7,7 +7,7 @@
     <title>Iniciar sesión</title>
 <body>
     <div class="center-height-div">
-        <form action='login' method='POST'>
+        <form action="{{ url_for('login_validation')}}"" method='POST'>
             <div class="form-group">
                 <label for="username">Usuario:</label>
                 <input type='text' name='username' id='username' placeholder='Ingresa tu usuario'/>

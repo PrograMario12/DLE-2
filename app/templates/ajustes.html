@@ -11,7 +11,7 @@
         <p>Selecciona la línea que quieres establecer para los registros</p>
         <button class="button-4 button-4-small" onclick="window.location.href = '/'">Regresar</button>
     </div>
-        
+
     <div class="menu centrar-objetos direction-column">
         {% for num in range(num_botones) %}
             <button class="button-4
@@ -26,6 +26,16 @@
                 {% endif %}
             </button>
         {% endfor %}
+    </div>
+
+    <div class=" menu centrar-objetos">
+        <button class="button-4" onclick="window.location.href = '/general_exit_from_line'">
+            Salida general de línea
+        </button>
+
+        <button class="button-4" onclick="">
+            Cambio de línea
+        </button>
     </div>
 </body>
 </html>
