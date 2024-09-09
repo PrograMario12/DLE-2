@@ -6,36 +6,60 @@
     <link rel="stylesheet" href="{{ css_file }}">
     <title>Ajustes de línea</title>
 </head>
-<body>
-    <div class="header-ajustes">
-        <p>Selecciona la línea que quieres establecer para los registros</p>
-        <button class="button-4 button-4-small" onclick="window.location.href = '/'">Regresar</button>
-    </div>
 
-    <div class="menu centrar-objetos direction-column">
-        {% for num in range(num_botones) %}
-            <button class="button-4
-                {% if lineas[num] == active_line %}
-                    button-4-select
-                {% endif %}
-            " type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">
-                {%if lineas[num] == 'inyectoras' %}
-                    Área de inyección
-                {% else %}
-                    Línea {{ lineas[num] }}
-                {% endif %}
+    <body>
+        <div class="header-ajustes">
+            <p>Selecciona la línea que quieres establecer para los registros</p>
+            <button class="button-4 button-4-small" onclick="window.location.href = '/'">Regresar</button>
+        </div>
+
+        <div class="menu centrar-objetos direction-column">
+            {% for num in range(num_botones) %}
+                <button class="button-4
+                    {% if lineas[num] == active_line %}
+                        button-4-select
+                    {% endif %}
+                " type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">
+                    {%if lineas[num] == 'inyectoras' %}
+                        Área de inyección
+                    {% else %}
+                        Línea {{ lineas[num] }}
+                    {% endif %}
+                </button>
+            {% endfor %}
+        </div>
+
+        <div class=" menu centrar-objetos">
+            <button class="button-4" onclick="window.location.href = '/general_exit_from_line'">
+                Salida general de línea
             </button>
-        {% endfor %}
-    </div>
 
-    <div class=" menu centrar-objetos">
-        <button class="button-4" onclick="window.location.href = '/general_exit_from_line'">
-            Salida general de línea
-        </button>
+            <button class="button-4" id="btn-open-modal">
+                Cambio de línea
+            </button>
+        </div>
 
-        <button class="button-4" onclick="">
-            Cambio de línea
-        </button>
-    </div>
-</body>
+        <dialog id="modal">
+            <form method="POST" action="/changeLine">
+                <label for="line">Selecciona la línea a dónde se moverá el personal:</label>
+                <select name="line">
+                    {% for num in range(num_botones) %}
+                        <option value="{{ lineas[num] }}">
+                            {%if lineas[num] == 'inyectoras' %}
+                                Área de inyección
+                            {% else %}
+                                Línea {{ lineas[num] }}
+                            {% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Cambiar</button>
+            </form>
+            <button id="btn-close-modal">Cerrar</button>
+        </dialog>
+
+        <!-- Importar el archivo JavaScript -->
+        <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+
+    </body>
 </html>

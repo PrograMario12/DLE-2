@@ -87,7 +87,6 @@ def general_exit_from_line():
     logout_user()
     return redirect('/')
 
-@app.route('/change_of_employees_from_line')
 
 def query_general_exit_from_line(production_line):
     query = """
@@ -98,3 +97,27 @@ def query_general_exit_from_line(production_line):
     """.format(production_line)
 
     functions.insert_bd(query)
+
+
+@app.route('/change_of_employees_from_line')
+@login_required
+def change_of_employees_from_line():
+    production_line = request.cookies.get('linea')
+    query_general_exit_from_line(production_line)
+    logout_user()
+    return redirect('/')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
+
+
+# Insert code to replace logatirhm
+def must_be_exactly_ten(value):
+    number = int(value)
+    if number == 10:
+        return number
+    else:
+        raise TypeError("The number must be exactly 10")

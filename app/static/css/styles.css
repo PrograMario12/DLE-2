@@ -399,3 +399,33 @@ button:hover {
 .header .uppercase {
     margin-top: 10px;
 }
+
+#modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.55);
+} 
+
+dialog {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 50%;
+    form {
+      margin-bottom: 20px;
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+    select, button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+    }
+}

@@ -109,8 +109,8 @@ def successful():
     user.set_hour(hour)
 
     usuario = functions.obtener_usuario(request.cookies.get('employee_number'))
-    imagen = functions.obtener_imagen(request.cookies.get('employee_number'))
-    imagen = 'static/img/media/' + str(imagen) + '.png'
+    image = functions.obtener_imagen(request.cookies.get('employee_number'))
+    image = 'static/img/media/' + str(image) + '.png'
 
     if not usuario:
         usuario = 'Error'
@@ -134,6 +134,6 @@ def successful():
         'linea': linea,
         'estacion': estacion,
         'tipo': tipo,
-        'imagen': imagen
+        'imagen': image
     }
     return render_template('successful.html', **context)
