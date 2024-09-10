@@ -71,5 +71,11 @@
     ],
     "cSpell.enableFiletypes": [
         "!html"
-    ]
+    ],
+    "prettier.printWidth": 79,
+    "editor.codeActionsOnSave": {
+
+
+    },
+    "editor.rulers": [72, 70]
 }

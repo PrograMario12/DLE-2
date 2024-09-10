@@ -1,6 +1,11 @@
 from app import app, functions, login_manager
 from flask import redirect, render_template, request
-from flask_login import login_required, UserMixin, login_user, logout_user
+from flask_login import (
+    login_required,
+    UserMixin,
+    login_user,
+    logout_user
+)
 import flask
 
 class User(UserMixin):
@@ -38,7 +43,8 @@ def settings():
 def changeLine():
     line = request.args.get('line')
     logout_user()
-    # Create a cookie named 'linea' with the value of the selected line
+    # Create a cookie named 'linea' with the value of the selected 
+    # line
     response = flask.make_response(redirect('/'))
     response.set_cookie('linea', line)
     return response
@@ -87,6 +93,25 @@ def general_exit_from_line():
     logout_user()
     return redirect('/')
 
+@app.route('/change_of_employees_from_line', methods=['POST'])
+@login_required
+def change_of_employees_from_line():
+    production_line = request.form['line']
+    # query_general_exit_from_line(production_line)
+    logout_user()
+    # return redirect('/')
+
+    return ('La línea de producción ha sido cambiada exitosamente ' 
+            + production_line)
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
+
+
+
 
 def query_general_exit_from_line(production_line):
     query = """
@@ -98,26 +123,12 @@ def query_general_exit_from_line(production_line):
 
     functions.insert_bd(query)
 
+def query_change_of_employees_from_line(production_line):
+    query = """
+    UPDATE registers
+        SET exit_hour = NOW()
+        WHERE production_line = '{}'
+        AND exit_hour IS NULL
+    """.format(production_line)
 
-@app.route('/change_of_employees_from_line')
-@login_required
-def change_of_employees_from_line():
-    production_line = request.cookies.get('linea')
-    query_general_exit_from_line(production_line)
-    logout_user()
-    return redirect('/')
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect('/')
-
-
-# Insert code to replace logatirhm
-def must_be_exactly_ten(value):
-    number = int(value)
-    if number == 10:
-        return number
-    else:
-        raise TypeError("The number must be exactly 10")
+    functions.insert_bd(query)

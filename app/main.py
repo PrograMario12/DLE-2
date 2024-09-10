@@ -29,21 +29,22 @@ def home():
         'actual_line': actual_line
     }
 
-    response = flask.make_response(render_template('index.html', **context))
+    response = flask.make_response(render_template('index.html', 
+                                                   **context))
     response.set_cookie('employee_number', '0')
 
     return response
 
 
 
-@main_bp.route('/menuStation')
+@main_bp.route('/menuStation', methods=['GET', 'POST'])
 def menuStation():
     # Renders the menu page for the stations.
 
     if 'linea' not in request.cookies:
         return redirect('/ajustes')
 
-    employee_number = request.args.get('employee_number')
+    employee_number = request.form['employee_number']
     print('El número de empleado es: ', employee_number)
 
     type_of_register = functions.get_last_register_type(employee_number)
@@ -69,19 +70,28 @@ def menuStation():
     for resultado in resultados:
         estacion = resultado[0]
         capacidadLH = resultado[1]
-        operadoresLH = empleados_por_estacion.get(str(estacion) + " LH", 0)
+        operadoresLH = empleados_por_estacion.get(str(estacion) 
+                                                  + " LH", 0)
         capacidadRH = resultado[2]
-        operadoresRH = empleados_por_estacion.get(str(estacion) + " RH", 0)
+        operadoresRH = empleados_por_estacion.get(str(estacion) 
+                                                  + " RH", 0)
 
         capacidadLH = int(capacidadLH) - int(operadoresLH)
         capacidadRH = int(capacidadRH) - int(operadoresRH)
 
-        estaciones.append([estacion, capacidadLH, operadoresLH, capacidadRH, operadoresRH])
+        estaciones.append([estacion, capacidadLH, operadoresLH, 
+                           capacidadRH, operadoresRH])
 
     employees_for_line = functions.get_employees_for_line(linea)
-    employees_for_line = int(employees_for_line[0][1]) if employees_for_line else 0
+    employees_for_line = (
+        int(employees_for_line[0][1]) 
+        if employees_for_line 
+        else 0
+    )
 
-    employees_necessary = int(functions.get_employees_necesary_for_line(linea)[0][0])
+    employees_necessary = int(
+        functions.get_employees_necessary_for_line(linea)[0][0]
+        )
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -94,7 +104,8 @@ def menuStation():
         'employees_necessary': employees_necessary
     }
 
-    response = flask.make_response(render_template('menu.html', **context))
+    response = flask.make_response(render_template('menu.html', 
+                                                   **context))
     response.set_cookie('employee_number', str(employee_number))
 
     return response
@@ -108,8 +119,10 @@ def successful():
     hour = datetime.now()
     user.set_hour(hour)
 
-    usuario = functions.obtener_usuario(request.cookies.get('employee_number'))
-    image = functions.obtener_imagen(request.cookies.get('employee_number'))
+    usuario = functions.obtener_usuario(
+                                request.cookies.get('employee_number'))
+    image = functions.obtener_imagen(
+                                request.cookies.get('employee_number'))
     image = 'static/img/media/' + str(image) + '.png'
 
     if not usuario:
@@ -122,7 +135,8 @@ def successful():
         linea = request.cookies.get('linea')
         tipo = 'Entrada'
     else:
-        functions.register_exit(request.cookies.get('employee_number'), hour)
+        functions.register_exit(request.cookies.get('employee_number'), 
+                                hour)
         tipo = 'Salida'
         linea = functions.get_values_for_exit(request.cookies.get('employee_number'))[0]
         estacion = functions.get_values_for_exit(request.cookies.get('employee_number'))[1]

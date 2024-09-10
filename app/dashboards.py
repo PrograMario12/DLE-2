@@ -8,7 +8,8 @@ def dashboard_lines():
     results = functions.get_lines()
     number_of_lines = len(results)
     employees_for_line = functions.get_employees_for_line()
-    employees_for_line = {line[0]: line[1] for line in employees_for_line}
+    employees_for_line = {line[0]: line[1] for line in 
+                          employees_for_line}
 
     there_are_no_lines = []
 
@@ -49,30 +50,42 @@ def dashboard_stations():
     numbers_of_stations = len(results)
 
     employees_for_station = functions.get_employees_for_station(line)
-    employees_for_station = {station[0]: station[1] for station in employees_for_station}
+    employees_for_station = {station[0]: station[1] for station in 
+                             employees_for_station}
     stations_list = sorted(list(set([result[0] for result in results])))
 
     stations = []
     for result in results:
         station = result[0]
         capacity_LH = result[1]
-        operators_LH = employees_for_station.get(str(station) + " LH", 0)
+        operators_LH = employees_for_station.get(str(station) 
+                                                 + " LH", 0)
         capacity_RH = result[2]
-        operators_RH = employees_for_station.get(str(station) + " RH", 0)
+        operators_RH = employees_for_station.get(str(station) 
+                                                 + " RH", 0)
 
-        names_operators_LH = functions.get_names_operators(station, line, 'LH')
+        names_operators_LH = functions.get_names_operators(station,
+                                                           line, 'LH')
 
-        names_operators_RH = functions.get_names_operators(station, line, 'RH')
+        names_operators_RH = functions.get_names_operators(station, 
+                                                           line, 'RH')
 
         capacity_LH = int(capacity_LH) - int(operators_LH)
         capacity_RH = int(capacity_RH) - int(operators_RH)
 
-        stations.append([station, capacity_LH, operators_LH, capacity_RH, operators_RH, names_operators_LH, names_operators_RH])
+        stations.append([station, capacity_LH, operators_LH, 
+                         capacity_RH, operators_RH, names_operators_LH, 
+                         names_operators_RH])
 
     employees_for_line = functions.get_employees_for_line(line)
-    employees_for_line = int(employees_for_line[0][1]) if employees_for_line else 0
+    employees_for_line = (
+        int(employees_for_line[0][1])
+        if employees_for_line
+        else 0
+    )
 
-    employees_necessary = int(functions.get_employees_necesary_for_line(line)[0][0])
+    employees_necessary = int(functions.get_employees_necessary_for_line
+                              (line)[0][0])
 
     print('Las stations son:', stations)
 

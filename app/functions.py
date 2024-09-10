@@ -33,7 +33,8 @@ class User:
         Returns:
         - str: Representación en cadena del objeto Usuario.
         """
-        return "Número de empleado: {}, Hora: {}, Línea: {}".format(self.employee_number, self.hour, self.line)
+        return "Número de empleado: {}, Hora: {}, Línea: {}".format(
+            self.employee_number, self.hour, self.line)
 
 def execute_query(query):
     """
@@ -110,7 +111,8 @@ def get_lines():
         SELECT *
         FROM lines
         ORDER BY CASE 
-            WHEN name ~ '[0-9]' THEN CAST(SUBSTRING(name, '^[0-9]+') AS INTEGER)
+            WHEN name ~ '[0-9]' THEN CAST(SUBSTRING(name, '^[0-9]+') 
+            AS INTEGER)
             ELSE 0
         END DESC;
         """
@@ -119,8 +121,11 @@ def get_lines():
 def get_stations(line):
     query = """
         SELECT position_name,
-            MAX(CASE WHEN side IN ('LH', 'BP') THEN employee_capacity END) AS employee_capacity_lh_or_bp,
-            COALESCE(MAX(CASE WHEN side = 'RH' THEN employee_capacity END), 0) AS employee_capacity_rh
+            MAX(CASE WHEN side IN ('LH', 'BP') 
+                THEN employee_capacity END) 
+                    AS employee_capacity_lh_or_bp,
+            COALESCE(MAX(CASE WHEN side = 'RH' 
+                THEN employee_capacity END), 0) AS employee_capacity_rh
         FROM positions
         WHERE line_id = {}
         GROUP BY position_name
@@ -188,7 +193,12 @@ def register_entry(user_id, linea, estacion, marca):
         None
     """
     fecha_actual = datetime.now().strftime("%Y-%m-%d")
-    query = "INSERT INTO registers (id_employee, date_register, production_line, production_station, entry_hour) VALUES ({}, '{}', '{}', '{}', '{}')".format(user_id, fecha_actual, linea, estacion, marca)
+    query = """
+        INSERT INTO 
+            registers (id_employee, date_register, production_line,
+                        production_station, entry_hour) 
+        VALUES ({}, '{}', '{}', '{}', '{}')
+        """.format(user_id, fecha_actual, linea, estacion, marca)
     insert_bd(query)
 
 def register_exit(user_id, marca):
@@ -202,7 +212,11 @@ def register_exit(user_id, marca):
     Returns:
         None
     """
-    query = "UPDATE registers SET exit_hour = '{}' WHERE id_employee = {} AND exit_hour IS NULL".format(marca, user_id)
+    query = """
+    UPDATE registers 
+        SET exit_hour = '{}' 
+        WHERE id_employee = {} AND exit_hour IS NULL
+    """.format(marca, user_id)
     insert_bd(query)
 
 def get_last_register_type(user_id):
@@ -265,10 +279,15 @@ def obtener_usuario(user_id):
     Returns:
     str: Nombre completo del usuario.
     """
-    query = "SELECT nombre_empleado, apellidos_empleado FROM table_empleados_tarjeta WHERE numero_tarjeta = {}".format(user_id)
+    query = """
+    SELECT nombre_empleado, apellidos_empleado 
+        FROM table_empleados_tarjeta 
+        WHERE numero_tarjeta = {}
+    """.format(user_id)
     results = execute_query(query)
 
-    # Devolver el primer resultado si existen resultados, de lo contrario devolver None
+    # Devolver el primer resultado si existen resultados, de lo 
+    # contrario devolver None
     # Concatena el nombre y los apellidos
     return results[0][0] + " " + results[0][1] if results else None
 
@@ -282,10 +301,15 @@ def obtener_imagen(user_id):
     Returns:
     - str: ID de la imagen.
     """
-    query = "SELECT id_empleado FROM table_empleados_tarjeta WHERE numero_tarjeta = {}".format(user_id)
+    query = """
+    SELECT id_empleado 
+        FROM table_empleados_tarjeta 
+        WHERE numero_tarjeta = {}
+    """.format(user_id)
     results = execute_query(query)
 
-    # Devolver el primer resultado si existen resultados, de lo contrario devolver None
+    # Devolver el primer resultado si existen resultados, de lo 
+    # contrario devolver None
     return results[0][0] if results else None
 
 def get_line_id(linea):
@@ -302,9 +326,10 @@ def get_line_id(linea):
     results = execute_query(query)
     return results[0][0] if results else None
 
-def get_employees_necesary_for_line(line):
+def get_employees_necessary_for_line(line):
     """
-    Obtiene el número total de empleados necesarios por estación de una línea.
+    Obtiene el número total de empleados necesarios por estación de 
+    una línea.
 
     Args:
     - line (str): Line.
@@ -322,10 +347,15 @@ def get_names_operators(estacion, linea, posicion):
     estacion_final = str(estacion) + ' ' + posicion
 
     query = """
-    SELECT table_empleados_tarjeta.nombre_empleado, table_empleados_tarjeta.apellidos_empleado, table_empleados_tarjeta.id_empleado
+    SELECT table_empleados_tarjeta.nombre_empleado, 
+    table_empleados_tarjeta.apellidos_empleado, 
+    table_empleados_tarjeta.id_empleado
         FROM registers
-        join table_empleados_tarjeta on registers.id_employee = table_empleados_tarjeta.numero_tarjeta
-        WHERE registers.production_station = '{}' AND registers.production_line = '{}' AND exit_hour IS NULL
+        JOIN table_empleados_tarjeta on registers.id_employee 
+        = table_empleados_tarjeta.numero_tarjeta
+        WHERE registers.production_station = '{}' 
+        AND registers.production_line = '{}' 
+        AND exit_hour IS NULL
         """.format(estacion_final, linea)
 
     names = []
@@ -333,7 +363,8 @@ def get_names_operators(estacion, linea, posicion):
 
     for result in results:
         if result[0] and result[1] and result[2]:
-            full_name = '{} {} {}'.format(result[2], result[0], result[1])
+            full_name = '{} {} {}'.format(result[2], result[0], 
+                                          result[1])
             names.append(full_name)
         else:
             names.append('Información de usuario aún no disponible')
