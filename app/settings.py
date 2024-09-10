@@ -1,39 +1,50 @@
-from app import app, functions, login_manager
-from flask import redirect, render_template, request
+''' This module contains the settings of the application. '''
+
+import flask
+from flask import (
+    request,
+    render_template,
+    redirect
+)
 from flask_login import (
     login_required,
     UserMixin,
     login_user,
     logout_user
 )
-import flask
+
+from app import app, functions, login_manager
 
 class User(UserMixin):
-    def __init__(self, id):
-        self.id = id
+    ''' This class represents a user. '''
+    def __init__(self, user_id):
+        self.user_id = user_id
 
-    def get_id(self):
-        return str(self.id)
+    def get_user_id(self):
+        ''' This function returns the user id. '''
+        return str(self.user_id)
 
-#Simular una base de datos de usuarios
+# Simulate a user database
 users = {1: User(1)}
 
 @login_manager.user_loader
 def load_user(user_id):
+    ''' This function loads a user. '''
     return users.get(int(user_id))
 
 
 @app.route('/settings')
 @login_required
 def settings():
-    lineas = functions.get_lines()
-    lineas_capacidad = [linea[1] for linea in lineas]
+    ''' This function renders the settings page. '''
+    lines = functions.get_lines()
+    lines_capacity = [line[1] for line in lines]
 
     context = {
         'css_file': 'static/css/styles.css',
-        'num_botones': len(lineas_capacidad),
-        'lineas': lineas_capacidad,
-        'active_line': request.cookies.get('linea')
+        'number_of_buttons': len(lines_capacity),
+        'lines': lines_capacity,
+        'active_line': request.cookies.get('line')
     }
 
     return render_template('ajustes.html', **context)
@@ -43,7 +54,7 @@ def settings():
 def changeLine():
     line = request.args.get('line')
     logout_user()
-    # Create a cookie named 'linea' with the value of the selected 
+    # Create a cookie named 'line' with the value of the selected 
     # line
     response = flask.make_response(redirect('/'))
     response.set_cookie('linea', line)

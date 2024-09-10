@@ -1,17 +1,21 @@
-from flask import Blueprint, redirect, render_template, request
+''' This module contains the routes for the main blueprint of the 
+application. '''
+
 from datetime import datetime
 import flask
+from flask import Blueprint, redirect, render_template, request
+
 from app import functions
 
 main_bp = Blueprint('main', __name__)
 
-user = functions.User(0, 0, 0);
+user = functions.User(0, 0, 0)
 
 
 
 @main_bp.route('/')
 def home():
-    # Renders the home page.
+    ''' Renders the home page of the application. '''
 
     actual_line = request.cookies.get('linea')
     user.set_line(actual_line)
