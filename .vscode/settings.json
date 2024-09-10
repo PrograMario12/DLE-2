@@ -70,12 +70,17 @@
         "pyfile"
     ],
     "cSpell.enableFiletypes": [
-        "!html"
+        "!html",
+        "razor"
     ],
     "prettier.printWidth": 79,
     "editor.codeActionsOnSave": {
 
 
     },
-    "editor.rulers": [72, 70]
+    "editor.rulers": [
+        72,
+        70
+    ],
+    "cSpell.language": "en,es,lorem"
 }

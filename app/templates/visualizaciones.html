@@ -53,7 +53,7 @@
     <body>
         <div class="header-ajustes"> <!-- Div de Header ajustes -->
             <h1>Resumen actual (Gente)</h1>
-            {% if tipo_seleccion == 'línea' %}
+            {% if selection_type == 'línea' %}
                 <button class="button-4 button-4-small" onclick="window.location.href = '/'">Inicio</button>
             {% else %}
             <div class="botones"> <!-- Div de botones -->
@@ -65,7 +65,7 @@
         </div> <!-- Fin de Div de Header ajustes -->
 
         <div class="header">
-            {% if lineaseleccionada  %}
+            {% if selecteed_line  %}
 
                 <div class="h3-contexto">
                     <h3 class="separate-h3">Estándar: {{ employees_necessary }}</h3>
@@ -81,13 +81,13 @@
                     </h3>
                 </div>
 
-                {% if lineaseleccionada == 'inyectoras' %}
+                {% if selecteed_line == 'inyectoras' %}
                     <h1 class="uppercase">
                         Inyección
                     </h1>
                 {% else %}
                     <h1 class="uppercase">
-                        Línea {{ lineaseleccionada }}
+                        Línea {{ selecteed_line }}
                     </h1>
                 {% endif %}
 
@@ -96,34 +96,34 @@
 
 
 
-        {% if tipo_seleccion == 'línea' %}
+        {% if selection_type == 'línea' %}
             <div class="menu "> <!-- Div de menu -->
             {% for i  in range (num_cards) %}
-                <a href="/visualizacionesEstacion?line={{lineas_capacidad_operadores[i][0]}}" class="a-estilos 
-                {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0   %}
+                <a href="/visualizaciones_estación?line={{inline_operator_capacity[i][0]}}" class="a-estilos 
+                {% if inline_operator_capacity[i][1] == -1 and inline_operator_capacity[i][2] == 0   %}
                 disabled
                 {% endif %}"><div class="card card-high-height
-                    {% if (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) == 100 %}
+                    {% if (inline_operator_capacity[i][2] / inline_operator_capacity[i][1] * 100) == 100 %}
                         empleado-ok
-                    {% elif (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) <= 101 %}
+                    {% elif (inline_operator_capacity[i][2] / inline_operator_capacity[i][1] * 100) <= 101 %}
                         empleado-nook
                     {% else %}
                         empleado-warning
                     {% endif %}
-                    {% if lineas_capacidad_operadores[i][1] == -1 and lineas_capacidad_operadores[i][2] == 0 %}
+                    {% if inline_operator_capacity[i][1] == -1 and inline_operator_capacity[i][2] == 0 %}
                         empleado-disabled
                     {% endif %}
                     "> <!-- Div de card -->
 
-                    {% if lineas_capacidad_operadores[i][0] == 'inyectoras' %}
+                    {% if inline_operator_capacity[i][0] == 'inyectoras' %}
                         <h3> Inyección </h3>
                     {% else %}
-                        <h3>Líneas {{ lineas_capacidad_operadores[i][0] }}</h3>
+                        <h3>Líneas {{ inline_operator_capacity[i][0] }}</h3>
                     {% endif %}
 
                     <div class="texto-de-botones">
                         <p class="big-text">
-                            {{ (lineas_capacidad_operadores[i][2] / lineas_capacidad_operadores[i][1] * 100) | round(2) }}% 
+                            {{ (inline_operator_capacity[i][2] / inline_operator_capacity[i][1] * 100) | round(2) }}% 
                         </p>
                     </div>
                 </div></a>
@@ -139,44 +139,44 @@
             <div class="menu direction-row">
                 {% for i  in range (num_cards) %}
                     <div class="card card-mitad 
-                    {% if lineaseleccionada == 'inyectoras' %}
+                    {% if selecteed_line == 'inyectoras' %}
                         card-injectors
                     {% endif %}
                     ">
 
-                    {% if lineaseleccionada == 'inyectoras' %}
+                    {% if selecteed_line == 'inyectoras' %}
                         <h3>INY-{{ lineas[i] }}</h3>
                     {% else %}
                         <h3>Estación {{ lineas[i] }}</h3>
                     {% endif %}
 
                     <div class="texto-de-botones">
-                        <div onclick="showPopup({{ lineas_capacidad_operadores[i][5] }})" class="lado
-                        {% if lineas_capacidad_operadores[i][1] == 0 %}
+                        <div onclick="showPopup({{ inline_operator_capacity[i][5] }})" class="lado
+                        {% if inline_operator_capacity[i][1] == 0 %}
                             empleado-ok
-                        {% elif lineas_capacidad_operadores[i][1] > 0 %}
+                        {% elif inline_operator_capacity[i][1] > 0 %}
                             empleado-nook
                         {% else %}
                             empleado-warning
                         {% endif %}
                         ">
-                        {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
+                        {% if inline_operator_capacity[i][3] != 0 or inline_operator_capacity[i][4] >= 1 %}
                             <p>
                                 LH
                             </p>
                         {% endif %}
 
                             <p>
-                                <i class="fi fi-rr-user"></i> {% if lineas_capacidad_operadores[i][1] < 0 %} 0 {% else %} {{ lineas_capacidad_operadores[i][1] }} {% endif %}
-                                <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
+                                <i class="fi fi-rr-user"></i> {% if inline_operator_capacity[i][1] < 0 %} 0 {% else %} {{ inline_operator_capacity[i][1] }} {% endif %}
+                                <i class="fi fi-sr-user"></i> {{ inline_operator_capacity[i][2] }}
                             </p>
                     </div>
 
-                    {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
-                    <div onclick="showPopup({{ lineas_capacidad_operadores[i][6] }})" class="lado
-                    {% if lineas_capacidad_operadores[i][3] == 0 %}
+                    {% if inline_operator_capacity[i][3] != 0 or inline_operator_capacity[i][4] >= 1 %}
+                    <div onclick="showPopup({{ inline_operator_capacity[i][6] }})" class="lado
+                    {% if inline_operator_capacity[i][3] == 0 %}
                         empleado-ok
-                    {% elif lineas_capacidad_operadores[i][3] > 0 %}
+                    {% elif inline_operator_capacity[i][3] > 0 %}
                         empleado-nook
                     {% else %}
                         empleado-warning
@@ -186,8 +186,8 @@
                                 RH
                             </p>
                             <p>
-                                <i class="fi fi-rr-user"></i> {% if lineas_capacidad_operadores[i][3] < 0 %} 0 {% else %} {{ lineas_capacidad_operadores[i][3] }} {% endif %}
-                                <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][4] }}
+                                <i class="fi fi-rr-user"></i> {% if inline_operator_capacity[i][3] < 0 %} 0 {% else %} {{ inline_operator_capacity[i][3] }} {% endif %}
+                                <i class="fi fi-sr-user"></i> {{ inline_operator_capacity[i][4] }}
                             </p>
                     </div>
                     {% endif %}
