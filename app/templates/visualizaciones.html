@@ -65,7 +65,7 @@
         </div> <!-- Fin de Div de Header ajustes -->
 
         <div class="header">
-            {% if selecteed_line  %}
+            {% if selected_line  %}
 
                 <div class="h3-contexto">
                     <h3 class="separate-h3">Estándar: {{ employees_necessary }}</h3>
@@ -81,13 +81,13 @@
                     </h3>
                 </div>
 
-                {% if selecteed_line == 'inyectoras' %}
+                {% if selected_line == 'inyectoras' %}
                     <h1 class="uppercase">
                         Inyección
                     </h1>
                 {% else %}
                     <h1 class="uppercase">
-                        Línea {{ selecteed_line }}
+                        Línea {{ selected_line }}
                     </h1>
                 {% endif %}
 
@@ -99,7 +99,7 @@
         {% if selection_type == 'línea' %}
             <div class="menu "> <!-- Div de menu -->
             {% for i  in range (num_cards) %}
-                <a href="/visualizaciones_estación?line={{inline_operator_capacity[i][0]}}" class="a-estilos 
+                <a href="/visualizaciones_estación?line={{inline_operator_capacity[i][0]}}" class="a-estilos
                 {% if inline_operator_capacity[i][1] == -1 and inline_operator_capacity[i][2] == 0   %}
                 disabled
                 {% endif %}"><div class="card card-high-height
@@ -139,19 +139,21 @@
             <div class="menu direction-row">
                 {% for i  in range (num_cards) %}
                     <div class="card card-mitad 
-                    {% if selecteed_line == 'inyectoras' %}
+                    {% if selected_line == 'inyectoras' %}
                         card-injectors
                     {% endif %}
                     ">
 
-                    {% if selecteed_line == 'inyectoras' %}
+                    {% if lineas[i] == 'nva' %}
+                        <h3 class="uppercase">{{ lineas[i] }}</h3>
+                    {% elif selected_line == 'inyectoras' %}
                         <h3>INY-{{ lineas[i] }}</h3>
                     {% else %}
                         <h3>Estación {{ lineas[i] }}</h3>
                     {% endif %}
 
                     <div class="texto-de-botones">
-                        <div onclick="showPopup({{ inline_operator_capacity[i][5] }})" class="lado
+                        <div onclick="showPopup({{ inline_operator_capacity[i][5] }});" class="lado
                         {% if inline_operator_capacity[i][1] == 0 %}
                             empleado-ok
                         {% elif inline_operator_capacity[i][1] > 0 %}

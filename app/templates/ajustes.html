@@ -14,16 +14,16 @@
         </div>
 
         <div class="menu centrar-objetos direction-column">
-            {% for num in range(num_botones) %}
+            {% for num in range(number_of_buttons) %}
                 <button class="button-4
-                    {% if lineas[num] == active_line %}
+                    {% if lines[num] == active_line %}
                         button-4-select
                     {% endif %}
-                " type="button" onclick="window.location.href = '/changeLine?line={{ lineas[num] }}'">
-                    {%if lineas[num] == 'inyectoras' %}
+                " type="button" onclick="window.location.href = '/changeLine?line={{ lines[num] }}'">
+                    {%if lines[num] == 'inyectoras' %}
                         Área de inyección
                     {% else %}
-                        Línea {{ lineas[num] }}
+                        Línea {{ lines[num] }}
                     {% endif %}
                 </button>
             {% endfor %}
@@ -40,21 +40,23 @@
         </div>
 
         <dialog id="modal">
-            <form method="POST" action="/change_of_employees_from_line">
+            <h3>Función en construcción🔨👷🏾</h3>
+            <h3>Disculpe las molestias😊</h3>
+            <!-- <form method="POST" action="/change_of_employees_from_line">
                 <label for="line">Selecciona la línea a dónde se moverá el personal:</label>
                 <select name="line">
-                    {% for num in range(num_botones) %}
-                        <option value="{{ lineas[num] }}">
-                            {%if lineas[num] == 'inyectoras' %}
+                    {% for num in range(number_of_buttons) %}
+                        <option value="{{ lines[num] }}">
+                            {%if lines[num] == 'inyectoras' %}
                                 Área de inyección
                             {% else %}
-                                Línea {{ lineas[num] }}
+                                Línea {{ lines[num] }}
                             {% endif %}
                         </option>
                     {% endfor %}
                 </select>
                 <button type="submit">Cambiar</button>
-            </form>
+            </form> -->
             <button id="btn-close-modal">Cerrar</button>
         </dialog>
 

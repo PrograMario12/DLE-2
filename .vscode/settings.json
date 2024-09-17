@@ -67,10 +67,13 @@
         }
     ],
     "cSpell.words": [
+        "Adair",
+        "errorhandler",
+        "inyectoras",
+        "psycopg",
         "pyfile"
     ],
     "cSpell.enableFiletypes": [
-        "!html",
         "razor"
     ],
     "prettier.printWidth": 79,

@@ -17,18 +17,22 @@ Date: [2024-07-16]
 
     <body class="body-center">
         <div class="header">
-            {% if lineaseleccionada  %}
-                {% if lineaseleccionada == 'inyectoras' %}
+            {% if selected_line  %}
+                {% if selected_line == 'inyectoras' %}
                     <h1 class="uppercase">
                         Inyectoras
                     </h1>
                 {% else %}
                     <h1 class="uppercase">
-                        Línea {{ lineaseleccionada }}
+                        Línea {{ selected_line }}
                     </h1>
                 {% endif %}
             {% endif %}
-            <h2 class="uppercase">Selecciona tu {{ tipo_seleccion }}</h2>
+
+            <h2 class="uppercase">
+                Selecciona tu {{ type_of_selection }}
+            </h2>
+
             <div class="h3-contexto">
                 <h3 class="separate-h3"><i class="fi fi-sr-user "></i> Real: {{employees_for_line}} </h3>
                 {% if employees_necessary > employees_for_line %}
@@ -39,18 +43,17 @@ Date: [2024-07-16]
             </div>
         </div>
 
-        <!-- Debemos añadir un color gris cuando de ambos lados sea 0 -->
-            {% if tipo_seleccion == 'línea' %}
+            {% if type_of_selection == 'línea' %}
             <div class="menu ">
                 {% for i  in range (num_cards) %}
                 <a href="/menuStation?linea={{lineas_capacidad_operadores[i][0]}}" class="a-estilos {% if lineas_capacidad_operadores[i][1] == -1%}
-                disabled    
+                disabled
                 {% endif %}"
-                ><div class="card 
+                ><div class="card
                     {% if lineas_capacidad_operadores[i][1] == 0%}
-                        empleado-ok 
+                        empleado-ok
                     {% else %}
-                        empleado-nook  
+                        empleado-nook
                     {% endif %}
                     {% if lineas_capacidad_operadores[i][1] == -1%}
                         empleado-disabled
@@ -79,24 +82,32 @@ Date: [2024-07-16]
             <div class="menu direction-row">
                 {% for i  in range (num_cards) %}
                     <div class="card card-mitad
-                    {% if lineaseleccionada == 'inyectoras' %}
+                    {% if selected_line == 'inyectoras' %}
                         card-injectors
                     {% endif %}
                     ">
-                    {% if lineaseleccionada == 'inyectoras' %}
+                    {% if selected_line == 'inyectoras' %}
                         <h3>INY-{{lineas[i]}}</h3>
+                    {% elif lineas[i] == 'nva' %}
+                        <h3 class="uppercase">{{lineas[i]}}</h3>
                     {% else %}
                         <h3>Estación {{ lineas[i] }}</h3>
                     {% endif %}
 
                     <div class="texto-de-botones">
-                        <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} LH"><div class="lado
+                        {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
+                            <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} LH">
+                        {% else %}
+                            <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}}">
+
+                        {% endif %}
+                        <div class="lado
                         {% if lineas_capacidad_operadores[i][1] == 0 and lineas_capacidad_operadores[i][2] == 0 %}
                             employee-no-necessary
                         {% elif lineas_capacidad_operadores[i][1] == 0 %}
                             empleado-ok
                         {% elif lineas_capacidad_operadores[i][1] > 0 %}
-                            empleado-nook   
+                            empleado-nook
                         {% else %}
                             empleado-warning
                         {% endif %}

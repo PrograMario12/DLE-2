@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seleccionar inyectoras</title>
+    <link rel="stylesheet" href="{{ css_file }}">
+
+</head>
+
+<body>
+    <div class="container">
+        <form id="inyectoras-form" action="/save-active-injectors" method="POST">
+            <h2>Selecciona las inyectoras que estarán activas</h2>
+
+            <div class="checkbox-group">
+                {% for injector in injectors %}
+                    <label class="label-checkbox">
+                        <input type="checkbox" id="{{ injector[0] }}" name="injectors" value="{{ injector[0] }}"
+                        {% if injector[1]  %} checked {%endif%} /><p>INY-{{ injector[0]}}</p>
+                    </label>
+                {% endfor %}
+
+            </div>
+            <button type="submit" class="button-submit">Guardar Selección</button>
+        </form>
+    </div>
+</body>
+</html>

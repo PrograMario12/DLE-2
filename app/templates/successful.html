@@ -16,11 +16,20 @@ style="background-color: #DC3545;"
     >
         <p class="exito-principales">{{ tipo }} registrada para</p>
         <picture>
-            <source srcset="{{ imagen }}" type="image/webp">
-            <img src="{{ imagen }}" alt="Imagen de usuario" loading="lazy">
+            <source srcset="{{ image }}" type="image/webp">
+            <img src="{{ image }}" alt="Imagen de usuario" loading="lazy">
         </picture>
-        <p class="exito-principales">{{ usuario }}</p>
-        <p class="exito-principales">Línea {{ linea }} Estación {{ estacion }}</p>
+        <p class="exito-principales">{{ user }}</p>
+
+        {% if line == 'inyectoras' %}
+            <p class="exito-principales">
+                Área {{ line }} Estación {{station}} 
+            </p>
+        {% else %}
+            <p class="exito-principales">
+                Línea {{ line }} Estación {{ station }}
+            </p>
+        {% endif %}
     </div>
 </body>
 

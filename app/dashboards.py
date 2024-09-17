@@ -3,7 +3,7 @@
 from flask import Blueprint, render_template, request
 from app import functions
 
-dashboards_bp = Blueprint('settings', __name__)
+dashboards_bp = Blueprint('dashboards', __name__)
 
 @dashboards_bp.route('/visualizaciones')
 def dashboard_lines():

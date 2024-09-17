@@ -2,9 +2,16 @@
 the routes module and runs the Flask web server. '''
 
 from flask import Flask
-from flask_login import LoginManager
+from flask_login import (
+    login_required,
+    UserMixin,
+    login_user,
+    logout_user,
+    LoginManager
+)
 
-from app import settings
+from .user_model import User
+from . import settings
 from . import main
 from . import dashboards
 
@@ -13,6 +20,11 @@ app.secret_key = 'Top secret key unbreakable code'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_name):
+    ''' This function loads a user. '''
+    return User.get(user_name)
 
 def configure_app():
     ''' This function configures the Flask application. '''
@@ -23,6 +35,8 @@ configure_app()
 app.register_blueprint(main.main_bp)
 
 app.register_blueprint(dashboards.dashboards_bp)
+
+app.register_blueprint(settings.settings_bp)
 
 if __name__ == '__main__':
     app.run(debug=True)

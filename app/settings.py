@@ -1,39 +1,23 @@
-''' This module contains the settings of the application. '''
+''' This module contains the settings of the settings_application. '''
 
 import flask
 from flask import (
+    Blueprint,
     request,
     render_template,
-    redirect
-)
-from flask_login import (
-    login_required,
-    UserMixin,
-    login_user,
-    logout_user
+    redirect,
+    url_for
 )
 
-from app import app, functions, login_manager
+from flask_login import login_required, logout_user, login_user
 
-class User(UserMixin):
-    ''' This class represents a user. '''
-    def __init__(self, user_id):
-        self.user_id = user_id
+from app import functions
 
-    def get_user_id(self):
-        ''' This function returns the user id. '''
-        return str(self.user_id)
+from . import user_model
 
-# Simulate a user database
-users = {1: User(1)}
+settings_bp = Blueprint('settings', __name__)
 
-@login_manager.user_loader
-def load_user(user_id):
-    ''' This function loads a user. '''
-    return users.get(int(user_id))
-
-
-@app.route('/settings')
+@settings_bp.route('/settings')
 @login_required
 def settings():
     ''' This function renders the settings page. '''
@@ -49,97 +33,161 @@ def settings():
 
     return render_template('ajustes.html', **context)
 
-@app.route('/changeLine')
+@settings_bp.route('/changeLine')
 @login_required
-def changeLine():
+def change_line():
+    ''' This function changes the production line. '''
     line = request.args.get('line')
+    if line == 'inyectoras':
+        line_id = functions.get_line_id(line)
+        injectors = get_status_injectors(line_id)
+        injectors.pop()
+
+        context = {
+            'css_file': 'static/css/styles.css',
+            'injectors' : injectors
+        }
+        return render_template('seleccionar_inyectoras.html', **context)
     logout_user()
-    # Create a cookie named 'line' with the value of the selected 
-    # line
     response = flask.make_response(redirect('/'))
-    response.set_cookie('linea', line)
+    response.set_cookie('line', line)
     return response
 
-@app.errorhandler(401)
+@settings_bp.route('/save-active-injectors', methods=['POST'])
+@login_required
+def save_active_injectors():
+    ''' This function saves the active injectors. '''
+    injectors = request.form.getlist('injectors')
+
+    status_injectors = get_status_injectors(6)
+
+    for injector in status_injectors:
+        if injector[0] in injectors:
+            query = f"""
+            UPDATE position_status ps
+                SET is_active = TRUE
+                FROM positions p
+                WHERE p.position_id = ps.position_id_fk
+                AND p.position_name = '{injector[0]}';
+            """
+        else:
+            query = f"""
+            UPDATE position_status ps
+                SET is_active = FALSE
+                FROM positions p
+                WHERE p.position_id = ps.position_id_fk
+                AND p.position_name = '{injector[0]}'
+            """
+        functions.insert_bd(query)
+
+    response = flask.make_response(redirect('/'))
+    response.set_cookie('line', 'inyectoras')
+    return response
+
+@settings_bp.errorhandler(401)
 def unauthorized(e):
+    ''' This function handles unauthorized access. '''
 
     context = {
         'css_file': 'static/css/styles.css',
+        'error': e
     }
 
     return render_template('unauthorized.html', **context)
 
-@app.errorhandler(404)
+@settings_bp.errorhandler(404)
 def page_not_found(e):
+    ''' This function handles page not found errors. '''
 
     context = {
         'css_file': 'static/css/not_found.css',
+        'error': e
     }
 
     return render_template('not_found.html', **context)
 
-@app.route('/login')
+@settings_bp.route('/login')
 def login():
+    ''' This function renders the login page. '''
 
     context = {
         'css_file': 'static/css/styles.css',
     }
     return render_template('login.html', **context)
 
-@app.route('/login_validation', methods=['POST'])
+@settings_bp.route('/login_validation', methods=['POST'])
 def login_validation():
+    ''' This function validates the login credentials. '''
+
     username = request.form['username']
-    password = request.form['password']
 
-    if username == 'admin' and password == 'admin':
-        login_user(User(1))
-        return redirect('/settings')
-    else:
-        return redirect('/')
+    user = user_model.User.get(username)
 
-@app.route('/general_exit_from_line')
+    if user:
+        login_user(user)
+        return redirect(url_for('settings.settings'))
+    return 'Usuario o contraseña incorrectos', 401
+
+
+@settings_bp.route('/general_exit_from_line')
 def general_exit_from_line():
-    production_line = request.cookies.get('linea')
+    ''' This function logs out all employees from the line. '''
+    production_line = request.cookies.get('line')
     query_general_exit_from_line(production_line)
     logout_user()
     return redirect('/')
 
-@app.route('/change_of_employees_from_line', methods=['POST'])
+@settings_bp.route('/change_of_employees_from_line', methods=['POST'])
 @login_required
 def change_of_employees_from_line():
+    ''' This function logs out all employees from the line. '''
     production_line = request.form['line']
     # query_general_exit_from_line(production_line)
     logout_user()
     # return redirect('/')
 
-    return ('La línea de producción ha sido cambiada exitosamente ' 
+    return ('La línea de producción ha sido cambiada exitosamente '
             + production_line)
 
-@app.route('/logout')
+@settings_bp.route('/logout')
 @login_required
 def logout():
+    ''' This function logs out the user. '''
     logout_user()
     return redirect('/')
 
-
-
-
 def query_general_exit_from_line(production_line):
-    query = """
+    ''' This function logs out all employees from a line. '''
+    query = f"""
     UPDATE registers
         SET exit_hour = NOW()
-        WHERE production_line = '{}'
+        WHERE production_line = '{production_line}'
         AND exit_hour IS NULL
-    """.format(production_line)
+    """
 
     functions.insert_bd(query)
 
 def query_change_of_employees_from_line(production_line):
-    query = """
+    ''' This function logs out all employees from a line. '''
+    query = f"""
     UPDATE registers
         SET exit_hour = NOW()
-        WHERE production_line = '{}'
+        WHERE production_line = '{production_line}'
         AND exit_hour IS NULL
-    """.format(production_line)
+    """
 
     functions.insert_bd(query)
+
+def get_status_injectors(line_id):
+    ''' This function gets the status of the injectors. '''
+    query = f"""
+    SELECT p.position_name, ps.is_active
+      FROM positions p
+      INNER JOIN position_status ps
+      ON p.position_id = ps.position_id_fk
+      WHERE p.line_id = {line_id}
+      ORDER BY p.position_name;
+    """
+
+    results = functions.execute_query(query)
+    return results
