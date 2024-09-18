@@ -23,6 +23,8 @@ def home():
 
     if actual_line == 'inyectoras':
         actual_line = "Área inyección"
+    elif actual_line == 'metalizado':
+        actual_line = "Área metalizado"
     else:
         actual_line = "Línea " + str(actual_line)
 

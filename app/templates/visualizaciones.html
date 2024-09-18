@@ -85,6 +85,10 @@
                     <h1 class="uppercase">
                         Inyección
                     </h1>
+                {% elif selected_line == 'metalizado' %}
+                    <h1 class="uppercase">
+                        Metalizado
+                    </h1>
                 {% else %}
                     <h1 class="uppercase">
                         Línea {{ selected_line }}
@@ -117,6 +121,8 @@
 
                     {% if inline_operator_capacity[i][0] == 'inyectoras' %}
                         <h3> Inyección </h3>
+                    {% elif inline_operator_capacity[i][0] == 'metalizado' %}
+                        <h3 >Metalizado</h3>
                     {% else %}
                         <h3>Líneas {{ inline_operator_capacity[i][0] }}</h3>
                     {% endif %}
@@ -153,6 +159,8 @@
                         <h3 class="uppercase">{{ lineas[i] }}</h3>
                     {% elif selected_line == 'inyectoras' %}
                         <h3>INY-{{ lineas[i] }}</h3>
+                    {% elif selected_line == 'metalizado' %}
+                        <h3>MET-{{ lineas[i] }}</h3>
                     {% else %}
                         <h3>Estación {{ lineas[i] }}</h3>
                     {% endif %}

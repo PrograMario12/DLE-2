@@ -11,18 +11,22 @@
     <div class="center-height-div">
         <form action="{{ url_for('settings.login_validation')}}"" method='POST'>
             <div class="form-group">
-                <label for="username">Tarjeta de supervisor</label>
+                <label for="username">Tarjeta del supervisor</label>
                     <input 
                         type="password"
                         class="text"
                         name="username"
                         tabindex="1"
+                        placeholder="Escanea tu credencial"
                         required
                         autofocus
                         oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                     />
             </div>
+            <button class="button-4" onclick="window.location.href='/'">Cancelar</button>
         </form>
+
+        
     </div>
 </body>
 </html>
