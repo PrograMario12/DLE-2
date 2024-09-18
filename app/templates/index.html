@@ -15,60 +15,49 @@
       </div>
     </section>
 
-      <form
-        method="post"
-        action="/menuStation"
-        id="login-form"
-        class="login-form"
-        autocomplete="off"
-        role="main"
-      >
-        <picture>
-          <source
-            srcset="{{ img_file }}"
+    <form
+      method="post"
+      action="/menuStation"
+      id="login-form"
+      class="login-form"
+      autocomplete="off"
+      role="main"
+    >
+      <picture>
+        <source srcset="{{ img_file }}" />
+        <img src="{{ img_file }}" alt="Logo" class="img" />
+      </picture>
+
+      <div>
+        <label class="label-email">
+          <input
+            type="password"
+            class="text"
+            name="employee_number"
+            tabindex="1"
+            required
+            autofocus
+            autocomplete="new-password"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+            minlength="10"
           />
-          <img src="{{ img_file }}" alt="Logo" class="img" />
-        </picture>
-
-        <div>
-          <label class="label-email">
-            <input
-              type="password"
-              class="text"
-              name="employee_number"
-              tabindex="1"
-              required
-              autofocus
-              autocomplete="new-password"
-              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-            />
-            <span class="required">Escanea tu credencial</span>
-          </label>
-        </div>
-        <script>
-          const emailInput = document.querySelector(
-            'input[name="employee_number"]'
-          );
-          emailInput.addEventListener("input", function () {
-            if (this.value.length === 10) {
-              document.getElementById("login-form").submit();
-            }
-          });
-        </script>
-        <script src="{{ js_file }}"></script>
-      </form>
-
-      <p class="actual-line"> {{ actual_line }}</p>
-
-      <div class="botones-esquina">
-        <button class="boton" onclick="location.href='/settings'">
-          <i class="fi fi-sr-settings"></i>
-        </button>
-
-        <button class="boton" onclick="location.href='/visualizaciones'">
-          <i class="fi fi-sr-users-alt"></i>
-        </button>
+          <span class="required">Escanea tu credencial</span>
+        </label>
       </div>
+      <script src="{{ js_file }}"></script>
+    </form>
+
+    <p class="actual-line"> {{ actual_line }}</p>
+
+    <div class="botones-esquina">
+      <button class="boton" onclick="location.href='/settings'">
+        <i class="fi fi-sr-settings"></i>
+      </button>
+
+      <button class="boton" onclick="location.href='/visualizaciones'">
+        <i class="fi fi-sr-users-alt"></i>
+      </button>
+    </div>
   </body>
 
 </html>

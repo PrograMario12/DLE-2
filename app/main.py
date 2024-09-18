@@ -14,8 +14,6 @@ main_bp = Blueprint('main', __name__)
 
 user = functions.User(0, 0, 0)
 
-
-
 @main_bp.route('/')
 def home():
     ''' Renders the home page of the application. '''
@@ -52,6 +50,8 @@ def menu_station():
 
     employee_number = request.form['employee_number']
 
+    print(employee_number)
+
     if functions.get_last_register_type(employee_number) == 'Exit':
         response = flask.make_response(redirect('/successful'))
         response.set_cookie('employee_number', employee_number)
@@ -73,7 +73,7 @@ def menu_station():
 @main_bp.route('/successful')
 def successful():
     'Screen when the user has successfully registered an entry or exit'
-    estacion = request.args.get('estacion')
+    station = request.args.get('estacion')
     hour = datetime.now()
     user.set_hour(hour)
 
@@ -92,7 +92,7 @@ def successful():
     if tipo == 'Entry':
         functions.register_entry(request.cookies.get('employee_number'),
                                  request.cookies.get('line'),
-                                 estacion,
+                                 station,
                                  hour
                                 )
         line = request.cookies.get('line')
@@ -105,24 +105,26 @@ def successful():
                                              .cookies
                                              .get('employee_number')
                                             )[0]
-        estacion = functions.get_values_for_exit(request.cookies.get('employee_number'))[1]
+        station = functions.get_values_for_exit(
+                request.cookies.get('employee_number')
+            )[1]
 
     context = {
         'css_file': 'static/css/styles.css',
         'user': usuario,
         'horario': hour,
         'line': line,
-        'station': estacion,
+        'station': station,
         'tipo': tipo,
         'image': image
     }
     return render_template('successful.html', **context)
 
-def create_context_for_menu(resultados, line):
+def create_context_for_menu(results, line):
     ''' Create the context dictionary for the menu template '''
-    numero_estaciones = len(resultados)
-    empleados_por_estacion = get_empleados_por_estacion_dict(line)
-    estaciones, list_of_stations = process_estaciones(resultados, empleados_por_estacion)
+    numero_estaciones = len(results)
+    employees_for_station = get_employees_for_station(line)
+    estaciones, list_of_stations = process_stations(results, employees_for_station)
     employees_for_line, employees_necessary = get_employee_info(line)
 
     return {
@@ -136,32 +138,32 @@ def create_context_for_menu(resultados, line):
         'employees_necessary': employees_necessary
     }
 
-def get_empleados_por_estacion_dict(line):
+def get_employees_for_station(line):
     ''' Get the employees for each station in a dictionary '''
-    empleados_por_estacion = functions.get_employees_for_station(line)
-    return {estacion[0]: estacion[1] for estacion 
-            in empleados_por_estacion}
+    employees_for_station = functions.get_employees_for_station(line)
+    return {station[0]: station[1] for station
+            in employees_for_station}
 
-def process_estaciones(resultados, empleados_por_estacion):
+def process_stations(results, employees_for_station):
     ''' Process the stations '''
     estaciones = []
     estaciones_set = set()
 
-    for resultado in resultados:
-        estacion, capacidadLH, capacidadRH = (
+    for resultado in results:
+        station, capacidadLH, capacidadRH = (
                                 resultado[0], resultado[1], resultado[2]
                             )
-        operadoresLH = empleados_por_estacion.get(f"{estacion} LH", 0)
-        operadoresRH = empleados_por_estacion.get(f"{estacion} RH", 0)
+        operadoresLH = employees_for_station.get(f"{station} LH", 0)
+        operadoresRH = employees_for_station.get(f"{station} RH", 0)
 
         capacidadLH = int(capacidadLH) - int(operadoresLH)
         capacidadRH = int(capacidadRH) - int(operadoresRH)
 
         estaciones.append(
-                [estacion, capacidadLH, operadoresLH, capacidadRH, 
+                [station, capacidadLH, operadoresLH, capacidadRH,
                 operadoresRH]
             )
-        estaciones_set.add(estacion)
+        estaciones_set.add(station)
 
     list_of_stations = sorted(list(estaciones_set))
     return estaciones, list_of_stations

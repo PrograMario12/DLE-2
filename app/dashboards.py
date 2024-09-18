@@ -1,7 +1,8 @@
 ''' This module contains the routes for the dashboards of the app. '''
 
 from flask import Blueprint, render_template, request
-from app import functions
+from app import functions, main
+
 
 dashboards_bp = Blueprint('dashboards', __name__)
 
@@ -25,7 +26,19 @@ def dashboard_lines():
         else:
             line.append(0)
 
+        stations_info = functions.get_stations(result[0])
+        employees_for_station = main.get_employees_for_station(result[1])
+
+        stations = main.process_stations(stations_info,
+                                         employees_for_station)
+        stations = stations[0]
+
+        status = validate_stations(stations)
+        line.append(status)
+
         lines.append(line)
+
+    print(lines)
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -121,3 +134,10 @@ def get_employees_for_line(line):
     ''' Gets the employees for a line. '''
     employees_for_line = functions.get_employees_for_line(line)
     return int(employees_for_line[0][1]) if employees_for_line else 0
+
+def validate_stations(stations):
+    ''' Validates the stations. '''
+    for station in stations:
+        if int(station[1]) < 0 or int(station[3]) < 0:
+            return False
+    return True

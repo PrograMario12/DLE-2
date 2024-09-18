@@ -14,3 +14,11 @@ setInterval(function(){
 
 	html.innerHTML = horas+" : "+minutos;
 },1000);
+
+document.getElementById("login-form").addEventListener("submit", function(event) {
+	const employeeNumberInput = document.querySelector('input[name="employee_number"]');
+	if (employeeNumberInput.value.length !== 10) {
+	  event.preventDefault(); // Prevenir el envío del formulario
+	  alert("Por favor escanea una credencial válida");
+	}
+  });
