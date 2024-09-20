@@ -81,19 +81,9 @@
                     </h3>
                 </div>
 
-                {% if selected_line == 'inyectoras' %}
-                    <h1 class="uppercase">
-                        Inyección
-                    </h1>
-                {% elif selected_line == 'metalizado' %}
-                    <h1 class="uppercase">
-                        Metalizado
-                    </h1>
-                {% else %}
-                    <h1 class="uppercase">
-                        Línea {{ selected_line }}
-                    </h1>
-                {% endif %}
+                <h1 class="uppercase">
+                    {{ selected_line }}
+                </h1>
 
             {% endif %}
         </div>
@@ -120,7 +110,6 @@
                     "> <!-- Div de card -->
 
                     <h3 class="capitalize">{{ inline_operator_capacity[i][0] }}</h3>
-                    
 
                     <div class="texto-de-botones">
                         <p class="big-text">
@@ -152,9 +141,9 @@
 
                     {% if lineas[i] == 'nva' %}
                         <h3 class="uppercase">{{ lineas[i] }}</h3>
-                    {% elif selected_line == 'inyectoras' %}
+                    {% elif selected_line == 'área inyección' %}
                         <h3>INY-{{ lineas[i] }}</h3>
-                    {% elif selected_line == 'metalizado' %}
+                    {% elif selected_line == 'área metalizado' %}
                         <h3>MET-{{ lineas[i] }}</h3>
                     {% else %}
                         <h3>Estación {{ lineas[i] }}</h3>

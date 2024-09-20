@@ -144,18 +144,20 @@ def process_stations(results, employees_for_station):
     estaciones_set = set()
 
     for resultado in results:
-        station, capacidadLH, capacidadRH = (
+        station, capacity_lh, capacity_rh = (
                                 resultado[0], resultado[1], resultado[2]
                             )
-        operadoresLH = employees_for_station.get(f"{station} LH", 0)
-        operadoresRH = employees_for_station.get(f"{station} RH", 0)
+        operators_lh = employees_for_station.get(f"{station} LH", 0)
+        if operators_lh == 0:
+            operators_lh = employees_for_station.get(f"{station} BP", 0)
+        operators_rh = employees_for_station.get(f"{station} RH", 0)
 
-        capacidadLH = int(capacidadLH) - int(operadoresLH)
-        capacidadRH = int(capacidadRH) - int(operadoresRH)
+        capacity_lh = int(capacity_lh) - int(operators_lh)
+        capacity_rh = int(capacity_rh) - int(operators_rh)
 
         estaciones.append(
-                [station, capacidadLH, operadoresLH, capacidadRH,
-                operadoresRH]
+                [station, capacity_lh, operators_lh, capacity_rh,
+                operators_rh]
             )
         estaciones_set.add(station)
 
@@ -165,7 +167,7 @@ def process_stations(results, employees_for_station):
 def get_employee_info(line):
     ''' Get the employee information '''
     employees_for_line = functions.get_employees_for_line(line)
-    employees_for_line_count = (int(employees_for_line[0][1]) 
+    employees_for_line_count = (int(employees_for_line[0][1])
                                 if employees_for_line else 0)
     employees_necessary = int(
                 functions.get_employees_necessary_for_line(line)[0][0]

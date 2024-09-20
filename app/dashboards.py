@@ -27,7 +27,7 @@ def dashboard_lines():
         line = [result[1], result[2]]
         # Remove the first word from result[1]
         modified_result = ' '.join(result[1].split()[1:])
-        
+
         if modified_result in employees_for_line:
             line.append(employees_for_line[modified_result])
         else:
@@ -63,15 +63,14 @@ def dashboard_lines():
 def dashboard_stations():
     ''' Renders the dashboard page for the stations. '''
     line = request.args.get('line')
-    print ('La línea es', line)
 
     line_id = functions.get_line_id(line)
-    print ('El id es', line_id)
 
     results = functions.get_stations(line_id)
     numbers_of_stations = len(results)
 
     employees_for_station = functions.get_employees_for_station(line)
+
     employees_for_station = {station[0]: station[1] for station
                              in employees_for_station}
     stations_list = sorted(list(set([result[0] for result in results])))
@@ -109,6 +108,7 @@ def prepare_stations_data(results, employees_for_station, line):
                                                 employees_for_station,
                                                 ' LH'
                                             )
+
         capacity_rh, operators_rh = get_capacity_operators(
                                                 result[2],
                                                 station,
@@ -119,12 +119,12 @@ def prepare_stations_data(results, employees_for_station, line):
         names_operators_lh = functions.get_names_operators(
                                                 station,
                                                 line,
-                                                'LH'
+                                                ' LH'
                                             )
         names_operators_rh = functions.get_names_operators(
                                                 station,
                                                 line,
-                                                'RH'
+                                                ' RH'
                                             )
 
         stations.append([station, capacity_lh, operators_lh,
@@ -133,14 +133,14 @@ def prepare_stations_data(results, employees_for_station, line):
 
     return stations
 
-
 def get_capacity_operators(capacity, station, employees_for_station,
                            suffix):
     ''' Gets the capacity and operators for a station. '''
     operators = employees_for_station.get(f"{station}{suffix}", 0)
+    if suffix == ' LH' and operators == 0:
+        operators = employees_for_station.get(f"{station} BP", 0)
     capacity = int(capacity) - int(operators)
     return capacity, operators
-
 
 def get_employees_for_line(line):
     ''' Gets the employees for a line. '''

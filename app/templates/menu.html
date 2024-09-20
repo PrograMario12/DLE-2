@@ -81,9 +81,9 @@ Date: [2024-07-16]
                     ">
                     {% if lineas[i] == 'nva' %}
                         <h3 class="uppercase">{{lineas[i]}}</h3>
-                    {% elif selected_line == 'inyectoras' %}
+                    {% elif selected_line == 'Área inyección' %}
                         <h3>INY-{{lineas[i]}}</h3>
-                    {% elif selected_line == 'metalizado' %}
+                    {% elif selected_line == 'Área metalizado' %}
                         <h3>MET-{{ lineas[i] }}</h3>
                     {% else %}
                         <h3>Estación {{ lineas[i] }}</h3>
@@ -93,7 +93,7 @@ Date: [2024-07-16]
                         {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
                             <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} LH">
                         {% else %}
-                            <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}}">
+                            <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} BP">
 
                         {% endif %}
                         <div class="lado
@@ -113,7 +113,12 @@ Date: [2024-07-16]
                             </p>
                         {% endif %}
                             <p>
-                                <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][1] }}
+                                <i class="fi fi-rr-user"></i> 
+                                {% if lineas_capacidad_operadores[i][1] < 0 %}
+                                    0
+                                {% else %}
+                                    {{ lineas_capacidad_operadores[i][1] }}
+                                {% endif %}
                                 <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
                             </p>
                     </div></a>
@@ -134,7 +139,12 @@ Date: [2024-07-16]
                                 RH
                             </p>
                             <p>
-                                <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][3] }}
+                                <i class="fi fi-rr-user"></i>
+                                {% if lineas_capacidad_operadores[i][1] < 0 %}
+                                    0
+                                {% else %}
+                                    {{ lineas_capacidad_operadores[i][3] }}
+                                {% endif %}
                                 <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][4] }}
                             </p>
                     </div></a>
