@@ -225,6 +225,10 @@ a.disabled {
     text-transform: uppercase;
 }
 
+.capitalize{
+    text-transform: capitalize;
+}
+
 
 /* CSS botones ajustes */
 .header-ajustes {

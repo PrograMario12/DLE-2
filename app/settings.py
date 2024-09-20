@@ -22,12 +22,13 @@ settings_bp = Blueprint('settings', __name__)
 def settings():
     ''' This function renders the settings page. '''
     lines = functions.get_lines()
-    lines_capacity = [line[1] for line in lines]
+    names_lines = [line[3].capitalize() + ' ' + line[1] for line
+                   in lines]
 
     context = {
         'css_file': 'static/css/styles.css',
-        'number_of_buttons': len(lines_capacity),
-        'lines': lines_capacity,
+        'number_of_buttons': len(names_lines),
+        'lines': names_lines,
         'active_line': request.cookies.get('line')
     }
 
@@ -38,7 +39,7 @@ def settings():
 def change_line():
     ''' This function changes the production line. '''
     line = request.args.get('line')
-    if line == 'inyectoras':
+    if line == 'Área inyección':
         line_id = functions.get_line_id(line)
         injectors = get_status_injectors(line_id)
         injectors.pop()
@@ -50,6 +51,7 @@ def change_line():
         return render_template('seleccionar_inyectoras.html', **context)
     logout_user()
     response = flask.make_response(redirect('/'))
+    line_id = functions.get_line_id(line)
     response.set_cookie('line', line)
     return response
 
@@ -81,7 +83,7 @@ def save_active_injectors():
         functions.insert_bd(query)
 
     response = flask.make_response(redirect('/'))
-    response.set_cookie('line', 'inyectoras')
+    response.set_cookie('line', 'Área inyección')
     return response
 
 @settings_bp.errorhandler(401)
@@ -126,7 +128,7 @@ def login_validation():
     if user:
         login_user(user)
         return redirect(url_for('settings.settings'))
-    return 'Usuario o contraseña incorrectos', 401
+    return redirect(url_for('settings.login'))
 
 
 @settings_bp.route('/general_exit_from_line')

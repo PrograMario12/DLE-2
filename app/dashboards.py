@@ -12,8 +12,12 @@ def dashboard_lines():
     results = functions.get_lines()
     number_of_lines = len(results)
     employees_for_line = functions.get_employees_for_line()
-    employees_for_line = {line[0]: line[1] for line in
-                          employees_for_line}
+
+    employees_for_line = {line[0]: line[1] for line
+                          in employees_for_line}
+
+    print('los empleados por línea son', employees_for_line)
+    print('los resultados son', results)
 
     there_are_no_lines = []
 
@@ -21,13 +25,18 @@ def dashboard_lines():
 
     for result in results:
         line = [result[1], result[2]]
-        if result[1] in employees_for_line:
-            line.append(employees_for_line[result[1]])
+        # Remove the first word from result[1]
+        modified_result = ' '.join(result[1].split()[1:])
+        
+        if modified_result in employees_for_line:
+            line.append(employees_for_line[modified_result])
         else:
             line.append(0)
 
         stations_info = functions.get_stations(result[0])
         employees_for_station = main.get_employees_for_station(result[1])
+
+        print('la información de estaciones es', stations_info)
 
         stations = main.process_stations(stations_info,
                                          employees_for_station)
@@ -54,9 +63,12 @@ def dashboard_lines():
 def dashboard_stations():
     ''' Renders the dashboard page for the stations. '''
     line = request.args.get('line')
-    line_name = functions.get_line_id(line)
+    print ('La línea es', line)
 
-    results = functions.get_stations(line_name)
+    line_id = functions.get_line_id(line)
+    print ('El id es', line_id)
+
+    results = functions.get_stations(line_id)
     numbers_of_stations = len(results)
 
     employees_for_station = functions.get_employees_for_station(line)

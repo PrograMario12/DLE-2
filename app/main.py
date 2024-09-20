@@ -21,14 +21,6 @@ def home():
         logout_user()
     actual_line = request.cookies.get('line')
 
-    if actual_line == 'inyectoras':
-        actual_line = "Área inyección"
-    elif actual_line == 'metalizado':
-        actual_line = "Área metalizado"
-    else:
-        actual_line = "Línea " + str(actual_line)
-
-
     context = {
         'css_file': 'static/css/init_styles.css',
         'js_file': 'static/js/clock.js',
@@ -47,12 +39,9 @@ def home():
 @main_bp.route('/menuStation', methods=['GET', 'POST'])
 def menu_station():
     ''' Renders the menu page for the user to select a station. '''
-    if 'line' not in request.cookies:
+    if 'line' not in  request.cookies:
         return redirect('/settings')
-
     employee_number = request.form['employee_number']
-
-    print(employee_number)
 
     if functions.get_last_register_type(employee_number) == 'Exit':
         response = flask.make_response(redirect('/successful'))
@@ -92,24 +81,24 @@ def successful():
                                         )
 
     if tipo == 'Entry':
-        functions.register_entry(request.cookies.get('employee_number'),
-                                 request.cookies.get('line'),
-                                 station,
-                                 hour
-                                )
         line = request.cookies.get('line')
+        production_line = ' '.join(line.split(' ')[1:])
+        functions.register_entry(request.cookies.get('employee_number'),
+                     production_line,
+                     station,
+                     hour
+                    )
         tipo = 'Entrada'
     else:
         functions.register_exit(request.cookies.get('employee_number'),
                                 hour)
         tipo = 'Salida'
-        line = functions.get_values_for_exit(request
-                                             .cookies
-                                             .get('employee_number')
-                                            )[0]
-        station = functions.get_values_for_exit(
-                request.cookies.get('employee_number')
-            )[1]
+        employee_number = request.cookies.get('employee_number')
+        line, station = functions.get_values_for_exit(employee_number)
+        if line in ['inyección', 'metalizado']:
+            line = 'Área de ' + line
+        else:
+            line = 'Línea ' + line
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -126,7 +115,9 @@ def create_context_for_menu(results, line):
     ''' Create the context dictionary for the menu template '''
     numero_estaciones = len(results)
     employees_for_station = get_employees_for_station(line)
-    estaciones, list_of_stations = process_stations(results, employees_for_station)
+    estaciones, list_of_stations = process_stations(results,
+                                                employees_for_station
+                                            )
     employees_for_line, employees_necessary = get_employee_info(line)
 
     return {
@@ -143,8 +134,9 @@ def create_context_for_menu(results, line):
 def get_employees_for_station(line):
     ''' Get the employees for each station in a dictionary '''
     employees_for_station = functions.get_employees_for_station(line)
-    return {station[0]: station[1] for station
-            in employees_for_station}
+    if not employees_for_station:
+        return {}
+    return {station[0]: station[1] for station in employees_for_station}
 
 def process_stations(results, employees_for_station):
     ''' Process the stations '''
@@ -173,7 +165,8 @@ def process_stations(results, employees_for_station):
 def get_employee_info(line):
     ''' Get the employee information '''
     employees_for_line = functions.get_employees_for_line(line)
-    employees_for_line_count = int(employees_for_line[0][1]) if employees_for_line else 0
+    employees_for_line_count = (int(employees_for_line[0][1]) 
+                                if employees_for_line else 0)
     employees_necessary = int(
                 functions.get_employees_necessary_for_line(line)[0][0]
             )

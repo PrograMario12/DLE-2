@@ -17,21 +17,10 @@ Date: [2024-07-16]
 
     <body class="body-center">
         <div class="header">
-            {% if selected_line  %}
-                {% if selected_line == 'inyectoras' %}
-                    <h1 class="uppercase">
-                        Inyectoras
-                    </h1>
-                {% elif selected_line == 'metalizado' %}
-                    <h1 class="uppercase">
-                        Metalizado
-                    </h1>
-                {% else %}
-                    <h1 class="uppercase">
-                        Línea {{ selected_line }}
-                    </h1>
-                {% endif %}
-            {% endif %}
+
+            <h1 class="uppercase">
+                {{ selected_line }}
+            </h1>
 
             <h2 class="uppercase">
                 Selecciona tu {{ type_of_selection }}

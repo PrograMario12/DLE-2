@@ -63,8 +63,6 @@ def execute_query(query):
     except psycopg2.Error as e:
         print(f"Error al conectar a la base de datos: {e}")
 
-    print('Conexión establecida')
-
     cursor = conn.cursor()
     cursor.execute(query)
     results = cursor.fetchall()
@@ -103,10 +101,10 @@ def insert_bd(query):
     conn.close()
 
 def get_lines():
-    ''' Gets the lines. '''
+    ''' Gets the zones. '''
     query = """
-        SELECT *
-        FROM lines
+        SELECT line_id, type_zone || ' ' || name, employee_capacity
+        FROM zones
         ORDER BY CASE
             WHEN name ~ '[0-9]' THEN CAST(SUBSTRING(name, '^[0-9]+') 
             AS INTEGER)
@@ -170,23 +168,19 @@ def get_employees_for_line(linea=None):
         """
     return execute_query(query)
 
-def get_employees_for_station(linea):
-    """
-    Gets the total number of employees per station for a line.
+def get_employees_for_station(line):
+    """ Gets the employees for a station. """
 
-    Args:
-    - line (str): Line.
+    line = ' '.join(line.split()[1:])
 
-    Returns:
-    - list: Query results.
-    """
     query = f"""
-    SELECT production_station, COUNT(*) AS empleados_trabajando
+    SELECT production_station, COUNT(*) AS employees_working
         FROM registers
         WHERE entry_hour IS NOT NULL AND exit_hour IS NULL
-        AND production_line = '{linea}'
+        AND production_line = '{line}'
         GROUP BY production_station;
     """
+
     return execute_query(query)
 
 def register_entry(user_id, line, station, mark):
@@ -293,7 +287,12 @@ def get_image(user_id):
 
 def get_line_id(line):
     ''' Gets the line ID. '''
-    query = f"SELECT line_id FROM lines WHERE name = '{line}'"
+    query = f"""SELECT line_id
+            FROM zones 
+            WHERE LOWER(type_zone) || ' ' || LOWER(name) =
+            '{line.lower()}'"""
+    
+    print (query)
     results = execute_query(query)
     return results[0][0] if results else None
 
@@ -309,10 +308,11 @@ def get_employees_necessary_for_line(line):
             AND line_id = 6
         """
     else:
+        line = get_line_id(line)
         query = f"""
         SELECT employee_capacity
-            FROM lines
-            WHERE name = '{line}'
+            FROM zones
+            WHERE line_id = {line}
         """
 
     return execute_query(query)
@@ -343,5 +343,4 @@ def get_names_operators(station, line, position):
         else:
             names.append('Información de usuario aún no disponible')
 
-    print('Los nombres son: ', names)
     return names

@@ -20,13 +20,7 @@
                         button-4-select
                     {% endif %}
                 " type="button" onclick="window.location.href = '/changeLine?line={{ lines[num] }}'">
-                    {%if lines[num] == 'inyectoras' %}
-                        Área de inyección
-                    {% elif lines[num] == 'metalizado' %}
-                        Área de metalizado
-                    {% else %}
-                        Línea {{ lines[num] }}
-                    {% endif %}
+                    {{lines[num]}}
                 </button>
             {% endfor %}
         </div>

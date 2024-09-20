@@ -119,13 +119,8 @@
                     {% endif %}
                     "> <!-- Div de card -->
 
-                    {% if inline_operator_capacity[i][0] == 'inyectoras' %}
-                        <h3> Inyección </h3>
-                    {% elif inline_operator_capacity[i][0] == 'metalizado' %}
-                        <h3 >Metalizado</h3>
-                    {% else %}
-                        <h3>Líneas {{ inline_operator_capacity[i][0] }}</h3>
-                    {% endif %}
+                    <h3 class="capitalize">{{ inline_operator_capacity[i][0] }}</h3>
+                    
 
                     <div class="texto-de-botones">
                         <p class="big-text">
