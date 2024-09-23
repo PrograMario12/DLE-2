@@ -16,6 +16,7 @@
         <div class="menu centrar-objetos direction-column">
             {% for num in range(number_of_buttons) %}
                 <button class="button-4
+                    capitalize
                     {% if lines[num] == active_line %}
                         button-4-select
                     {% endif %}

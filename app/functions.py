@@ -106,7 +106,7 @@ def get_lines():
         SELECT line_id, type_zone || ' ' || name, employee_capacity
         FROM zones
         ORDER BY CASE
-            WHEN name ~ '[0-9]' THEN CAST(SUBSTRING(name, '^[0-9]+') 
+            WHEN name ~ '[0-9]' THEN CAST(SUBSTRING(name, '^[0-9]+')
             AS INTEGER)
             ELSE 0
         END DESC;

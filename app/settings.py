@@ -22,7 +22,7 @@ settings_bp = Blueprint('settings', __name__)
 def settings():
     ''' This function renders the settings page. '''
     lines = functions.get_lines()
-    names_lines = [line[1].capitalize() for line
+    names_lines = [line[1] for line
                    in lines]
 
     context = {
