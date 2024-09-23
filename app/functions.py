@@ -149,14 +149,16 @@ def get_stations(line):
             """
     return execute_query(query)
 
-def get_employees_for_line(linea=None):
+def get_employees_for_line(production_line_name=None):
     ''' Gets the employees for a line. '''
-    if linea:
+
+
+    if production_line_name:
         query = f"""
         SELECT production_line, count(id_employee) AS employees_working
             FROM registers
             WHERE entry_hour IS NOT NULL and exit_hour is NULL 
-            AND production_line = '{linea}'
+            AND production_line = '{production_line_name}'
             GROUP BY production_line
         """
     else:
@@ -288,11 +290,10 @@ def get_image(user_id):
 def get_line_id(line):
     ''' Gets the line ID. '''
     query = f"""SELECT line_id
-            FROM zones 
+            FROM zones
             WHERE LOWER(type_zone) || ' ' || LOWER(name) =
             '{line.lower()}'"""
-    
-    print (query)
+
     results = execute_query(query)
     return results[0][0] if results else None
 

@@ -16,9 +16,6 @@ def dashboard_lines():
     employees_for_line = {line[0]: line[1] for line
                           in employees_for_line}
 
-    print('los empleados por línea son', employees_for_line)
-    print('los resultados son', results)
-
     there_are_no_lines = []
 
     lines = []
@@ -36,8 +33,6 @@ def dashboard_lines():
         stations_info = functions.get_stations(result[0])
         employees_for_station = main.get_employees_for_station(result[1])
 
-        print('la información de estaciones es', stations_info)
-
         stations = main.process_stations(stations_info,
                                          employees_for_station)
         stations = stations[0]
@@ -46,8 +41,6 @@ def dashboard_lines():
         line.append(status)
 
         lines.append(line)
-
-    print(lines)
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -64,7 +57,7 @@ def dashboard_stations():
     ''' Renders the dashboard page for the stations. '''
     line = request.args.get('line')
 
-    line_id = functions.get_line_id(line)
+    line_id = functions.get_line_id(line.lower())
 
     results = functions.get_stations(line_id)
     numbers_of_stations = len(results)
@@ -78,10 +71,14 @@ def dashboard_stations():
     stations = prepare_stations_data(results, employees_for_station,
                                      line)
 
-    employees_for_line = get_employees_for_line(line)
     employees_necessary = int(
-            functions.get_employees_necessary_for_line(line)[0][0]
-        )
+                functions.get_employees_necessary_for_line(line)[0][0]
+            )
+    line = ' '.join(line.split()[1:])
+    employees_for_line = functions.get_employees_for_line(line)
+    employees_for_line = (employees_for_line[0][1] if employees_for_line 
+                          else 0)
+    print (employees_for_line)
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -141,11 +138,6 @@ def get_capacity_operators(capacity, station, employees_for_station,
         operators = employees_for_station.get(f"{station} BP", 0)
     capacity = int(capacity) - int(operators)
     return capacity, operators
-
-def get_employees_for_line(line):
-    ''' Gets the employees for a line. '''
-    employees_for_line = functions.get_employees_for_line(line)
-    return int(employees_for_line[0][1]) if employees_for_line else 0
 
 def validate_stations(stations):
     ''' Validates the stations. '''
