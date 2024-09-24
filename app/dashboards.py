@@ -113,7 +113,6 @@ def prepare_stations_data(results, employees_for_station, line):
                                                 ' RH'
                                             )
 
-        print(station, line)
         names_operators_lh = functions.get_names_operators(
                                                 station,
                                                 line,
