@@ -140,7 +140,7 @@ def get_stations(line):
                     THEN employee_capacity END)
                         AS employee_capacity_lh_or_bp,
                 COALESCE(MAX(CASE WHEN side = 'RH'
-                    THEN employee_capacity END), 0) 
+                    THEN employee_capacity END), 0)
                         AS employee_capacity_rh
             FROM positions
             WHERE line_id = {line}

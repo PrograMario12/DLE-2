@@ -48,11 +48,13 @@ def change_line():
             'css_file': 'static/css/styles.css',
             'injectors' : injectors
         }
-        return render_template('seleccionar_inyectoras.html', **context)
+        return render_template('seleccionar_inyectoras.html',
+                               **context)
     logout_user()
     response = flask.make_response(redirect('/'))
     line_id = functions.get_line_id(line)
     response.set_cookie('line', line)
+    response.set_cookie('station', '0')
     return response
 
 @settings_bp.route('/save-active-injectors', methods=['POST'])
@@ -157,6 +159,55 @@ def logout():
     ''' This function logs out the user. '''
     logout_user()
     return redirect('/')
+
+@settings_bp.route('/settings_line')
+@login_required
+def settings_line():
+    ''' This function renders the settings line page. '''
+    context = {
+        'css_file': 'static/css/styles.css',
+    }
+
+    return render_template('settings_configuration_line.html',
+                           **context)
+
+@settings_bp.route('/change_line_unique')
+@login_required
+def change_line_unique():
+    ''' This function changes the production line. '''
+    line = request.args.get('line')
+    response = flask.make_response(redirect('settings_station_unique'))
+    response.set_cookie('line', line)
+    return response
+
+@settings_bp.route('/settings_station_unique')
+@login_required
+def settings_station_unique():
+    ''' This function changes the production line. '''
+    line = request.cookies.get('line')
+    line_id = functions.get_line_id(line)
+
+    stations = [station[0] for station in functions.get_stations(line_id)]
+    number_of_stations = len(stations)
+
+    context = {
+        'css_file': 'static/css/styles.css',
+        'stations': stations,
+        'number_of_stations': number_of_stations,
+    }
+
+    return render_template('settings_configuration_station.html',
+                           **context)
+
+@settings_bp.route('/change_station_unique')
+@login_required
+def change_station_unique():
+    ''' This function changes the production line. '''
+    station = request.args.get('station')
+    logout_user()
+    response = flask.make_response(redirect('/'))
+    response.set_cookie('station', station)
+    return response
 
 def query_general_exit_from_line(production_line):
     ''' This function logs out all employees from a line. '''

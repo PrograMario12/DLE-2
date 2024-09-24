@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar la estación</title>
+    <link rel="stylesheet" href="{{ css_file }}">
+</head>
+
+    <body>
+        <div class="header-ajustes">
+            <p>Selecciona la estación que quieres establecer para los registros</p>
+            <button class="button-4 button-4-small" onclick="window.location.href = '/'">Regresar</button>
+        </div>
+
+        <div class="menu centrar-objetos direction-column">
+            {% for num in range(number_of_stations) %}
+                <button class="button-4
+                    capitalize
+                " type="button" onclick="window.location.href = '/change_station_unique?station={{ stations[num] }}'">
+                    {{stations[num]}}
+                </button>
+            {% endfor %}
+        </div>
+    </body>
+</html>

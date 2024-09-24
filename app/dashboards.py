@@ -76,7 +76,7 @@ def dashboard_stations():
             )
     line = ' '.join(line.split()[1:])
     employees_for_line = functions.get_employees_for_line(line)
-    employees_for_line = (employees_for_line[0][1] if employees_for_line 
+    employees_for_line = (employees_for_line[0][1] if employees_for_line
                           else 0)
     print (employees_for_line)
 

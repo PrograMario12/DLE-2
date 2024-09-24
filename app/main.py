@@ -20,17 +20,24 @@ def home():
     if flask_login.current_user.is_authenticated:
         logout_user()
     actual_line = request.cookies.get('line')
+    station = request.cookies.get('station')
+    if not station or station == '0':
+        station = 'general'
 
     context = {
         'css_file': 'static/css/init_styles.css',
         'js_file': 'static/js/clock.js',
         'img_file': 'static/img/magna-logo.png',
-        'actual_line': actual_line
+        'actual_line': actual_line,
+        'station': station
     }
 
     response = flask.make_response(render_template('index.html',
                                                    **context))
     response.set_cookie('employee_number', '0')
+
+    if not station:
+        response.set_cookie('station', '0')
 
     return response
 
@@ -41,6 +48,7 @@ def menu_station():
     ''' Renders the menu page for the user to select a station. '''
     if 'line' not in  request.cookies:
         return redirect('/settings')
+
     employee_number = request.form['employee_number']
 
     if functions.get_last_register_type(employee_number) == 'Exit':
@@ -52,19 +60,25 @@ def menu_station():
     line_name = functions.get_line_id(line)
     resultados = functions.get_stations(line_name)
 
+    if request.cookies.get('station') != '0':
+        response = flask.make_response(redirect('/successful'))
+        response.set_cookie('employee_number', employee_number)
+        return response
+
     context = create_context_for_menu(resultados, line)
 
     response = flask.make_response(render_template
                                     ('menu.html', **context)
                                 )
     response.set_cookie('employee_number', str(employee_number))
-
     return response
 
 @main_bp.route('/successful')
 def successful():
     'Screen when the user has successfully registered an entry or exit'
     station = request.args.get('estacion')
+    if not station:
+        station = request.cookies.get('station') + ' BP'
     hour = datetime.now()
     user.set_hour(hour)
 
