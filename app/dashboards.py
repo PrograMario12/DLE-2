@@ -56,6 +56,7 @@ def dashboard_lines():
 def dashboard_stations():
     ''' Renders the dashboard page for the stations. '''
     line = request.args.get('line')
+    line_search = ' '.join(line.split()[1:])
 
     line_id = functions.get_line_id(line.lower())
 
@@ -66,19 +67,18 @@ def dashboard_stations():
 
     employees_for_station = {station[0]: station[1] for station
                              in employees_for_station}
-    stations_list = sorted(list(set([result[0] for result in results])))
+    stations_list = sorted({result[0] for result in results})
 
     stations = prepare_stations_data(results, employees_for_station,
-                                     line)
+                                     line_search)
 
     employees_necessary = int(
                 functions.get_employees_necessary_for_line(line)[0][0]
             )
-    line = ' '.join(line.split()[1:])
-    employees_for_line = functions.get_employees_for_line(line)
+
+    employees_for_line = functions.get_employees_for_line(line_search)
     employees_for_line = (employees_for_line[0][1] if employees_for_line
                           else 0)
-    print (employees_for_line)
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -113,6 +113,7 @@ def prepare_stations_data(results, employees_for_station, line):
                                                 ' RH'
                                             )
 
+        print(station, line)
         names_operators_lh = functions.get_names_operators(
                                                 station,
                                                 line,

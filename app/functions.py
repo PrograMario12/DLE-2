@@ -320,7 +320,7 @@ def get_employees_necessary_for_line(line):
 
 def get_names_operators(station, line, position):
     ''' Gets the names of the operators. '''
-    final_station = str(station) + ' ' + position
+    final_station = str(station) + position
 
     query = f"""
     SELECT table_empleados_tarjeta.nombre_empleado,
@@ -333,6 +333,8 @@ def get_names_operators(station, line, position):
         AND registers.production_line = '{line}'
         AND exit_hour IS NULL
     """
+
+    print(query)
 
     names = []
     results = execute_query(query)

@@ -187,7 +187,8 @@ def settings_station_unique():
     line = request.cookies.get('line')
     line_id = functions.get_line_id(line)
 
-    stations = [station[0] for station in functions.get_stations(line_id)]
+    stations = [station[0] for station in 
+                functions.get_stations(line_id)]
     number_of_stations = len(stations)
 
     context = {
