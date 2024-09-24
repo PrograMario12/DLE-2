@@ -78,7 +78,7 @@ def successful():
     'Screen when the user has successfully registered an entry or exit'
     station = request.args.get('estacion')
     if not station:
-        station = request.cookies.get('station') + ' BP'
+        station = (request.cookies.get('station') or '') + ' BP'
     hour = datetime.now()
     user.set_hour(hour)
 
