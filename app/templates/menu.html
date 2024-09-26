@@ -80,10 +80,10 @@ Date: [2024-07-16]
                     ">
                     {% if lineas[i] == 'nva' %}
                         <h3 class="uppercase">{{lineas[i]}}</h3>
-                    {% elif selected_line == 'Área inyección' %}
+                    {% elif selected_line == 'área inyección' %}
                         <h3>INY-{{lineas[i]}}</h3>
-                    {% elif selected_line == 'Área metalizado' %}
-                        <h3>MET-{{ lineas[i] }}</h3>
+                    {% elif selected_line == 'área metalizado' %}
+                        <h3 class="capitalize">{{ lineas[i] }}</h3>
                     {% else %}
                         <h3>Estación {{ lineas[i] }}</h3>
                     {% endif %}
