@@ -19,26 +19,32 @@ def dashboard_lines():
                           in employees_for_line}
 
     for result in results:
-        line = [result[1], result[2]]
-        # Remove the first word from result[1]
-        modified_result = ' '.join(result[1].split()[1:])
+        employees_for_station = main.get_employees_for_station(
+                                                            result[1])
 
-        if modified_result in employees_for_line:
-            line.append(employees_for_line[modified_result])
-        else:
-            line.append(0)
+        print ('Los empleados por estación son:', employees_for_station)
 
-        stations_info = functions.get_stations(result[0])
-        employees_for_station = main.get_employees_for_station(result[1])
+        if employees_for_station or result[1] in ('área metalizado',
+                                                  'área inyección'):
+            line = [result[1], result[2]]
+            # Remove the first word from result[1]
+            modified_result = ' '.join(result[1].split()[1:])
 
-        stations = main.process_stations(stations_info,
-                                         employees_for_station)
-        stations = stations[0]
+            if modified_result in employees_for_line:
+                line.append(employees_for_line[modified_result])
+            else:
+                line.append(0)
 
-        status = validate_stations(stations)
-        line.append(status)
+            stations_info = functions.get_stations(result[0])
 
-        lines.append(line)
+            stations = main.process_stations(stations_info,
+                                            employees_for_station)
+            stations = stations[0]
+
+            status = validate_stations(stations)
+            line.append(status)
+
+            lines.append(line)
 
 
 
