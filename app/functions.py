@@ -115,7 +115,7 @@ def get_lines():
 
 def get_stations(line):
     ''' Gets the stations. '''
-    if line == 6:
+    if line == 6 or line == 7:
         query = f"""
         SELECT position_name,
             MAX(CASE WHEN side IN ('LH', 'BP')
@@ -242,8 +242,6 @@ def get_last_register_type(user_id):
         return 'Exit'
     return 'Entry'
 
-
-
 def get_values_for_exit(user_id):
     ''' Gets the values for exit. '''
     query = f"""
@@ -255,7 +253,6 @@ def get_values_for_exit(user_id):
     """
     results = execute_query(query)
     return results[0] if results else None
-
 
 def get_user(user_id):
     '''Gets the user based on their ID. '''
@@ -299,14 +296,15 @@ def get_line_id(line):
 
 def get_employees_necessary_for_line(line):
     ''' Gets the employees necessary for a line. '''
+    line_id = get_line_id(line)
 
-    if line == 'inyectoras':
-        query = """
+    if line_id in (6, 7):
+        query = f"""
         SELECT count(*)
             FROM position_status ps
             INNER JOIN positions p ON p.position_id = ps.position_id_fk
             WHERE ps.is_active is TRUE
-            AND line_id = 6
+            AND line_id = {line_id}
         """
     else:
         line = get_line_id(line)
@@ -333,8 +331,6 @@ def get_names_operators(station, line, position):
         AND registers.production_line = '{line}'
         AND exit_hour IS NULL
     """
-
-    print(query)
 
     names = []
     results = execute_query(query)

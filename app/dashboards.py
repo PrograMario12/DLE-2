@@ -9,16 +9,14 @@ dashboards_bp = Blueprint('dashboards', __name__)
 @dashboards_bp.route('/visualizaciones')
 def dashboard_lines():
     ''' Renders the dashboard page for the lines. '''
+    there_are_no_lines = []
+    lines = []
+
     results = functions.get_lines()
-    number_of_lines = len(results)
     employees_for_line = functions.get_employees_for_line()
 
     employees_for_line = {line[0]: line[1] for line
                           in employees_for_line}
-
-    there_are_no_lines = []
-
-    lines = []
 
     for result in results:
         line = [result[1], result[2]]
@@ -41,6 +39,10 @@ def dashboard_lines():
         line.append(status)
 
         lines.append(line)
+
+
+
+    number_of_lines = len(lines)
 
     context = {
         'css_file': 'static/css/styles.css',
@@ -92,7 +94,6 @@ def dashboard_stations():
     }
 
     return render_template('visualizaciones.html', **context)
-
 
 def prepare_stations_data(results, employees_for_station, line):
     ''' Prepares the data for the stations. '''

@@ -6,7 +6,8 @@ from flask import (
     request,
     render_template,
     redirect,
-    url_for
+    url_for,
+    make_response
 )
 
 from flask_login import login_required, logout_user, login_user
@@ -39,17 +40,22 @@ def settings():
 def change_line():
     ''' This function changes the production line. '''
     line = request.args.get('line')
-    if line == 'Área inyección':
+    if line in ('área metalizado', 'área inyección'):
         line_id = functions.get_line_id(line)
-        injectors = get_status_injectors(line_id)
-        injectors.pop()
+        positions = get_status_positions(line_id)
+        print(positions)
+        positions.pop()
 
         context = {
             'css_file': 'static/css/styles.css',
-            'injectors' : injectors
+            'positions' : positions,
+            'line': line
         }
-        return render_template('seleccionar_inyectoras.html',
-                               **context)
+
+        response = make_response(render_template('seleccionar_inyectoras.html', **context))
+        response.set_cookie('line', line)
+        return response, context
+
     logout_user()
     response = flask.make_response(redirect('/'))
     line_id = functions.get_line_id(line)
@@ -57,16 +63,16 @@ def change_line():
     response.set_cookie('station', '0')
     return response
 
-@settings_bp.route('/save-active-injectors', methods=['POST'])
+@settings_bp.route('/save-active-positions', methods=['POST'])
 @login_required
-def save_active_injectors():
-    ''' This function saves the active injectors. '''
-    injectors = request.form.getlist('injectors')
+def save_active_positions():
+    ''' This function saves the active positions. '''
+    positions = request.form.getlist('position')
 
-    status_injectors = get_status_injectors(6)
+    status_positions = get_status_positions(functions.get_line_id(request.cookies.get('line')))
 
-    for injector in status_injectors:
-        if injector[0] in injectors:
+    for injector in status_positions:
+        if injector[0] in positions:
             query = f"""
             UPDATE position_status ps
                 SET is_active = TRUE
@@ -85,7 +91,6 @@ def save_active_injectors():
         functions.insert_bd(query)
 
     response = flask.make_response(redirect('/'))
-    response.set_cookie('line', 'Área inyección')
     return response
 
 @settings_bp.errorhandler(401)
@@ -122,7 +127,6 @@ def login():
 @settings_bp.route('/login_validation', methods=['POST'])
 def login_validation():
     ''' This function validates the login credentials. '''
-
     username = request.form['username']
 
     user = user_model.User.get(username)
@@ -187,7 +191,7 @@ def settings_station_unique():
     line = request.cookies.get('line')
     line_id = functions.get_line_id(line)
 
-    stations = [station[0] for station in 
+    stations = [station[0] for station in
                 functions.get_stations(line_id)]
     number_of_stations = len(stations)
 
@@ -232,8 +236,8 @@ def query_change_of_employees_from_line(production_line):
 
     functions.insert_bd(query)
 
-def get_status_injectors(line_id):
-    ''' This function gets the status of the injectors. '''
+def get_status_positions(line_id):
+    ''' This function gets the status of the positions. '''
     query = f"""
     SELECT p.position_name, ps.is_active
       FROM positions p
