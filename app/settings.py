@@ -23,14 +23,16 @@ settings_bp = Blueprint('settings', __name__)
 def settings():
     ''' This function renders the settings page. '''
     lines = functions.get_lines()
-    names_lines = [line[1] for line
-                   in lines]
+    names_lines = [line[1] for line in lines]
+
+    active_line = request.cookies.get('line')
+    number_of_buttons = len(names_lines)
 
     context = {
         'css_file': 'static/css/styles.css',
-        'number_of_buttons': len(names_lines),
+        'number_of_buttons': number_of_buttons,
         'lines': names_lines,
-        'active_line': request.cookies.get('line')
+        'active_line': active_line
     }
 
     return render_template('ajustes.html', **context)
@@ -40,28 +42,34 @@ def settings():
 def change_line():
     ''' This function changes the production line. '''
     line = request.args.get('line')
-    if line in ('área metalizado', 'área inyección'):
+    valid_lines = ['área metalizado', 'área inyección']
+
+    if line in valid_lines:
         line_id = functions.get_line_id(line)
         positions = get_status_positions(line_id)
-        print(positions)
-        positions.pop()
 
         context = {
             'css_file': 'static/css/styles.css',
-            'positions' : positions,
+            'positions': positions,
             'line': line
         }
 
-        response = make_response(render_template('seleccionar_inyectoras.html', **context))
-        response.set_cookie('line', line)
-        return response, context
+        response = make_response(render_template
+                                 ('seleccionar_inyectoras.html',
+                                  **context)
+                                )
+    else:
+        context = {}
+        logout_user()
+        response = flask.make_response(redirect('/'))
 
-    logout_user()
-    response = flask.make_response(redirect('/'))
-    line_id = functions.get_line_id(line)
+    # Set common cookies
     response.set_cookie('line', line)
-    response.set_cookie('station', '0')
+    if not context:
+        response.set_cookie('station', '0')
+
     return response
+
 
 @settings_bp.route('/save-active-positions', methods=['POST'])
 @login_required
@@ -69,7 +77,8 @@ def save_active_positions():
     ''' This function saves the active positions. '''
     positions = request.form.getlist('position')
 
-    status_positions = get_status_positions(functions.get_line_id(request.cookies.get('line')))
+    status_positions = get_status_positions(
+        functions.get_line_id(request.cookies.get('line')))
 
     for injector in status_positions:
         if injector[0] in positions:

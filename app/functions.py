@@ -1,9 +1,7 @@
 ''' Module for queries to the database. '''
 
 from datetime import datetime
-
-import psycopg2
-from config import Config
+from app import database as Database
 
 
 class User:
@@ -41,64 +39,20 @@ class User:
                 Hora: {self.hour}, Línea: {self.line}"""
 
 def execute_query(query):
-    """
-    Executes a query in the database.
-
-    Args:
-    - query (str): SQL query.
-
-    Returns:
-    - list: Query results.
-    """
-    # Establish a connection to the database
-    try:
-        conn = psycopg2.connect(
-            host=Config.DATABASE_HOST,
-            user=Config.DATABASE_USER,
-            database=Config.DATABASE_NAME,
-            password=Config.DATABASE_PASSWORD,
-            port=Config.DATABASE_PORT
-        )
-        # Resto del código de tu aplicación
-    except psycopg2.Error as e:
-        print(f"Error al conectar a la base de datos: {e}")
-
-    cursor = conn.cursor()
-    cursor.execute(query)
-    results = cursor.fetchall()
-    cursor.close()
-    conn.close()
+    ''' Executes a query. '''
+    db = Database.Database()
+    db.connect()
+    results = db.execute_query(query)
+    db.disconnect()
 
     return results
 
 def insert_bd(query):
-    """
-    Insert data into the database.
-
-    Args:
-    - query (str): SQL query.
-    """
-    # Establish a connection to the database
-    conn = psycopg2.connect(
-            host=Config.DATABASE_HOST,
-            user=Config.DATABASE_USER,
-            database=Config.DATABASE_NAME,
-            password=Config.DATABASE_PASSWORD,
-            port=Config.DATABASE_PORT
-        )
-
-    # Crear un cursor para ejecutar consultas
-    cursor = conn.cursor()
-
-    # Ejecutar la consulta recibida como parámetro
-    cursor.execute(query)
-
-    # Confirmar la transacción
-    conn.commit()
-
-    # Cerrar el cursor y la conexión
-    cursor.close()
-    conn.close()
+    ''' Insert into the database. '''
+    db = Database.Database()
+    db.connect()
+    db.insert_query(query)
+    db.disconnect()
 
 def get_lines():
     ''' Gets the zones. '''

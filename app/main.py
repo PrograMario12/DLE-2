@@ -1,4 +1,4 @@
-''' This module contains the routes for the main blueprint of the 
+''' This module contains the routes for the main blueprint of the
 application. '''
 
 from datetime import datetime
@@ -22,14 +22,14 @@ def home():
     actual_line = request.cookies.get('line')
     station = request.cookies.get('station')
     if not station or station == '0':
-        station = 'general'
+        station_text = 'general'
 
     context = {
         'css_file': 'static/css/init_styles.css',
         'js_file': 'static/js/clock.js',
         'img_file': 'static/img/magna-logo.png',
         'actual_line': actual_line,
-        'station': station
+        'station': station_text
     }
 
     response = flask.make_response(render_template('index.html',
@@ -37,6 +37,7 @@ def home():
     response.set_cookie('employee_number', '0')
 
     if not station:
+        print('Station is None')
         response.set_cookie('station', '0')
 
     return response
@@ -75,7 +76,8 @@ def menu_station():
 
 @main_bp.route('/successful')
 def successful():
-    'Screen when the user has successfully registered an entry or exit'
+    '''Screen when the user has successfully registered an entry or 
+    exit'''
     station = request.args.get('estacion')
     if not station:
         station = (request.cookies.get('station') or '') + ' BP'
