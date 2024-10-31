@@ -90,9 +90,9 @@ Date: [2024-07-16]
 
                     <div class="texto-de-botones">
                         {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
-                            <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} LH">
+                            <a href="/successful?station={{lineas_capacidad_operadores[i][0]}} LH">
                         {% else %}
-                            <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} BP">
+                            <a href="/successful?station={{lineas_capacidad_operadores[i][0]}} BP">
 
                         {% endif %}
                         <div class="lado
@@ -123,7 +123,7 @@ Date: [2024-07-16]
                     </div></a>
 
                     {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
-                    <a href="/successful?estacion={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado
+                    <a href="/successful?station={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado
                         {% if lineas_capacidad_operadores[i][3] == 0 and lineas_capacidad_operadores[i][4] == 0 %}
                             employee-no-necessary
                         {% elif lineas_capacidad_operadores[i][3] == 0 %}

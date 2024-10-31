@@ -83,8 +83,21 @@
 
     },
     "editor.rulers": [
-        72,
+        79,
         70
     ],
-    "cSpell.language": "en,es,lorem"
+    "cSpell.language": "en,es,lorem",
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "10.98.16.70",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "name": "dle",
+            "group": "omx-magna-apps",
+            "database": "direct_labor_efficency",
+            "username": "developer"
+        }
+    ]
 }

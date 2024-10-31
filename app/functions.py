@@ -67,9 +67,27 @@ def get_lines():
         """
     return execute_query(query)
 
-def get_stations(line):
+def get_stations(line=None):
     ''' Gets the stations. '''
-    if line == 6 or line == 7:
+    if line is None:
+        query = """
+            SELECT line_id, position_name,
+                MAX(CASE WHEN side IN ('LH', 'BP')
+                    THEN employee_capacity END)
+                        AS employee_capacity_lh_or_bp,
+                COALESCE(MAX(CASE WHEN side = 'RH'
+                    THEN employee_capacity END), 0)
+                        AS employee_capacity_rh
+            FROM positions
+            WHERE position_id IN (
+                SELECT position_id_fk
+                FROM position_status
+                WHERE is_active = True
+            )
+            GROUP BY line_id, position_name
+            ORDER BY line_id, position_name;
+        """
+    if line in (6, 7):
         query = f"""
         SELECT position_name,
             MAX(CASE WHEN side IN ('LH', 'BP')
@@ -106,7 +124,6 @@ def get_stations(line):
 def get_employees_for_line(production_line_name=None):
     ''' Gets the employees for a line. '''
 
-
     if production_line_name:
         query = f"""
         SELECT production_line, count(id_employee) AS employees_working
@@ -124,18 +141,30 @@ def get_employees_for_line(production_line_name=None):
         """
     return execute_query(query)
 
-def get_employees_for_station(line):
+def get_employees_for_station(line=None):
     """ Gets the employees for a station. """
 
-    line = ' '.join(line.split()[1:])
-
-    query = f"""
-    SELECT production_station, COUNT(*) AS employees_working
-        FROM registers
-        WHERE entry_hour IS NOT NULL AND exit_hour IS NULL
-        AND production_line = '{line}'
-        GROUP BY production_station;
-    """
+    if line is None:
+        query = """
+            SELECT production_line,
+                production_station,
+                COUNT(*) AS employees_working
+            FROM registers
+            WHERE entry_hour IS NOT NULL
+                AND exit_hour IS NULL
+            GROUP BY production_line, production_station;
+        """
+    else:
+        line = ' '.join(line.split()[1:])
+        query = f"""
+            SELECT production_station,
+                COUNT(*) AS employees_working
+            FROM registers
+            WHERE entry_hour IS NOT NULL
+                AND exit_hour IS NULL
+                AND production_line = '{line}'
+            GROUP BY production_station;
+        """
 
     return execute_query(query)
 
@@ -206,7 +235,10 @@ def get_values_for_exit(user_id):
         LIMIT 1
     """
     results = execute_query(query)
-    return results[0] if results else None
+
+    if results:
+        return (results[0][0], results[0][1])
+    return (None, None)
 
 def get_user(user_id):
     '''Gets the user based on their ID. '''

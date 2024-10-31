@@ -1,5 +1,6 @@
 ''' This module contains the routes for the dashboards of the app. '''
 
+import json
 from flask import Blueprint, render_template, request
 from app import functions, main
 
@@ -12,41 +13,53 @@ def dashboard_lines():
     there_are_no_lines = []
     lines = []
 
-    results = functions.get_lines()
+    zones = functions.get_lines()
     employees_for_line = functions.get_employees_for_line()
+    employees_for_station = functions.get_employees_for_station()
 
+    employees_for_station_dict = {}
+    for key, value, count in employees_for_station:
+        if key in employees_for_station_dict:
+            employees_for_station_dict[key].append((value, count))
+        else:
+            employees_for_station_dict[key] = [(value, count)]
+
+    # print(
+    #         "Empleados por estación ",
+    #         json.dumps(employees_for_station_dict, indent=4)
+    #     )
     employees_for_line = {line[0]: line[1] for line
                           in employees_for_line}
+    # print(employees_for_line)
 
-    for result in results:
-        employees_for_station = main.get_employees_for_station(
-                                                            result[1])
+    for zone in zones:
+        modified_zone = str(' '.join(zone[1].split()[1:]))
+        employees_for_station = employees_for_station_dict.get(modified_zone, [])
+        employees_for_station_position = {
+                station[0]: station[1] for station
+                in employees_for_station
+            }
 
-        print ('Los empleados por estación son:', employees_for_station)
-
-        if employees_for_station or result[1] in ('área metalizado',
+        if employees_for_station_position or zone[1] in ('área metalizado',
                                                   'área inyección'):
-            line = [result[1], result[2]]
-            # Remove the first word from result[1]
-            modified_result = ' '.join(result[1].split()[1:])
+            line = [zone[1], zone[2]]
 
-            if modified_result in employees_for_line:
-                line.append(employees_for_line[modified_result])
+            if modified_zone in employees_for_line:
+                line.append(employees_for_line[modified_zone])
             else:
                 line.append(0)
 
-            stations_info = functions.get_stations(result[0])
+            stations_info = functions.get_stations(zone[0])
+            print(stations_info)
 
             stations = main.process_stations(stations_info,
-                                            employees_for_station)
+                                            employees_for_station_position)
             stations = stations[0]
 
             status = validate_stations(stations)
             line.append(status)
 
             lines.append(line)
-
-
 
     number_of_lines = len(lines)
 
@@ -68,7 +81,7 @@ def dashboard_stations():
 
     line_id = functions.get_line_id(line.lower())
 
-    results = functions.get_stations(line_id)
+    zones = functions.get_stations(line_id)
     numbers_of_stations = len(results)
 
     employees_for_station = functions.get_employees_for_station(line)

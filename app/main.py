@@ -7,7 +7,6 @@ import flask_login
 from flask import Blueprint, redirect, render_template, request
 from flask_login import logout_user
 
-
 from app import functions
 
 main_bp = Blueprint('main', __name__)
@@ -41,8 +40,6 @@ def home():
         response.set_cookie('station', '0')
 
     return response
-
-
 
 @main_bp.route('/menuStation', methods=['GET', 'POST'])
 def menu_station():
@@ -78,7 +75,7 @@ def menu_station():
 def successful():
     '''Screen when the user has successfully registered an entry or 
     exit'''
-    station = request.args.get('estacion')
+    station = request.args.get('station')
     if not station:
         station = (request.cookies.get('station') or '') + ' BP'
     hour = datetime.now()
@@ -110,7 +107,9 @@ def successful():
                                 hour)
         tipo = 'Salida'
         employee_number = request.cookies.get('employee_number')
+
         line, station = functions.get_values_for_exit(employee_number)
+
         if line in ['inyección', 'metalizado']:
             line = 'Área de ' + line
         else:
@@ -156,6 +155,8 @@ def get_employees_for_station(line):
 
 def process_stations(results, employees_for_station):
     ''' Process the stations '''
+    print("Los empleados por estación son: ", employees_for_station)
+    print("Los resultados son: ", results)
     estaciones = []
     estaciones_set = set()
 
