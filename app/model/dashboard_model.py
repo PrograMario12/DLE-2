@@ -29,6 +29,15 @@ class LinesDashboard():
                         (card['employees_working']
                         / card['employee_capacity']) * 100, 2)
 
+        for card in cars_data:
+            if 'percentage' in card:
+                if card['percentage'] > 100:
+                    card['class'] = 'employee-warning'
+                elif card['percentage'] < 100:
+                    card['class'] = 'employee-nook'
+                else:
+                    card['class'] = 'employee-ok'
+
         active_lines = []
         for card in cars_data:
             if 'employees_working' in card:
@@ -40,6 +49,8 @@ class LinesDashboard():
                 card['status'] = False
             else:
                 card['status'] = True
+
+        print(cars_data)
 
         return cars_data
 

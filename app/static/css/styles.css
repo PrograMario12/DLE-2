@@ -167,19 +167,19 @@ img {
 }
 
 /* Estilos para el estado de la card */
-.empleado-ok {
+.employee-ok {
     background-color: #28A745;
 }
 
-.empleado-nook {
+.employee-nook {
     background-color: #FFC107;
 }
 
-.empleado-warning {
+.employee-warning {
     background-color: #DC3545;
 }
 
-.empleado-disabled{
+.employee-disabled{
     background-color: #808080;
 }
 

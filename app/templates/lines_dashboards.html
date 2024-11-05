@@ -17,14 +17,7 @@
     <div class="menu">
         {% for line in lines%}
             {% if line.percentage %}
-            <div class="card-dashboard capitalize" style="background-color: 
-                {% if line.percentage <= 99 %}
-                    #FFC107
-                {% elif line.percentage == 100 %}
-                    #28a745
-                {% else %}
-                    #df0001
-                {% endif %}">
+            <div class="card-dashboard capitalize {{line.class}}">
                 <h2>{{ line.name }}</h2>
                 <h1>
                     {{ line.percentage }}%
@@ -36,7 +29,5 @@
             {% endif %}
         {% endfor %}
     </div>
-
-    
 
 {% endblock %}
