@@ -77,7 +77,7 @@ def dashboard_lines():
 def lines_dashboards():
     ''' Renders the dashboard page for the lines. '''
     dm = dashboard_model.LinesDashboard()
-    lines = dm.create_dictionary()
+    lines = dm.create_lines_dashboard()
 
     context = {
         'lines': lines,
