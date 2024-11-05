@@ -3,7 +3,7 @@
 import json
 from flask import Blueprint, render_template, request
 from app import functions, main
-
+from app.model import dashboard_model
 
 dashboards_bp = Blueprint('dashboards', __name__)
 
@@ -72,6 +72,18 @@ def dashboard_lines():
     }
 
     return render_template('visualizaciones.html', **context)
+
+@dashboards_bp.route('/visualizaciones_lines')
+def lines_dashboards():
+    ''' Renders the dashboard page for the lines. '''
+    dm = dashboard_model.LinesDashboard()
+    lines = dm.create_dictionary()
+
+    context = {
+        'lines': lines,
+    }
+
+    return render_template('lines_dashboards.html', **context)
 
 @dashboards_bp.route('/visualizaciones_estación')
 def dashboard_stations():

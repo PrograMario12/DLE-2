@@ -8,6 +8,9 @@
 
 html{
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    background-color: #F9F9F9;
+
 }
 
 a {
@@ -17,15 +20,14 @@ a {
 
 
 h1 {
-    font-size: 50px;
+    font-size: 48px;
     font-weight: bold;
-    margin-bottom: 16px;
-    margin-top: 0;
     text-align: center;
+    justify-content: center;
 }
 
 h2 {
-    font-size: 35px;
+    font-size: 36px;
     font-weight: bold;
     margin-bottom: 16px;
     margin-top: 0;
@@ -33,7 +35,7 @@ h2 {
 }
 
 h3 {
-    font-size: 25px;
+    font-size: 24px;
     font-weight: bold;
     margin-bottom: 16px;
     margin-top: 0;
@@ -54,7 +56,7 @@ img {
     background-color: #F9F9F9;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
     width: 100%;
 }
@@ -62,11 +64,9 @@ img {
 .menu {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
-    margin-bottom: 16px;
+    justify-content: space-between;
     flex-wrap: wrap;
     width: 100%;
-    margin-top: 1rem; /*Cambio realizado para generar un margen */
 }
 
 .centrar-objetos {
@@ -85,14 +85,12 @@ img {
 .card {
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
-    padding: 16px 0;
     width: 100%;
     align-items: center;
     justify-content: center;
     display: flex;
     flex-direction: column;
     text-align: center;
-    margin: 10px 0;
 }
 
 .card-high-height {
@@ -235,30 +233,35 @@ a.disabled {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #24292E;
-    color: #ffffff;
+    background-color: #E9ECEF;
+    color: #000;
+    height: 100px;
+    padding: 5px 20px;
 }
 
+.title{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    height: auto;
+    width: 80%;
+}
 
 .button-4 {
     appearance: none;
-    background-color: #FAFBFC;
+    background-color: #6C757D;
     border: 1px solid rgba(27, 31, 35, 0.15);
     border-radius: 6px;
     box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
-    box-sizing: border-box;
     color: #24292E;
     cursor: pointer;
     display: inline-block;
     font-family: Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 4rem;
     line-height: 20px;
     list-style: none;
     padding: 6px 16px;
-    position: relative;
     transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
     user-select: none;
     -webkit-user-select: none;
@@ -268,7 +271,11 @@ a.disabled {
     word-wrap: break-word;
     width: 40%;
     height: 10vh;
-  }
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 5px;
+}
 
   .button-4-small{
     width: 10%;
@@ -276,12 +283,11 @@ a.disabled {
   }
 
   .button-4-half{
-    width: 45%;
-    height: 50px;
-  }
+    width: 80px;
+    height: 80px;}
   
   .button-4:hover {
-    background-color: #F3F4F6;
+    background-color: #4E555B;
     text-decoration: none;
     transition-duration: 0.1s;
   }
@@ -316,7 +322,10 @@ a.disabled {
   }
 
   .botones{
-    width: 30%;
+    display: flex;
+    width: 20%;
+    justify-content: right;
+    align-items: center;
   }
 
   /* EStilos para la página unauthorized */
@@ -405,13 +414,11 @@ button:hover {
     font-weight: bold;
 }
 
-.header .uppercase {
-    margin-top: 10px;
-}
+
 
 #modal::backdrop {
     background-color: rgba(0, 0, 0, 0.55);
-} 
+}
 
 dialog {
     border: 1px solid #ccc;
@@ -453,4 +460,38 @@ dialog {
     width: 100%;
     align-items: center;
     justify-content: space-around;
+}
+
+/* Estilos para dashboards */
+.card-dashboard {
+    display: flex;
+    flex-direction: column;
+    margin: 15px auto;
+    padding: 10px;
+    width: 450px;
+    height: auto;
+    border-radius: 40px;
+    box-shadow: 5px 5px 30px 7px rgba(0,0,0,0.25), -5px -5px 30px 7px rgba(0,0,0,0.22);
+    cursor: pointer;
+    transition: 0.4s;
+    justify-content: center;
+}
+
+.card-dashboard:hover {
+    transform: scale(0.9, 0.9);
+    box-shadow: 5px 5px 30px 15px rgba(0,0,0,0.25), 
+    -5px -5px 30px 15px rgba(0,0,0,0.22);
+}
+
+.information {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #4298B5;
+    padding: 6px;
+}
+
+.information p{
+    font-size: 1.5rem;
+    margin: 0 6px;
 }

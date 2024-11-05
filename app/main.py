@@ -155,8 +155,8 @@ def get_employees_for_station(line):
 
 def process_stations(results, employees_for_station):
     ''' Process the stations '''
-    print("Los empleados por estación son: ", employees_for_station)
-    print("Los resultados son: ", results)
+    # print("Los empleados por estación son: ", employees_for_station)
+    # print("Los resultados son: ", results)
     estaciones = []
     estaciones_set = set()
 

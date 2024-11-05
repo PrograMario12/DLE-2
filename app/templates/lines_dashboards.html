@@ -1,0 +1,42 @@
+{% extends "base/base_dashboards.html" %}
+
+{% block title %} Dashboard líneas {% endblock %}
+
+{% block header %}
+    <h1>Dashboard líneas</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="information">
+        <p>🟡Faltan empleados</p>
+        <p>🟢Línea completa</p>
+        <p>🔴Línea excedida</p>
+        <p>⚠️Línea completa, personal mal posicionado</p>
+    </div>
+
+    <div class="menu">
+        {% for line in lines%}
+            {% if line.percentage %}
+            <div class="card-dashboard capitalize" style="background-color: 
+                {% if line.percentage <= 99 %}
+                    #FFC107
+                {% elif line.percentage == 100 %}
+                    #28a745
+                {% else %}
+                    #df0001
+                {% endif %}">
+                <h2>{{ line.name }}</h2>
+                <h1>
+                    {{ line.percentage }}%
+                    {% if line.status == False %}
+                        ⚠️
+                    {% endif %}
+                </h1>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    
+
+{% endblock %}
