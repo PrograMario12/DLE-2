@@ -17,12 +17,12 @@
     <div class="menu">
         {% for card in cards %}
             <div class="card uppercase">
-                <h2>{{card.name}}</h2>
+                <h2>{{card.position_name}}</h2>
                 <div class="select-position">
                     {%for side in card.sides%}
-                        <div class="card-dashboard small-card-dashboard uppercase">
+                        <div class="card-dashboard small-card-dashboard uppercase {{side.class}}">
                             <h3>{{side.side_title}}</h3>
-                            <p><i class="fi fi-rr-user"></i>{{side.employee_capacity}} <i class="fi fi-sr-user"></i> 0</p>
+                            <p><i class="fi fi-rr-user"></i>{{side.employee_capacity}} <i class="fi fi-sr-user"></i> {{side.employees_working}}</p>
                         </div>
                     {%endfor%}
                 </div>

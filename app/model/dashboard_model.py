@@ -109,21 +109,32 @@ class LinesDashboard():
         active_lines_str = ','.join(map(str, active_lines))
 
         query_employees_actives_for_station = f"""
-            SELECT line_id_fk, position_id_fk, COUNT(*) AS employees_working
-            FROM registers
-            WHERE entry_hour IS NOT NULL
-                AND exit_hour IS NULL
-                AND line_id_fk IN ({active_lines_str})
-            GROUP BY line_id_fk, position_id_fk;
+            SELECT
+              r.line_id_fk,
+              r.position_id_fk,
+              COUNT(*) AS employees_working
+            FROM sch_dev.registers r
+			INNER JOIN sch_dev.tbl_sides_of_positions tbl_p 
+              ON r.position_id_fk = tbl_p.side_id
+			INNER JOIN sch_dev.positions ps 
+              ON tbl_p.position_id_fk = ps.position_id
+            WHERE r.entry_hour IS NOT NULL
+                AND r.exit_hour IS NULL
+                AND r.line_id_fk IN ({active_lines_str})
+            GROUP BY r.line_id_fk, r.position_id_fk;
         """
+        print(query_employees_actives_for_station)
 
         query_employees_necessary_for_station = f"""
-            SELECT line_id, position_id, COUNT(*) AS employees_necessary
-            FROM positions
-            WHERE line_id IN ({active_lines_str})
-                AND position_name NOT LIKE '%nva%'
-                AND position_name NOT LIKE '%afe%'
-            GROUP BY line_id, position_id;
+            SELECT
+              p.line_id,
+              tbl_p.side_id,
+              tbl_p.employee_capacity 
+            FROM sch_dev.positions p
+            INNER JOIN sch_dev.tbl_sides_of_positions tbl_p 
+              ON tbl_p.position_id_fk = p.position_id
+            WHERE p.line_id in ({active_lines_str}) 
+            AND p.position_name NOT LIKE '%afe%'
         """
 
         employees_actives = self.db.execute_query(
@@ -156,10 +167,10 @@ class StationsDashboard():
 
     def create_stations_dashboard(self, line):
         ''' Create a dictionary with the stations '''
-        card_data=[]
-        positions = {}
         stations = self.get_stations(line)
+        employees_active = {emp[0]: emp[1] for emp in self.get_employees_actives(line)}
 
+        positions = {}
         for station in stations:
             position_id = station[0]
             if position_id not in positions:
@@ -170,18 +181,26 @@ class StationsDashboard():
             positions[position_id]['sides'].append({
                 'side_id': station[2],
                 'side_title': station[3],
-                'employee_capacity': station[4]
+                'employee_capacity': station[4],
+                'employees_working': employees_active.get(station[2], 0)
             })
 
+        card_data = []
         for position_id, position_data in positions.items():
             card = {
                 'position_id': position_id,
                 'position_name': position_data['name'],
                 'sides': position_data['sides']
             }
+            for side in card['sides']:
+                if side['employee_capacity'] > side['employees_working']:
+                    side['class'] = 'employee-warning'
+                elif side['employee_capacity'] == side['employees_working']:
+                    side['class'] = 'employee-ok'
+                else:
+                    side['class'] = 'employee-nook'
             card_data.append(card)
 
-        print(json.dumps(card_data, indent=4))
         return card_data
 
     def get_employees_actives(self, line):
@@ -227,7 +246,7 @@ class StationsDashboard():
 			INNER JOIN sch_dev.tbl_sides_of_positions sides
               ON sides.position_id_fk = p.position_id
             WHERE line_id = {line}
-            ORDER BY position_name
+            ORDER BY position_name, sides.side_title
         """
         stations = self.db.execute_query(query)
         self.db.disconnect()
