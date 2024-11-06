@@ -184,10 +184,13 @@ def register_entry(user_id, line, station, mark):
     today_date = datetime.now().strftime("%Y-%m-%d")
     query = f"""
         INSERT INTO registers
-            (id_employee, date_register, production_line,
-             production_station, entry_hour)
+            (id_employee,
+            date_register,
+            entry_hour,
+            line_id_fk,
+            position_id_fk)
         VALUES (
-            {user_id}, '{today_date}', '{line}', '{station}', '{mark}'
+            {user_id}, '{today_date}', '{mark}', '{line}', '{station}'
         )
         """
     insert_bd(query)
@@ -240,35 +243,35 @@ def get_values_for_exit(user_id):
         return (results[0][0], results[0][1])
     return (None, None)
 
-def get_user(user_id):
-    '''Gets the user based on their ID. '''
-    query = f"""
-    SELECT nombre_empleado, apellidos_empleado 
-        FROM table_empleados_tarjeta
-        WHERE numero_tarjeta = {user_id}
-    """
-    results = execute_query(query)
+# def get_user(user_id):
+#     '''Gets the user based on their ID. '''
+#     query = f"""
+#     SELECT nombre_empleado, apellidos_empleado 
+#         FROM table_empleados_tarjeta
+#         WHERE numero_tarjeta = {user_id}
+#     """
+#     results = execute_query(query)
 
-    return results[0][0] + " " + results[0][1] if results else None
+#     return results[0][0] + " " + results[0][1] if results else None
 
-def get_image(user_id):
-    """
-    Gets the image of a user based on their ID.
+# def get_image(user_id):
+#     """
+#     Gets the image of a user based on their ID.
 
-    Args:
-    - user_id (int): User ID.
+#     Args:
+#     - user_id (int): User ID.
 
-    Returns:
-    - str: Image ID.
-    """
-    query = f"""
-    SELECT id_empleado
-        FROM table_empleados_tarjeta
-        WHERE numero_tarjeta = {user_id}
-    """
-    results = execute_query(query)
+#     Returns:
+#     - str: Image ID.
+#     """
+#     query = f"""
+#     SELECT id_empleado
+#         FROM table_empleados_tarjeta
+#         WHERE numero_tarjeta = {user_id}
+#     """
+#     results = execute_query(query)
 
-    return results[0][0] if results else None
+#     return results[0][0] if results else None
 
 def get_line_id(line):
     ''' Gets the line ID. '''

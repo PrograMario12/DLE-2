@@ -16,148 +16,48 @@ Date: [2024-07-16]
 
     <body class="body-center">
         <div class="header">
-
             <h1 class="uppercase">
-                {{ selected_line }}
+                {{line}}
             </h1>
 
             <h2 class="uppercase">
-                Selecciona tu {{ type_of_selection }}
+                Selecciona tu estación
             </h2>
 
             <div class="h3-contexto">
-                <h3 class="separate-h3"><i class="fi fi-sr-user "></i> Real: {{employees_for_line}} </h3>
-                {% if employees_necessary > employees_for_line %}
-                    <h3><i class="fi fi-rr-user"></i> Fuera de estándar: {{ employees_necessary - employees_for_line }} </h3>
-                {% else %}
-                    <h3><i class="fi fi-rr-user"></i> Fuera de estándar: {{ employees_for_line - employees_necessary }} </h3>
-                {% endif %}
+                <h3>
+                    Real: {{total_capacity}}
+                </h3>
+                <h3>
+                    Fuera de estándar: {{total_employees}}
+                </h3>
             </div>
         </div>
 
-            {% if type_of_selection == 'línea' %}
-            <div class="menu ">
-                {% for i  in range (num_cards) %}
-                <a href="/menuStation?linea={{lineas_capacidad_operadores[i][0]}}" class="a-estilos {% if lineas_capacidad_operadores[i][1] == -1%}
-                disabled
-                {% endif %}"
-                ><div class="card
-                    {% if lineas_capacidad_operadores[i][1] == 0%}
-                        empleado-ok
-                    {% else %}
-                        empleado-nook
-                    {% endif %}
-                    {% if lineas_capacidad_operadores[i][1] == -1%}
-                        empleado-disabled
-                    {% endif %}
-                    ">
-                    <h3 >
-                        Línea {{ lineas_capacidad_operadores[i][0] }}
-                    </h3>
-
-                    <div class="texto-de-botones">
-                        <p>
-                            <i class="fi fi-rr-user"></i> {{ lineas_capacidad_operadores[i][1] }}
-                        </p>
-                        <p>
-                        <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
-                        </p>
-                    </div>
-                </div></a>
-                {% endfor %}
-            </div>
-
-
-            {% else %}
-
-
-            <div class="menu direction-row">
-                {% for i  in range (num_cards) %}
-                    <div class="card card-mitad
-                    {% if selected_line == 'inyectoras' %}
-                        card-injectors
-                    {% endif %}
-                    ">
-                    {% if lineas[i] == 'nva' %}
-                        <h3 class="uppercase">{{lineas[i]}}</h3>
-                    {% elif selected_line == 'área inyección' %}
-                        <h3>INY-{{lineas[i]}}</h3>
-                    {% elif selected_line == 'área metalizado' %}
-                        <h3 class="capitalize">{{ lineas[i] }}</h3>
-                    {% else %}
-                        <h3>Estación {{ lineas[i] }}</h3>
-                    {% endif %}
-
-                    <div class="texto-de-botones">
-                        {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
-                            <a href="/successful?station={{lineas_capacidad_operadores[i][0]}} LH">
-                        {% else %}
-                            <a href="/successful?station={{lineas_capacidad_operadores[i][0]}} BP">
-
-                        {% endif %}
-                        <div class="lado
-                        {% if lineas_capacidad_operadores[i][1] == 0 and lineas_capacidad_operadores[i][2] == 0 %}
-                            employee-no-necessary
-                        {% elif lineas_capacidad_operadores[i][1] == 0 %}
-                            empleado-ok
-                        {% elif lineas_capacidad_operadores[i][1] > 0 %}
-                            empleado-nook
-                        {% else %}
-                            empleado-warning
-                        {% endif %}
-                        ">
-                        {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %} 
-                            <p>
-                                LH
-                            </p>
-                        {% endif %}
-                            <p>
-                                <i class="fi fi-rr-user"></i> 
-                                {% if lineas_capacidad_operadores[i][1] < 0 %}
-                                    0
-                                {% else %}
-                                    {{ lineas_capacidad_operadores[i][1] }}
-                                {% endif %}
-                                <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][2] }}
-                            </p>
-                    </div></a>
-
-                    {% if lineas_capacidad_operadores[i][3] != 0 or lineas_capacidad_operadores[i][4] >= 1 %}
-                    <a href="/successful?station={{lineas_capacidad_operadores[i][0]}} RH"><div class="lado
-                        {% if lineas_capacidad_operadores[i][3] == 0 and lineas_capacidad_operadores[i][4] == 0 %}
-                            employee-no-necessary
-                        {% elif lineas_capacidad_operadores[i][3] == 0 %}
-                            empleado-ok
-                        {% elif lineas_capacidad_operadores[i][3] > 0 %}
-                            empleado-nook
-                        {% else %}
-                            empleado-warning
-                        {% endif %}
-                    ">
-                            <p>
-                                RH
-                            </p>
-                            <p>
-                                <i class="fi fi-rr-user"></i>
-                                {% if lineas_capacidad_operadores[i][1] < 0 %}
-                                    0
-                                {% else %}
-                                    {{ lineas_capacidad_operadores[i][3] }}
-                                {% endif %}
-                                <i class="fi fi-sr-user"></i> {{ lineas_capacidad_operadores[i][4] }}
-                            </p>
-                    </div></a>
-                    {% endif %}
+        <div class="menu">
+            {% for card in cards %}
+                <div class="card">
+                    <h2>{{tipo}} {{card.position_name}}</h2>
+                    <div class="select-position">
+                        {%for side in card.sides%}
+                            <a href="/successful?id={{side.side_id}}" class="card-dashboard small-card-dashboard uppercase {{side.class}}">
+                                <h3>{{side.side_title}}</h3>
+                                <p><i class="fi fi-rr-user"></i>{{side.employee_capacity}} <i class="fi fi-sr-user"></i> {{side.employees_working}}</p>
+                            </a>
+                        {%endfor%}
                     </div>
                 </div>
-                {% endfor %}
-            {% endif %}
+            {%endfor%}
         </div>
 
         <div class="div-button-cancel">
             <button onclick="window.location.href='/'" class="cancel-button">Cancelar</button>
         </div>
 
+        <div class="left">
+            <p><i class="fi fi-rr-user"></i> Personal marcado en el estándar</p>
+            <p><i class="fi fi-sr-user"></i> Personal actual</p>
+        </div>
     </body>
 
 </html>

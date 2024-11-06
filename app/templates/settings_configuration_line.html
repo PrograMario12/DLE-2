@@ -1,25 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings configuration line</title>
-    <link rel="stylesheet" href="{{ css_file }}">
-</head>
-<body>
-    <div class="container">
-        <div class="row">
-            <div class="header-ajustes">
-                <p>Selecciona el área que quieres establecer para los registros</p>
-                <button class="button-4 button-4-small" onclick="window.location.href = '/'">Regresar</button>
-            </div>
+{% extends "base/base_dashboards.html" %}
 
+{% block title %} Ajustes {% endblock %}
+
+{% block header %} <h1>Selecciona la línea</h1> {% endblock %}
+
+{% block content %}
+
+    <div class="container">
             <div class="menu centrar-objetos ">
                 <button class="button-4" onclick="window.location.href = 'change_line_unique?line=área inyección'">Inyección</button>
                 <button class="button-4" onclick="window.location.href = 'change_line_unique?line=área metalizado'">Metalizado</button>
             </div>
-
-        </div>
     </div>
-</body>
-</html>
+{% endblock %}

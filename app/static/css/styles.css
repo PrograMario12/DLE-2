@@ -66,6 +66,10 @@ p{
     width: 100%;
 }
 
+.header{
+    width: 100%;
+}
+
 .menu {
     display: flex;
     flex-direction: row;
@@ -120,23 +124,33 @@ p{
 }
 
 .div-button-cancel {
-    /* display: flex; */
-    /* justify-content: center; */
+    width: 100%;
+    display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .cancel-button {
+    width: 50%;
     background-color: #BD2130;
     color: #000;
-    border-radius: 4px;
+    border-radius: 20px;
     text-decoration: none;
     font-weight: bold;
+    font-size: 2rem;
     transition: background-color 0.3s ease;
     min-height: 50px;
+    margin: 20px 0;
 }
 
 .cancel-button:hover {
-    background-color: #c82333;
+    background-color: #c8233318;
+}
+
+.left{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Estilos para el estado de la card */
@@ -227,13 +241,10 @@ a.disabled {
     border: 1px solid rgba(27, 31, 35, 0.15);
     border-radius: 6px;
     box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
-    color: #24292E;
+    color: #fff;
     cursor: pointer;
     display: inline-block;
-    font-family: Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
-    font-size: 4rem;
-    line-height: 20px;
-    list-style: none;
+    font-size: 2rem;
     padding: 6px 16px;
     transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
     user-select: none;
@@ -242,12 +253,12 @@ a.disabled {
     vertical-align: middle;
     white-space: nowrap;
     word-wrap: break-word;
-    width: 40%;
-    height: 10vh;
+    width: 80%;
+    height: 80px;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 0 5px;
+    margin: 10px 5px;
 }
 
   .button-4-small{
@@ -257,7 +268,9 @@ a.disabled {
 
   .button-4-half{
     width: 80px;
-    height: 80px;}
+    height: 80px;
+    font-size: 4rem;
+}
   
   .button-4:hover {
     background-color: #4E555B;
@@ -313,8 +326,11 @@ a.disabled {
 
 /* Estilos para el formulario */
 form {
-    min-width: 400px;
-    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    height: auto;
     margin: 0 auto;
     background-color: #fff;
     padding: 20px;
@@ -322,23 +338,31 @@ form {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.form-group {
-    margin-bottom: 20px;
+.form-group{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 label {
     display: block;
     font-weight: bold;
-    margin-bottom: 5px;
+    font-size: 3rem;
+    margin: 20px 0;
 }
 
 input[type="text"],
 input[type="password"] {
     width: 100%;
+    font-size: 3rem;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 3px;
+    margin: 20px 0;
 }
+
+/* ********************************************* */
 
 input[type="checkbox"] {
     width: 40px;
@@ -374,8 +398,8 @@ button:hover {
 
 .h3-contexto{
     display: flex;
-    width: 100vw;
-    justify-content: center;
+    width: 100%;
+    justify-content: space-around;
     align-items: center;
     background-color: #c9c7c7cb;
     border-radius: 5px;
@@ -385,12 +409,6 @@ button:hover {
 .texto-de-botones .big-text{
     font-size: 80px;
     font-weight: bold;
-}
-
-
-
-#modal::backdrop {
-    background-color: rgba(0, 0, 0, 0.55);
 }
 
 dialog {
@@ -500,4 +518,48 @@ dialog {
     100% {
         transform: rotate(360deg);
     }
+}
+/* *************** */
+
+/* estilos modal */
+#myModal {
+    display: none; /* Inicialmente oculto */
+    position: fixed; /* Posición fija para mantenerlo en la pantalla */
+    z-index: 9999; /* Indica la superposición del modal sobre otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4); /* Fondo semitransparente */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* Margen para centrar verticalmente */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px; /* Anchura máxima del modal */
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+}
+/* *************************** */
+
+/* Pantalla final */
+.wallpaper{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

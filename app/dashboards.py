@@ -1,7 +1,6 @@
 ''' This module contains the routes for the dashboards of the app. '''
 
 from flask import Blueprint, render_template, request
-from app import functions
 from app.model import dashboard_model
 
 dashboards_bp = Blueprint('dashboards', __name__)
@@ -25,7 +24,6 @@ def stations_dashboard():
     dm = dashboard_model.StationsDashboard()
     card_data = dm.create_stations_dashboard(line)
     name_line = dm.get_line(line)
-    # print (stations)
 
     context = {
         'line': name_line,
@@ -34,3 +32,13 @@ def stations_dashboard():
 
     return render_template('stations_dashboards.html', **context)
 
+@dashboards_bp.route('/get_operators_actives')
+def get_operators_actives():
+    ''' Get the operators actives '''
+    station = request.args.get('id')
+    print(station)
+
+    dm = dashboard_model.OperatorsDashboard()
+    operators = dm.get_operators(station)
+
+    return operators

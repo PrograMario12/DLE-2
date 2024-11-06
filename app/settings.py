@@ -23,15 +23,13 @@ settings_bp = Blueprint('settings', __name__)
 def settings():
     ''' This function renders the settings page. '''
     lines = functions.get_lines()
-    names_lines = [line[1] for line in lines]
 
-    active_line = request.cookies.get('line')
-    number_of_buttons = len(names_lines)
+    active_line = int(request.cookies.get('line', 0))
+
 
     context = {
         'css_file': 'static/css/styles.css',
-        'number_of_buttons': number_of_buttons,
-        'lines': names_lines,
+        'lines': lines,
         'active_line': active_line
     }
 

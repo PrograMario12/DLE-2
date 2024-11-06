@@ -6,24 +6,19 @@
     <title>Usuario registrado</title>
     <link rel="stylesheet" href="{{ css_file }}">
 </head>
-<body class="body-center"
-{% if tipo == 'Entrada' %}
-style="background-color: #28A745;"
-{% else %}
-style="background-color: #DC3545;"
-{% endif %}>
-    <div class="exito-final"
-    >
-        <p class="exito-principales">{{ tipo }} registrada para</p>
-        <picture>
-            <source srcset="{{ image }}" type="image/webp">
-            <img src="{{ image }}" alt="Imagen de usuario" loading="lazy">
-        </picture>
-        <p class="exito-principales">{{ user }}</p>
-
-            <p class="exito-principales capitalize">
-                {{ line }} estación {{station}} 
-            </p>
+<body>
+    <div class="wallpaper {{color_class}}">
+        <div class="exito-final">
+            <p class="exito-principales">{{ tipo }} registrada para</p>
+            <picture>
+                <source srcset="{{ image }}" type="image/webp">
+                <img src="{{ image }}" alt="Imagen de usuario" loading="lazy">
+            </picture>
+            <p class="exito-principales">{{ user }}</p>
+                <p class="exito-principales capitalize">
+                    {{ line }} estación {{station}} 
+                </p>
+        </div>
     </div>
 </body>
 

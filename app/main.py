@@ -6,8 +6,10 @@ import flask
 import flask_login
 from flask import Blueprint, redirect, render_template, request
 from flask_login import logout_user
-
 from app import functions
+from app.model import dashboard_model
+from app import database
+
 
 main_bp = Blueprint('main', __name__)
 
@@ -16,18 +18,21 @@ user = functions.User(0, 0, 0)
 @main_bp.route('/')
 def home():
     ''' Renders the home page of the application. '''
+    dm = dashboard_model.StationsDashboard()
     if flask_login.current_user.is_authenticated:
         logout_user()
-    actual_line = request.cookies.get('line')
+    actual_line = int(request.cookies.get('line'))
+    line_name = dm.get_line(actual_line)
     station = request.cookies.get('station')
-    if not station or station == '0':
-        station_text = 'general'
+    station_text = 'general'
+    if station and station != '0':
+        station_text = station
 
     context = {
         'css_file': 'static/css/init_styles.css',
         'js_file': 'static/js/clock.js',
         'img_file': 'static/img/magna-logo.png',
-        'actual_line': actual_line,
+        'actual_line': line_name,
         'station': station_text
     }
 
@@ -48,145 +53,158 @@ def menu_station():
         return redirect('/settings')
 
     employee_number = request.form['employee_number']
+    line = int(request.cookies.get('line'))
 
     if functions.get_last_register_type(employee_number) == 'Exit':
         response = flask.make_response(redirect('/successful'))
         response.set_cookie('employee_number', employee_number)
         return response
 
-    line = request.cookies.get('line')
-    line_name = functions.get_line_id(line)
-    resultados = functions.get_stations(line_name)
-
     if request.cookies.get('station') != '0':
         response = flask.make_response(redirect('/successful'))
         response.set_cookie('employee_number', employee_number)
         return response
 
-    context = create_context_for_menu(resultados, line)
+    dm = dashboard_model.StationsDashboard()
+    card_data = dm.create_stations_dashboard(line)
+    line_name = dm.get_line(line)
+
+    total_capacity = 0
+    total_employees = 0
+
+    for card in card_data:
+        for side in card['sides']:
+            total_capacity += side['employee_capacity']
+            total_employees += side['employees_working']
+
+    total_capacity = total_capacity - 1
+    total_employees = max(0, total_employees - total_capacity)
+
+    tipo = 'Estación'
+
+    context = {
+        'css_file': 'static/css/styles.css',
+        'cards': card_data,
+        'line': line_name,
+        'total_capacity': total_capacity,
+        'total_employees': total_employees,
+        'tipo': tipo
+    }
 
     response = flask.make_response(render_template
-                                    ('menu.html', **context)
-                                )
+                                    ('menu.html', **context))
     response.set_cookie('employee_number', str(employee_number))
     return response
 
 @main_bp.route('/successful')
 def successful():
-    '''Screen when the user has successfully registered an entry or 
+    '''Screen when the user has successfully registered an entry or
     exit'''
-    station = request.args.get('station')
-    if not station:
-        station = (request.cookies.get('station') or '') + ' BP'
+    station = request.args.get('id')
+    dm = dashboard_model.StationsDashboard()
+    print('Station:', station)
+    employee_number = int(request.cookies.get('employee_number'))
+    # if not station:
+    #     station = (request.cookies.get('station') or '') + ' BP'
     hour = datetime.now()
-    user.set_hour(hour)
 
-    usuario = functions.get_user(request.cookies.get('employee_number'))
-    image = functions.get_image(request.cookies.get('employee_number'))
-    image = 'static/img/media/' + str(image) + '.png'
+    info_user = get_info_user(employee_number)
 
-    if not usuario:
-        usuario = 'Error'
+    image = 'static/img/media/' + str(info_user['id']) + '.png'
 
-    tipo = functions.get_last_register_type(request
-                                            .cookies
-                                            .get('employee_number')
-                                        )
+    tipo = functions.get_last_register_type(employee_number)
 
     if tipo == 'Entry':
-        line = request.cookies.get('line')
-        production_line = ' '.join(line.split(' ')[1:])
-        functions.register_entry(request.cookies.get('employee_number'),
-                     production_line,
+        line = int(request.cookies.get('line'))
+        line_name = dm.get_line(line)
+        station_name = get_position_name(int(station))
+        functions.register_entry(employee_number,
+                     line,
                      station,
-                     hour
+                     hour,
                     )
         tipo = 'Entrada'
+        color_class = 'employee-ok'
     else:
-        functions.register_exit(request.cookies.get('employee_number'),
+        color_class = 'employee-warning'
+        functions.register_exit(employee_number,
                                 hour)
         tipo = 'Salida'
-        employee_number = request.cookies.get('employee_number')
 
-        line, station = functions.get_values_for_exit(employee_number)
-
-        if line in ['inyección', 'metalizado']:
-            line = 'Área de ' + line
-        else:
-            line = 'Línea ' + line
+        line_name, station_name = get_values_for_exit(employee_number)
 
     context = {
         'css_file': 'static/css/styles.css',
-        'user': usuario,
-        'horario': hour,
-        'line': line,
-        'station': station,
+        'user': info_user['name'],
+        'line': line_name,
+        'station': station_name,
         'tipo': tipo,
-        'image': image
+        'image': image,
+        'color_class': color_class
     }
     return render_template('successful.html', **context)
 
-def create_context_for_menu(results, line):
-    ''' Create the context dictionary for the menu template '''
-    numero_estaciones = len(results)
-    employees_for_station = get_employees_for_station(line)
-    estaciones, list_of_stations = process_stations(results,
-                                                employees_for_station
-                                            )
-    employees_for_line, employees_necessary = get_employee_info(line)
+def get_info_user(employee_number):
+    ''' Gets the information of the user. '''
+    db = database.Database()
+    query = f"""
+    SELECT id_empleado, nombre_empleado, apellidos_empleado
+        FROM table_empleados_tarjeta
+        WHERE numero_tarjeta = {employee_number}
+        LIMIT 1
+    """
 
-    return {
-        'css_file': 'static/css/styles.css',
-        'type_of_selection': 'estación',
-        'num_cards': numero_estaciones,
-        'lineas_capacidad_operadores': estaciones,
-        'lineas': list_of_stations,
-        'selected_line': line,
-        'employees_for_line': employees_for_line,
-        'employees_necessary': employees_necessary
+    db.connect()
+    results = db.execute_query(query)
+
+    if not results:
+        return {
+            'id': None,
+            'name': 'Usuario aún no registrado'
+        }
+    info = {
+        'id': results[0][0],
+        'name': f"""{results[0][1]} {results[0][2]}"""
     }
 
-def get_employees_for_station(line):
-    ''' Get the employees for each station in a dictionary '''
-    employees_for_station = functions.get_employees_for_station(line)
-    if not employees_for_station:
-        return {}
-    return {station[0]: station[1] for station in employees_for_station}
+    return info
 
-def process_stations(results, employees_for_station):
-    ''' Process the stations '''
-    # print("Los empleados por estación son: ", employees_for_station)
-    # print("Los resultados son: ", results)
-    estaciones = []
-    estaciones_set = set()
+def get_values_for_exit(user_id):
+    ''' Gets the values for exit. '''
+    db = database.Database()
+    query = f"""
+        SELECT z."name" , ps.position_name
+            FROM sch_dev.registers r
+            INNER JOIN sch_dev.zones z ON z.line_id = r.line_id_fk
+            INNER JOIN sch_dev.tbl_sides_of_positions tbl_s ON tbl_s.side_id = r.position_id_fk
+            INNER JOIN sch_dev.positions ps ON ps.position_id = tbl_s.position_id_fk 
+            WHERE r.id_employee = {user_id}
+            ORDER BY r.id_register DESC
+            LIMIT 1
+        """
 
-    for resultado in results:
-        station, capacity_lh, capacity_rh = (
-                                resultado[0], resultado[1], resultado[2]
-                            )
-        operators_lh = employees_for_station.get(f"{station} LH", 0)
-        if operators_lh == 0:
-            operators_lh = employees_for_station.get(f"{station} BP", 0)
-        operators_rh = employees_for_station.get(f"{station} RH", 0)
+    db.connect()
+    results = db.execute_query(query)
+    db.disconnect()
 
-        capacity_lh = int(capacity_lh) - int(operators_lh)
-        capacity_rh = int(capacity_rh) - int(operators_rh)
+    if not results:
+        return (None, None)
+    return (results[0][0], results[0][1])
 
-        estaciones.append(
-                [station, capacity_lh, operators_lh, capacity_rh,
-                operators_rh]
-            )
-        estaciones_set.add(station)
+def get_position_name(position_id):
+    ''' Gets the position name. '''
+    db = database.Database()
+    query = f"""
+        SELECT ps.position_name
+            FROM sch_dev.tbl_sides_of_positions tbl_ps
+            INNER JOIN sch_dev.positions ps ON ps.position_id = tbl_ps.position_id_fk
+            WHERE tbl_ps.side_id = {position_id}
+        """
 
-    list_of_stations = sorted(list(estaciones_set))
-    return estaciones, list_of_stations
+    db.connect()
+    results = db.execute_query(query)
+    db.disconnect()
 
-def get_employee_info(line):
-    ''' Get the employee information '''
-    employees_for_line = functions.get_employees_for_line(line)
-    employees_for_line_count = (int(employees_for_line[0][1])
-                                if employees_for_line else 0)
-    employees_necessary = int(
-                functions.get_employees_necessary_for_line(line)[0][0]
-            )
-    return employees_for_line_count, employees_necessary
+    if not results:
+        return None
+    return results[0][0]
