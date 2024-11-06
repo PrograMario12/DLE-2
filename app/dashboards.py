@@ -1,77 +1,10 @@
 ''' This module contains the routes for the dashboards of the app. '''
 
-import json
 from flask import Blueprint, render_template, request
-from app import functions, main
+from app import functions
 from app.model import dashboard_model
 
 dashboards_bp = Blueprint('dashboards', __name__)
-
-@dashboards_bp.route('/visualizaciones')
-def dashboard_lines():
-    ''' Renders the dashboard page for the lines. '''
-    there_are_no_lines = []
-    lines = []
-
-    zones = functions.get_lines()
-    employees_for_line = functions.get_employees_for_line()
-    employees_for_station = functions.get_employees_for_station()
-
-    employees_for_station_dict = {}
-    for key, value, count in employees_for_station:
-        if key in employees_for_station_dict:
-            employees_for_station_dict[key].append((value, count))
-        else:
-            employees_for_station_dict[key] = [(value, count)]
-
-    # print(
-    #         "Empleados por estación ",
-    #         json.dumps(employees_for_station_dict, indent=4)
-    #     )
-    employees_for_line = {line[0]: line[1] for line
-                          in employees_for_line}
-    # print(employees_for_line)
-
-    for zone in zones:
-        modified_zone = str(' '.join(zone[1].split()[1:]))
-        employees_for_station = employees_for_station_dict.get(modified_zone, [])
-        employees_for_station_position = {
-                station[0]: station[1] for station
-                in employees_for_station
-            }
-
-        if employees_for_station_position or zone[1] in ('área metalizado',
-                                                  'área inyección'):
-            line = [zone[1], zone[2]]
-
-            if modified_zone in employees_for_line:
-                line.append(employees_for_line[modified_zone])
-            else:
-                line.append(0)
-
-            stations_info = functions.get_stations(zone[0])
-            print(stations_info)
-
-            stations = main.process_stations(stations_info,
-                                            employees_for_station_position)
-            stations = stations[0]
-
-            status = validate_stations(stations)
-            line.append(status)
-
-            lines.append(line)
-
-    number_of_lines = len(lines)
-
-    context = {
-        'css_file': 'static/css/styles.css',
-        'selection_type': 'línea',
-        'num_cards': number_of_lines,
-        'inline_operator_capacity': lines,
-        'lineas': there_are_no_lines
-    }
-
-    return render_template('visualizaciones.html', **context)
 
 @dashboards_bp.route('/visualizaciones_lines')
 def lines_dashboards():
@@ -84,6 +17,22 @@ def lines_dashboards():
     }
 
     return render_template('lines_dashboards.html', **context)
+
+@dashboards_bp.route('/dashboard_estaciones')
+def stations_dashboard():
+    ''' Renders the dashboard page for the stations. '''
+    line = request.args.get('line')
+    dm = dashboard_model.StationsDashboard()
+    card_data = dm.create_stations_dashboard(line)
+    name_line = dm.get_line(line)
+    # print (stations)
+
+    context = {
+        'line': name_line,
+        'cards': card_data
+    }
+
+    return render_template('stations_dashboards.html', **context)
 
 @dashboards_bp.route('/visualizaciones_estación')
 def dashboard_stations():

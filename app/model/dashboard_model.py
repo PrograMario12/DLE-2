@@ -1,5 +1,6 @@
 ''' Model for the dashboard '''
 from app.database import Database
+import json
 
 class LinesDashboard():
     ''' Class to represent the lines in the dashboard '''
@@ -15,7 +16,6 @@ class LinesDashboard():
         self.add_classes(lines_data)
         active_lines = self.get_active_lines(lines_data)
         self.add_status(lines_data, active_lines)
-        print(lines_data)
         return lines_data  # lines_data contains the processed line
         # cards with employee data, classes, and status
 
@@ -40,7 +40,9 @@ class LinesDashboard():
                 card_id = int(card['id'])
                 if card_id == employee_id:
                     card['employees_working'] = employees_working
-                    percentage = (employees_working / card['employee_capacity']) * 100
+                    percentage = (
+                        employees_working / card['employee_capacity']
+                        ) * 100
                     card['percentage'] = round(percentage, 2)
 
     def add_classes(self, lines_data):
@@ -103,45 +105,130 @@ class LinesDashboard():
     def get_status_lines(self, active_lines):
         ''' Get the status of the lines '''
         self.db.connect()
+
+        active_lines_str = ','.join(map(str, active_lines))
+
         query_employees_actives_for_station = f"""
-            SELECT line_id_fk,
-                position_id_fk,
-                COUNT(*) AS employees_working
+            SELECT line_id_fk, position_id_fk, COUNT(*) AS employees_working
             FROM registers
             WHERE entry_hour IS NOT NULL
                 AND exit_hour IS NULL
-                AND line_id_fk
-                IN ({','.join([str(line) for line in active_lines])})
+                AND line_id_fk IN ({active_lines_str})
             GROUP BY line_id_fk, position_id_fk;
         """
 
-        query_employees_necessary_for_station = F"""
+        query_employees_necessary_for_station = f"""
             SELECT line_id, position_id, COUNT(*) AS employees_necessary
             FROM positions
-            WHERE line_id
-            IN ({','.join([str(line) for line in active_lines])})
-            AND position_name NOT LIKE '%nva%'
-            AND position_name NOT LIKE '%afe%'
+            WHERE line_id IN ({active_lines_str})
+                AND position_name NOT LIKE '%nva%'
+                AND position_name NOT LIKE '%afe%'
             GROUP BY line_id, position_id;
         """
 
         employees_actives = self.db.execute_query(
                 query_employees_actives_for_station
             )
-
         employees_necessary = self.db.execute_query(
                 query_employees_necessary_for_station
             )
+
         self.db.disconnect()
 
-        different = []
-        for register in employees_necessary:
-            if register not in employees_actives:
-                different.append(register)
+        active_dict = {(line_id, pos_id): count for line_id, pos_id, count
+                       in employees_actives
+                       }
+        necessary_dict = {(line_id, pos_id): count for line_id, pos_id, count
+                          in employees_necessary
+                          }
 
-        lines_not_complete = []
-        for diff in different:
-            if diff[0] not in lines_not_complete:
-                lines_not_complete.append(diff[0])
+        lines_not_complete = {
+            line_id for (line_id, pos_id), count in necessary_dict.items()
+            if active_dict.get((line_id, pos_id), 0) < count
+        }
 
-        return lines_not_complete
+        return list(lines_not_complete)
+
+class StationsDashboard():
+    ''' Class to represent the stations in the dashboard '''
+    def __init__(self):
+        self.db = Database()
+
+    def create_stations_dashboard(self, line):
+        ''' Create a dictionary with the stations '''
+        card_data=[]
+        positions = {}
+        stations = self.get_stations(line)
+
+        for station in stations:
+            position_id = station[0]
+            if position_id not in positions:
+                positions[position_id] = {
+                    'name': station[1],
+                    'sides': []
+                }
+            positions[position_id]['sides'].append({
+                'side_id': station[2],
+                'side_title': station[3],
+                'employee_capacity': station[4]
+            })
+
+        for position_id, position_data in positions.items():
+            card = {
+                'position_id': position_id,
+                'position_name': position_data['name'],
+                'sides': position_data['sides']
+            }
+            card_data.append(card)
+
+        print(json.dumps(card_data, indent=4))
+        return card_data
+
+    def get_employees_actives(self, line):
+        ''' Get the employees actives '''
+        self.db.connect()
+        query = f"""
+            SELECT position_id_fk, COUNT(*) AS employees_working
+            FROM registers
+            WHERE entry_hour IS NOT NULL and exit_hour is NULL
+            AND line_id_fk = {line}
+            GROUP BY position_id_fk
+        """
+        employees = self.db.execute_query(query)
+        self.db.disconnect()
+
+        return employees
+
+    def get_line(self, line):
+        ''' Get the name of the line '''
+        self.db.connect()
+        query = f"""
+            SELECT type_zone || ' ' || name AS line
+            FROM zones WHERE line_id = {line}
+        """
+        line = self.db.execute_query(query)
+        self.db.disconnect()
+
+        line = str(line[0][0])
+
+        return line
+
+    def get_stations(self, line):
+        ''' Get the stations '''
+        self.db.connect()
+        query = f"""
+            SELECT
+              position_id,
+              position_name,
+              sides.side_id,
+              sides.side_title,
+              sides.employee_capacity
+            FROM sch_dev.positions p
+			INNER JOIN sch_dev.tbl_sides_of_positions sides
+              ON sides.position_id_fk = p.position_id
+            WHERE line_id = {line}
+            ORDER BY position_name
+        """
+        stations = self.db.execute_query(query)
+        self.db.disconnect()
+        return stations

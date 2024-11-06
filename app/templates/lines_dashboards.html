@@ -7,6 +7,11 @@
 {% endblock %}
 
 {% block content %}
+    <div class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
     <div class="information">
         <p>🟡Faltan empleados</p>
         <p>🟢Línea completa</p>
@@ -17,7 +22,7 @@
     <div class="menu">
         {% for line in lines%}
             {% if line.percentage %}
-            <div class="card-dashboard capitalize {{line.class}}">
+            <a href="/dashboard_estaciones?line={{line.id}}" class="card-dashboard capitalize {{line.class}}">
                 <h2>{{ line.name }}</h2>
                 <h1>
                     {{ line.percentage }}%
@@ -25,9 +30,15 @@
                         ⚠️
                     {% endif %}
                 </h1>
-            </div>
+            </a>
             {% endif %}
         {% endfor %}
     </div>
 
+    <script>
+        // Mostrar la ventana de carga al cargar la página
+        window.addEventListener('load', function() {
+            document.querySelector('.loading-screen').style.display = 'none';
+        });
+    </script>
 {% endblock %}

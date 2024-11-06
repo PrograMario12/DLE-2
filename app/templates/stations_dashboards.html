@@ -1,0 +1,39 @@
+{% extends "base/base_dashboards.html" %}
+
+{%block title%}Dashboard estaciones{%endblock%}
+
+{%block header%}
+    <h1>Dashboard estaciones</h1>
+{%endblock%}
+
+{%block content%}
+    <div class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <h1 class="capitalize">{{line}}</h1>
+
+    <div class="menu">
+        {% for card in cards %}
+            <div class="card uppercase">
+                <h2>{{card.name}}</h2>
+                <div class="select-position">
+                    {%for side in card.sides%}
+                        <div class="card-dashboard small-card-dashboard uppercase">
+                            <h3>{{side.side_title}}</h3>
+                            <p><i class="fi fi-rr-user"></i>{{side.employee_capacity}} <i class="fi fi-sr-user"></i> 0</p>
+                        </div>
+                    {%endfor%}
+                </div>
+            </div>
+        {%endfor%}
+    </div>
+
+    <script>
+        // Mostrar la ventana de carga al cargar la página
+        window.addEventListener('load', function() {
+            document.querySelector('.loading-screen').style.display = 'none';
+        });
+    </script>
+{%endblock%}
