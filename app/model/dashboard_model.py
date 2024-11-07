@@ -168,7 +168,8 @@ class StationsDashboard():
     def create_stations_dashboard(self, line):
         ''' Create a dictionary with the stations '''
         stations = self.get_stations(line)
-        employees_active = {emp[0]: emp[1] for emp in self.get_employees_actives(line)}
+        employees_active = {emp[0]: emp[1]
+                            for emp in self.get_employees_actives(line)}
 
         positions = {}
         for station in stations:
@@ -228,7 +229,7 @@ class StationsDashboard():
         line = self.db.execute_query(query)
         self.db.disconnect()
 
-        line = str(line[0][0])
+        line = str(line[0][0]) if line else "registra una línea"
 
         return line
 

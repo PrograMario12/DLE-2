@@ -21,10 +21,13 @@ def home():
     dm = dashboard_model.StationsDashboard()
     if flask_login.current_user.is_authenticated:
         logout_user()
-    actual_line = int(request.cookies.get('line'))
+    actual_line = int(request.cookies.get('line', 0))
     line_name = dm.get_line(actual_line)
     station = request.cookies.get('station')
-    station_text = 'general'
+    if line_name == "registra una línea":
+        station = '‼️'
+    else:
+        station_text = 'general'
     if station and station != '0':
         station_text = station
 
@@ -173,11 +176,13 @@ def get_values_for_exit(user_id):
     ''' Gets the values for exit. '''
     db = database.Database()
     query = f"""
-        SELECT z."name" , ps.position_name
+        SELECT z.type_zone || ' ' || z.name , ps.position_name
             FROM sch_dev.registers r
             INNER JOIN sch_dev.zones z ON z.line_id = r.line_id_fk
-            INNER JOIN sch_dev.tbl_sides_of_positions tbl_s ON tbl_s.side_id = r.position_id_fk
-            INNER JOIN sch_dev.positions ps ON ps.position_id = tbl_s.position_id_fk 
+            INNER JOIN sch_dev.tbl_sides_of_positions tbl_s
+              ON tbl_s.side_id = r.position_id_fk
+            INNER JOIN sch_dev.positions ps 
+              ON ps.position_id = tbl_s.position_id_fk
             WHERE r.id_employee = {user_id}
             ORDER BY r.id_register DESC
             LIMIT 1
@@ -197,7 +202,8 @@ def get_position_name(position_id):
     query = f"""
         SELECT ps.position_name
             FROM sch_dev.tbl_sides_of_positions tbl_ps
-            INNER JOIN sch_dev.positions ps ON ps.position_id = tbl_ps.position_id_fk
+            INNER JOIN sch_dev.positions ps
+              ON ps.position_id = tbl_ps.position_id_fk
             WHERE tbl_ps.side_id = {position_id}
         """
 
