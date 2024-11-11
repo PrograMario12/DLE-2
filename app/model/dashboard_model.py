@@ -1,6 +1,5 @@
 ''' Model for the dashboard '''
 from app.database import Database
-import json
 
 class LinesDashboard():
     ''' Class to represent the lines in the dashboard '''
@@ -10,7 +9,6 @@ class LinesDashboard():
     def create_lines_dashboard(self):
         ''' Create a dictionary with the lines '''
         lines = self.get_line()
-        lines_data = self.create_cards(lines)
         lines_data = self.create_cards(lines)
         self.add_employees_data(lines_data)
         self.add_classes(lines_data)
@@ -177,13 +175,14 @@ class StationsDashboard():
             if position_id not in positions:
                 positions[position_id] = {
                     'name': station[1],
+                    'status': station[2],
                     'sides': []
                 }
             positions[position_id]['sides'].append({
-                'side_id': station[2],
-                'side_title': station[3],
-                'employee_capacity': station[4],
-                'employees_working': employees_active.get(station[2], 0)
+                'side_id': station[3],
+                'side_title': station[4],
+                'employee_capacity': station[5],
+                'employees_working': employees_active.get(station[3], 0)
             })
 
         card_data = []
@@ -191,6 +190,7 @@ class StationsDashboard():
             card = {
                 'position_id': position_id,
                 'position_name': position_data['name'],
+                'status': position_data['status'],
                 'sides': position_data['sides']
             }
             for side in card['sides']:
@@ -238,14 +238,18 @@ class StationsDashboard():
         self.db.connect()
         query = f"""
             SELECT
-              position_id,
-              position_name,
+              pos.position_id,
+              pos.position_name,
+              ps.is_active,
               sides.side_id,
               sides.side_title,
               sides.employee_capacity
-            FROM sch_dev.positions p
+            FROM sch_dev.positions pos
 			INNER JOIN sch_dev.tbl_sides_of_positions sides
-              ON sides.position_id_fk = p.position_id
+              ON sides.position_id_fk = pos.position_id
+            INNER JOIN sch_dev.position_status ps 
+              ON ps.position_id_fk = pos.position_id
+
             WHERE line_id = {line}
             ORDER BY position_name, sides.side_title
         """

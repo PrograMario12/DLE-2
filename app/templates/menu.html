@@ -26,17 +26,17 @@ Date: [2024-07-16]
 
             <div class="h3-contexto">
                 <h3>
-                    Real: {{total_capacity}}
+                    Real: {{total_employees}}
                 </h3>
                 <h3>
-                    Fuera de estándar: {{total_employees}}
+                    Fuera de estándar: {{total_capacity}}
                 </h3>
             </div>
         </div>
 
         <div class="menu">
             {% for card in cards %}
-                <div class="card">
+                <div class="card {% if card.status == false%} hidden {%endif%}">
                     <h2>{{tipo}} {{card.position_name}}</h2>
                     <div class="select-position">
                         {%for side in card.sides%}

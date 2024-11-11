@@ -17,8 +17,8 @@
 
     <div class="menu">
         {% for card in cards %}
-            <div class="card uppercase">
-                <h2>{{card.position_name}}</h2>
+            <div class="card uppercase {% if card.status == false%} hidden {%endif%}">
+                <h2>{{tipo}} {{card.position_name}}</h2>
                 <div class="select-position">
                     {%for side in card.sides%}
                         <div class="card-dashboard small-card-dashboard uppercase {{side.class}}" onclick="openModal({{side.side_id}})">

@@ -20,14 +20,22 @@ def lines_dashboards():
 @dashboards_bp.route('/dashboard_estaciones')
 def stations_dashboard():
     ''' Renders the dashboard page for the stations. '''
-    line = request.args.get('line')
+    line = int(request.args.get('line'))
     dm = dashboard_model.StationsDashboard()
     card_data = dm.create_stations_dashboard(line)
     name_line = dm.get_line(line)
 
+    if line == 6:
+        tipo = 'Inyectora'
+    elif line == 7:
+        tipo = 'Metalizadora'
+    else:
+        tipo = 'Estación'
+
     context = {
         'line': name_line,
-        'cards': card_data
+        'cards': card_data,
+        'tipo': tipo
     }
 
     return render_template('stations_dashboards.html', **context)

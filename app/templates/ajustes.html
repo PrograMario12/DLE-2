@@ -6,9 +6,9 @@
 
 {% block content %}
 
-        <div class="menu centrar-objetos direction-column">
+        <div class="menu centrar-objetos ">
             {% for line in lines %}
-                <button class="button-4
+                <button class="button-4 button-4-settings
                     capitalize
                     {% if line[0] == active_line %}
                         button-4-select
@@ -17,11 +17,11 @@
                     {{line[1]}}
                 </button>
             {% endfor %}
-            <button class="button-4" onclick="window.location.href = '/general_exit_from_line'">
+            <button class="button-4" disabled onclick="window.location.href = '/general_exit_from_line'">
                 Salida general de línea
             </button>
 
-            <button class="button-4" onclick="window.location.href = '/settings_line'">
+            <button class="button-4" disabled onclick="window.location.href = '/settings_line'">
                 Configuración de estación
             </button>
         </div>

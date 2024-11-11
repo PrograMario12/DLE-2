@@ -9,11 +9,10 @@ from flask import (
     url_for,
     make_response
 )
-
 from flask_login import login_required, logout_user, login_user
 
 from app import functions
-
+from app import database
 from . import user_model
 
 settings_bp = Blueprint('settings', __name__)
@@ -39,17 +38,25 @@ def settings():
 @login_required
 def change_line():
     ''' This function changes the production line. '''
-    line = request.args.get('line')
-    valid_lines = ['área metalizado', 'área inyección']
+    line = int(request.args.get('line'))
+    valid_lines = [6, 7]
 
     if line in valid_lines:
-        line_id = functions.get_line_id(line)
-        positions = get_status_positions(line_id)
+        positions = get_status_positions(line)
+
+        if line == 6:
+            title = 'inyectoras'
+            prefix = 'INY-'
+        else:
+            title = 'metalizadoras'
+            prefix = ''
 
         context = {
             'css_file': 'static/css/styles.css',
             'positions': positions,
-            'line': line
+            'line': line,
+            'title': title,
+            'prefix': prefix
         }
 
         response = make_response(render_template
@@ -57,12 +64,12 @@ def change_line():
                                   **context)
                                 )
     else:
-        context = {}
+        context = { }
         logout_user()
         response = flask.make_response(redirect('/'))
 
     # Set common cookies
-    response.set_cookie('line', line)
+    response.set_cookie('line', str(line))
     if not context:
         response.set_cookie('station', '0')
 
@@ -74,28 +81,34 @@ def change_line():
 def save_active_positions():
     ''' This function saves the active positions. '''
     positions = request.form.getlist('position')
+    positions = [int(position) for position in positions]
+    line = int(request.cookies.get('line'))
 
-    status_positions = get_status_positions(
-        functions.get_line_id(request.cookies.get('line')))
+    status_positions = get_status_positions(line)
 
-    for injector in status_positions:
-        if injector[0] in positions:
-            query = f"""
-            UPDATE position_status ps
-                SET is_active = TRUE
-                FROM positions p
-                WHERE p.position_id = ps.position_id_fk
-                AND p.position_name = '{injector[0]}';
-            """
-        else:
-            query = f"""
-            UPDATE position_status ps
-                SET is_active = FALSE
-                FROM positions p
-                WHERE p.position_id = ps.position_id_fk
-                AND p.position_name = '{injector[0]}'
-            """
-        functions.insert_bd(query)
+    active_positions = set(positions)
+    all_positions = {position[0] for position in status_positions}
+
+    capacity_positions = get_capacity_positions(active_positions)
+    change_capacity (capacity_positions, line)
+
+    positions_to_activate = active_positions.intersection(all_positions)
+    if positions_to_activate:
+        query_activate = f"""
+        UPDATE position_status ps
+            SET is_active = TRUE
+            WHERE position_id_fk IN ({','.join(map(str, positions_to_activate))});
+        """
+        functions.insert_bd(query_activate)
+
+    positions_to_deactivate = all_positions - active_positions
+    if positions_to_deactivate:
+        query_deactivate = f"""
+        UPDATE position_status ps
+            SET is_active = FALSE
+            WHERE position_id_fk IN ({','.join(map(str, positions_to_deactivate))});
+        """
+        functions.insert_bd(query_deactivate)
 
     response = flask.make_response(redirect('/'))
     return response
@@ -246,13 +259,49 @@ def query_change_of_employees_from_line(production_line):
 def get_status_positions(line_id):
     ''' This function gets the status of the positions. '''
     query = f"""
-    SELECT p.position_name, ps.is_active
+    SELECT p.position_id, p.position_name, ps.is_active
       FROM positions p
       INNER JOIN position_status ps
       ON p.position_id = ps.position_id_fk
       WHERE p.line_id = {line_id}
+      AND p.position_name NOT LIKE '%afe%'
       ORDER BY p.position_name;
     """
 
     results = functions.execute_query(query)
     return results
+
+def get_capacity_positions(positions):
+    ''' This function gets the capacity of the positions. '''
+    db = database.Database()
+    query = f"""
+    SELECT position_id, sum(employee_capacity)
+        FROM positions pos
+        INNER JOIN tbl_sides_of_positions sides
+          ON sides.position_id_fk = pos.position_id
+        WHERE position_id IN ({','.join(map(str, positions))})
+        GROUP BY position_id
+    """
+    db.connect()
+    results = db.execute_query(query)
+    db.disconnect()
+
+
+    total_capacity = 0
+    if results:
+        for result in results:
+            total_capacity += result[1]
+    return total_capacity
+
+def change_capacity(capacity, line):
+    ''' This function changes the capacity of the line. '''
+    db = database.Database()
+    query = f"""
+    UPDATE zones
+        SET employee_capacity = {capacity}
+        WHERE line_id = {line}
+    """
+
+    db.connect()
+    db.insert_query(query)
+    db.disconnect()

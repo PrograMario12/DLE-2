@@ -19,6 +19,7 @@ user = functions.User(0, 0, 0)
 def home():
     ''' Renders the home page of the application. '''
     dm = dashboard_model.StationsDashboard()
+    station_text = ''
     if flask_login.current_user.is_authenticated:
         logout_user()
     actual_line = int(request.cookies.get('line', 0))
@@ -76,14 +77,19 @@ def menu_station():
     total_employees = 0
 
     for card in card_data:
-        for side in card['sides']:
-            total_capacity += side['employee_capacity']
-            total_employees += side['employees_working']
+        if card['status']:
+            for side in card['sides']:
+                total_capacity += side['employee_capacity']
+                total_employees += side['employees_working']
 
-    total_capacity = total_capacity - 1
-    total_employees = max(0, total_employees - total_capacity)
+    total_capacity = max((total_capacity - 1) - total_employees,0)
 
-    tipo = 'Estación'
+    if line == 6:
+        tipo = 'Inyectora'
+    elif line == 7:
+        tipo = 'Metalizadora'
+    else:
+        tipo = 'Estación'
 
     context = {
         'css_file': 'static/css/styles.css',

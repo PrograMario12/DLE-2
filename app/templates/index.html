@@ -14,6 +14,7 @@
         <span id="tiempo">00 : 00</span>
       </div>
     </section>
+    <script src="{{ js_file }}"></script>
 
     <form
       method="post"
@@ -30,7 +31,7 @@
 
       <div>
         <label class="label-email">
-          <input
+            <input
             type="password"
             class="text"
             name="employee_number"
@@ -40,26 +41,25 @@
             autocomplete="new-password"
             oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
             minlength="10"
-          />
+            />
           <span class="required">Escanea tu credencial</span>
         </label>
       </div>
-      <script src="{{ js_file }}"></script>
+      
     </form>
 
-    <p class="actual-line capitalize"> 
-      {{ actual_line }} {{station}}
-    </p>
-
     <div class="botones-esquina">
+      <p class="actual-line capitalize"> 
+        {{ actual_line }} {{station}}
+      </p>
+
       <button class="boton" onclick="location.href='/settings'">
-        <i class="fi fi-sr-settings"></i>
+        <p>🛠️</p>
       </button>
 
       <button class="boton" onclick="location.href='/visualizaciones_lines'">
-        <i class="fi fi-sr-users-alt"></i>
+        <p>📊</p>
       </button>
     </div>
   </body>
-
 </html>

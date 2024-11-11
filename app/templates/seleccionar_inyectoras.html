@@ -1,34 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seleccionar inyectoras</title>
-    <link rel="stylesheet" href="{{ css_file }}">
+{% extends "base/base_dashboards.html" %}
 
-</head>
+{% block title %}
+    Selección de {{ title }} activas
+{% endblock %}
 
-<body>
-    <div class="container">
-        <form id="inyectoras-form" action="/save-active-positions" method="POST">
-            <h2>Selecciona las posiciones que estarán activas</h2>
+{% block header %}
+    <h1>Selecciona las {{ title }}</h1>
+{% endblock %}
 
-            <div class="checkbox-group">
-                {% for position in positions %}
-                    <label class="label-checkbox capitalize">
-                        {% if line == 'área inyección' %}
-                            <input type="checkbox" id="{{ position[0] }}" name="position" value="{{ position[0] }}"
-                            {% if position[1]  %} checked {%endif%} /><p>INY-{{position[0]}}</p>
-                        {% else %}
-                            <input type="checkbox" id="{{ position[0] }}" name="position" value="{{ position[0] }}"
-                            {% if position[1]  %} checked {%endif%} /><p>{{position[0]}}</p>
-                        {% endif %}
-                    </label>
-                {% endfor %}
-
-            </div>
-            <button type="submit" class="button-submit">Guardar Selección</button>
-        </form>
-    </div>
-</body>
-</html>
+{% block content %}
+    <form id="actives-form" action="/save-active-positions" method="POST">
+        <div class="checkbox-group">
+            {% for position in positions %}
+                <div class="check-group">
+                    <p>{{prefix}}{{ position[1] }}</p>
+                    <input type="checkbox" id="{{position[0]}}" 
+                        {% if position[2] %} checked {% endif %} name = "position" value="{{position[0]}}"
+                    /><label class="label-c" for="{{position[0]}}"></label>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit">Guardar selección</button>
+    </form>
+{% endblock %}

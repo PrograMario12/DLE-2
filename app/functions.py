@@ -273,16 +273,6 @@ def get_values_for_exit(user_id):
 
 #     return results[0][0] if results else None
 
-def get_line_id(line):
-    ''' Gets the line ID. '''
-    query = f"""SELECT line_id
-            FROM zones
-            WHERE LOWER(type_zone) || ' ' || LOWER(name) =
-            '{line.lower()}'"""
-
-    results = execute_query(query)
-    return results[0][0] if results else None
-
 def get_employees_necessary_for_line(line):
     ''' Gets the employees necessary for a line. '''
     line_id = get_line_id(line)
