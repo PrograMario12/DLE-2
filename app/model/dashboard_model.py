@@ -129,9 +129,9 @@ class LinesDashboard():
               tbl_p.side_id,
               tbl_p.employee_capacity 
             FROM positions p
-            INNER JOIN tbl_sides_of_positions tbl_p 
+            INNER JOIN tbl_sides_of_positions tbl_p
               ON tbl_p.position_id_fk = p.position_id
-            WHERE p.line_id in ({active_lines_str}) 
+            WHERE p.line_id in ({active_lines_str})
             AND p.position_name NOT LIKE '%afe%'
         """
 
@@ -143,6 +143,8 @@ class LinesDashboard():
             )
 
         self.db.disconnect()
+
+        necessary_dict = {}
 
         if employees_actives:
             active_dict = {(line_id, pos_id): count for line_id, pos_id, count
