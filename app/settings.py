@@ -95,7 +95,7 @@ def save_active_positions():
     positions_to_activate = active_positions.intersection(all_positions)
     if positions_to_activate:
         query_activate = f"""
-        UPDATE position_status ps
+        UPDATE sch_dev.position_status ps
             SET is_active = TRUE
             WHERE position_id_fk IN ({','.join(map(str, positions_to_activate))});
         """
@@ -104,7 +104,7 @@ def save_active_positions():
     positions_to_deactivate = all_positions - active_positions
     if positions_to_deactivate:
         query_deactivate = f"""
-        UPDATE position_status ps
+        UPDATE sch_dev.position_status ps
             SET is_active = FALSE
             WHERE position_id_fk IN ({','.join(map(str, positions_to_deactivate))});
         """

@@ -105,6 +105,7 @@ class LinesDashboard():
         self.db.connect()
 
         active_lines_str = ','.join(map(str, active_lines))
+        print(active_lines)
 
         query_employees_actives_for_station = f"""
             SELECT
@@ -144,10 +145,15 @@ class LinesDashboard():
 
         self.db.disconnect()
 
-        active_dict = {(line_id, pos_id): count for line_id, pos_id, count
+        necessary_dict = {}
+
+
+        print(employees_actives)
+        if employees_actives:
+            active_dict = {(line_id, pos_id): count for line_id, pos_id, count
                        in employees_actives
                        }
-        necessary_dict = {(line_id, pos_id): count for line_id, pos_id, count
+            necessary_dict = {(line_id, pos_id): count for line_id, pos_id, count
                           in employees_necessary
                           }
 
