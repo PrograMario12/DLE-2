@@ -105,16 +105,17 @@ class LinesDashboard():
         self.db.connect()
 
         active_lines_str = ','.join(map(str, active_lines))
+        print(active_lines)
 
         query_employees_actives_for_station = f"""
             SELECT
               r.line_id_fk,
               r.position_id_fk,
               COUNT(*) AS employees_working
-            FROM registers r
-			INNER JOIN tbl_sides_of_positions tbl_p 
+            FROM sch_dev.registers r
+			INNER JOIN sch_dev.tbl_sides_of_positions tbl_p 
               ON r.position_id_fk = tbl_p.side_id
-			INNER JOIN positions ps 
+			INNER JOIN sch_dev.positions ps 
               ON tbl_p.position_id_fk = ps.position_id
             WHERE r.entry_hour IS NOT NULL
                 AND r.exit_hour IS NULL
@@ -128,10 +129,10 @@ class LinesDashboard():
               p.line_id,
               tbl_p.side_id,
               tbl_p.employee_capacity 
-            FROM positions p
-            INNER JOIN tbl_sides_of_positions tbl_p
+            FROM sch_dev.positions p
+            INNER JOIN sch_dev.tbl_sides_of_positions tbl_p 
               ON tbl_p.position_id_fk = p.position_id
-            WHERE p.line_id in ({active_lines_str})
+            WHERE p.line_id in ({active_lines_str}) 
             AND p.position_name NOT LIKE '%afe%'
         """
 
@@ -146,13 +147,15 @@ class LinesDashboard():
 
         necessary_dict = {}
 
+
+        print(employees_actives)
         if employees_actives:
             active_dict = {(line_id, pos_id): count for line_id, pos_id, count
-                        in employees_actives
-                        }
+                       in employees_actives
+                       }
             necessary_dict = {(line_id, pos_id): count for line_id, pos_id, count
-                            in employees_necessary
-                            }
+                          in employees_necessary
+                          }
 
         lines_not_complete = {
             line_id for (line_id, pos_id), count in necessary_dict.items()
@@ -247,10 +250,10 @@ class StationsDashboard():
               sides.side_id,
               sides.side_title,
               sides.employee_capacity
-            FROM positions pos
-			INNER JOIN tbl_sides_of_positions sides
+            FROM sch_dev.positions pos
+			INNER JOIN sch_dev.tbl_sides_of_positions sides
               ON sides.position_id_fk = pos.position_id
-            INNER JOIN position_status ps 
+            INNER JOIN sch_dev.position_status ps 
               ON ps.position_id_fk = pos.position_id
 
             WHERE line_id = {line}

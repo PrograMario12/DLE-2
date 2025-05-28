@@ -1,15 +1,15 @@
-''' This is the main file that runs the Flask web server. It imports 
-the routes module and runs the Flask web server. '''
+"""
+Application Factory and Entry Point for Flask.
+
+Use this script to create and configure the Flask application
+instance.
+It can also be run directly to start the development server.
+"""
 
 import os
 from flask import Flask
-from flask_login import (
-    login_required,
-    UserMixin,
-    login_user,
-    logout_user,
-    LoginManager
-)
+from flask_login import LoginManager
+
 from .user_model import User
 from . import settings
 from . import main
