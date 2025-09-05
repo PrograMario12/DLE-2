@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional
+from flask_login import UserMixin # <-- 1. IMPORTA UserMixin
 
 @dataclass(frozen=True)
-class User:
-    """Entidad que representa a un empleado."""
+class User(UserMixin): # <-- 2. HEREDA de UserMixin
+    """Entidad de negocio que representa a un empleado."""
     id: int
     name: str
     last_name: str

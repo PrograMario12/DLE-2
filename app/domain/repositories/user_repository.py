@@ -34,3 +34,8 @@ class IUserRepository(ABC):
     def get_all_lines(self) -> list[dict]:
         """Obtiene una lista de todas las líneas de producción."""
         pass
+
+    @abstractmethod
+    def find_by_id(self, user_id: int) -> Optional[User]:
+        """Busca un usuario por su ID primario."""
+        pass

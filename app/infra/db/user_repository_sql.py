@@ -82,9 +82,22 @@ class UserRepositorySQL(IUserRepository):
 
         return list(cards.values())
 
-    def get_last_register_type(self, user_id: int) -> Optional[str]:
-        # Implementación aquí
-        pass
+    def get_last_register_type(self, card_number: int) -> Optional[str]:
+        """
+        Obtiene el tipo del último registro ('Entry' o 'Exit') para un número de tarjeta.
+        """
+        # Esta query es una adaptación de tu lógica en `functions.py`
+        query = """
+        SELECT tipo_registro FROM registros
+        WHERE numero_tarjeta = %s
+        ORDER BY fecha_hora DESC
+        LIMIT 1;
+        """
+        cursor = self._get_cursor()
+        cursor.execute(query, (card_number,))
+        result = cursor.fetchone()
+        cursor.close()
+        return result[0] if result else None
 
     def get_last_station_for_user(self, user_id: int) -> Optional[str]:
         # Implementación aquí
@@ -101,3 +114,21 @@ class UserRepositorySQL(IUserRepository):
         ]
         cursor.close()
         return lines
+
+    def find_by_id(self, user_id: int) -> Optional[User]:
+        """Encuentra un usuario por su id_empleado."""
+        query = """
+                SELECT id_empleado, nombre_empleado, apellidos_empleado
+                FROM table_empleados_tarjeta
+                WHERE id_empleado = %s \
+                LIMIT 1 \
+                """
+        cursor = self._get_cursor()
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+
+        if not result:
+            return None
+
+        return User(id=result[0], name=result[1], last_name=result[2])

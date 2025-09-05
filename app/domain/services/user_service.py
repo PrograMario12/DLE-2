@@ -1,5 +1,9 @@
+"""
+src/domain/services/user_service.py
+Servicio para la lógica de negocio relacionada con usuarios.
+"""
 from app.domain.repositories.user_repository import IUserRepository
-
+from typing import Optional
 
 class UserService:
     """Servicio para la lógica de negocio relacionada con usuarios."""
@@ -23,3 +27,9 @@ class UserService:
         Obtiene la lista de líneas para mostrar en la página de configuración.
         """
         return self._user_repo.get_all_lines()
+
+    def get_user_last_register_type(self, card_number: int) -> Optional[str]:
+        """
+        Obtiene el tipo del último registro de un empleado.
+        """
+        return self._user_repo.get_last_register_type(card_number)
