@@ -1,6 +1,10 @@
+"""
+src/infra/db/database_manager.py
+Gestión de la conexión a la base de datos usando Psycopg2.
+"""
+
 import psycopg2
 from flask import g
-
 
 class DatabaseManager:
     """Gestiona el ciclo de vida de la conexión a la base de datos."""
@@ -23,7 +27,6 @@ class DatabaseManager:
         db = g.pop('db', None)
         if db is not None:
             db.close()
-
 
 class DBExtension:
     """Simple extensión de Flask para integrar el DatabaseManager."""

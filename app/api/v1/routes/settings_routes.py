@@ -32,7 +32,7 @@ def configure_line_and_station():
 
     # Para el método GET:
     # 1. Llamar al servicio para obtener la lista de líneas disponibles
-    available_lines = user_service.get_all_lines_for_settings()
+    available_lines = settings_bp.user_service.get_all_lines_for_settings()
 
     # 2. Renderizar la plantilla de ajustes, pasándole los datos
     return render_template('ajustes.html', lines=available_lines)

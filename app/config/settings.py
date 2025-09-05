@@ -15,6 +15,7 @@ class Settings:
     DB_NAME = os.getenv('DB_NAME')
     DB_USER = os.getenv('DB_USER')
     DB_PASSWORD = os.getenv('DB_PASSWORD')
+    DB_SCHEMA = os.getenv('DB_SCHEMA')
 
     # Configuración del servidor
     HOST = os.getenv('FLASK_RUN_HOST', '0.0.0.0')

@@ -1,15 +1,22 @@
-from typing import Optional
-from flask import g
+"""
+src/infra/db/user_repository_sql.py
+Implementación del repositorio de usuarios usando Psycopg2.
+"""
+from .db import get_db
 from app.domain.entities.user import User, StationInfo
 from app.domain.repositories.user_repository import IUserRepository
 from typing import List, Dict, Any, Optional
-
+from psycopg2 import sql
 
 class UserRepositorySQL(IUserRepository):
     """Implementación del repositorio con Psycopg2."""
 
+    def __init__(self, schema: str):
+        self.schema = schema
+
     def _get_cursor(self):
-        return g.db.cursor()
+        # Esta es la línea clave: ahora llama a la función que maneja 'g'
+        return get_db().cursor()
 
     def find_user_by_card_number(self, card_number: int) -> Optional[User]:
         query = """
@@ -105,9 +112,15 @@ class UserRepositorySQL(IUserRepository):
 
     def get_all_lines(self) -> list[dict]:
         """Implementación que obtiene todas las líneas de la tabla de zonas."""
-        query = "SELECT line_id, type_zone || ' ' || name as line_name FROM zones ORDER BY line_id"
+        query = sql.SQL(
+            "SELECT line_id, type_zone || ' ' || name as line_name "
+            "FROM {schema}.zones ORDER BY line_id"
+        )
+        formatted_query = query.format(
+            schema=sql.Identifier(self.schema)
+        )
         cursor = self._get_cursor()
-        cursor.execute(query)
+        cursor.execute(formatted_query)
         # Convertimos la tupla de resultados en una lista de diccionarios
         lines = [
             {"id": row[0], "name": row[1]} for row in cursor.fetchall()
