@@ -1,29 +1,42 @@
-{% extends "base/base_dashboards.html" %}
+{% extends 'base/base_dashboards.html' %}
 
 {% block title %} Ajustes {% endblock %}
 
-{% block header %} <h1>Selecciona la línea</h1> {% endblock %}
+{% block styles %}
+  {# Asumiendo que los estilos de .button-4 están en tu CSS principal #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/ajustes_styles.css') }}">
+{% endblock %}
+
+{% block header %}
+  <h1>Selecciona la línea</h1>
+{% endblock %}
 
 {% block content %}
+  <form
+    class="menu centrar-objetos"
+    method="POST"
+    action="{{ url_for('settings.configure_line_and_station') }}"
+  >
+    {% for line in lines %}
+      {#
+        2. El botón ahora es de tipo "submit".
+           Su `name` y `value` se enviarán como datos del formulario.
+      #}
+      <button
+        class="button-4 button-4-settings capitalize {% if line['id'] == active_line %}button-4-select{% endif %}"
+        type="submit"
+        name="line"
+        value="{{ line['id'] }}"
+      >
+        {{ line['name'] }}
+      </button>
+    {% endfor %}
 
-        <div class="menu centrar-objetos ">
-            {% for line in lines %}
-                <button class="button-4 button-4-settings
-                    capitalize
-                    {% if line[0] == active_line %}
-                        button-4-select
-                    {% endif %}
-                " type="button" onclick="window.location.href = '/changeLine?line={{ line[0] }}'">
-                    {{line[1]}}
-                </button>
-            {% endfor %}
-            <button class="button-4" disabled onclick="window.location.href = '/general_exit_from_line'">
-                Salida general de línea
-            </button>
-
-            <button class="button-4" disabled onclick="window.location.href = '/settings_line'">
-                Configuración de estación
-            </button>
-        </div>
-
+    <button class="button-4" disabled>
+      Salida general de línea
+    </button>
+    <button class="button-4" disabled>
+      Configuración de estación
+    </button>
+  </form>
 {% endblock %}

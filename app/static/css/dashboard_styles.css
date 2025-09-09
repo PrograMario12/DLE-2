@@ -1,0 +1,162 @@
+/* ==========================================================================
+   dashboard_styles.css
+   Estilos para el tablero de visualización de líneas.
+   ========================================================================== */
+
+/* --- 1. Variables y Estilos Globales de la Página --- */
+:root {
+  --color-background: #f4f7fa; /* Un gris azulado muy claro para el fondo */
+  --color-primary: #005A9C;   /* Azul corporativo */
+  --color-text-primary: #1A202C; /* Texto principal oscuro */
+  --color-text-secondary: #718096; /* Texto secundario más claro */
+
+  --status-green: #28a745;
+  --status-yellow: #ffc107;
+  --status-red: #dc3545;
+  --status-orange-warning: #fd7e14; /* Naranja para la advertencia 'mal posicionado' */
+
+  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --border-radius: 12px;
+}
+
+/* Aplicamos la fuente y el color de fondo a toda la página */
+body {
+  font-family: var(--font-family-sans);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+/* --- 2. Contenedor Principal y Encabezado --- */
+.content-wrapper {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.5rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2rem; /* 32px */
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+/* --- 3. Leyenda de Información --- */
+.information {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  font-size: 0.875rem; /* 14px */
+}
+
+.information p {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+}
+
+/* Círculos de color para la leyenda */
+.information p::before {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+.information p:nth-child(1)::before { background-color: var(--status-yellow); }
+.information p:nth-child(2)::before { background-color: var(--status-green); }
+.information p:nth-child(3)::before { background-color: var(--status-red); }
+.information p:nth-child(4)::before { background-color: var(--status-orange-warning); }
+
+
+/* --- 4. Menú de Tarjetas (Grid Layout) --- */
+.menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.card-dashboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  color: var(--color-text-primary);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-left: 5px solid transparent; /* Borde de estado */
+}
+
+.card-dashboard:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-dashboard h2 {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.card-dashboard h1 {
+  font-size: 3rem; /* 48px */
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-align: left;
+}
+
+/* --- 5. Clases de Estado para las Tarjetas --- */
+.employee-ok { border-left-color: var(--status-green); }
+.employee-nook { border-left-color: var(--status-yellow); }
+.employee-warning { border-left-color: var(--status-red); }
+
+/* Icono de advertencia para personal mal posicionado */
+.card-dashboard h1 .warning-icon {
+  font-size: 1.5rem;
+  color: var(--status-orange-warning);
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* --- 6. Pantalla de Carga (Opcional pero recomendado) --- */
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.loading-spinner {
+  border: 5px solid var(--color-background);
+  border-top: 5px solid var(--color-primary);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

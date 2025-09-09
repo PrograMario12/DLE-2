@@ -39,3 +39,9 @@ class IUserRepository(ABC):
     def find_by_id(self, user_id: int) -> Optional[User]:
         """Busca un usuario por su ID primario."""
         pass
+
+    def get_all_lines_summary(self) -> list[dict]:
+        pass
+
+    def get_active_operators(self, station_id: int) -> list:
+        pass

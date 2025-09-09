@@ -1,49 +1,55 @@
-from typing import Dict, Any, List
 from app.domain.repositories.user_repository import IUserRepository
 
-
 class DashboardService:
-    """
-    Contiene la lógica de negocio para construir los datos de los dashboards.
-    Depende de una interfaz de repositorio para obtener los datos (DIP).
-    """
-
     def __init__(self, user_repo: IUserRepository):
-        """Inyecta la dependencia del repositorio de usuarios."""
         self._user_repo = user_repo
 
-    def prepare_station_dashboard(self, line_id: int) -> Dict[str, Any]:
-        """
-        Prepara todos los datos necesarios para la vista del dashboard de una línea.
+    def get_lines_summary(self) -> list[dict]:
+        """Prepara el resumen de todas las líneas, incluyendo el porcentaje."""
 
-        Args:
-            line_id: El ID de la línea a consultar.
+        # 1. Obtiene los datos base del repositorio
+        lines_from_repo = self._user_repo.get_all_lines_summary()
 
-        Returns:
-            Un diccionario con los datos listos para ser usados en la plantilla.
-        """
-        cards_data = self._user_repo.get_station_cards_for_line(line_id)
+        processed_lines = []
+        for line in lines_from_repo:
+            operators = line.get('operators', 0)
+            capacity = line.get('capacity', 0)
+
+            # 2. Calcula el porcentaje
+            if capacity > 0:
+                percentage = round((operators / capacity) * 100)
+            else:
+                percentage = 0  # Evita la división por cero si la capacidad es 0
+
+            # 3. Añade el porcentaje y otros datos al nuevo diccionario
+            line['percentage'] = percentage
+
+            # (Opcional) Puedes añadir la lógica para la clase CSS aquí también
+            if percentage < 80:
+                line['class'] = 'employee-nook'  # Amarillo
+            elif percentage > 100:
+                line['class'] = 'employee-warning'  # Rojo
+            else:
+                line['class'] = 'employee-ok'  # Verde
+
+            processed_lines.append(line)
+
+        return processed_lines
+
+    def get_station_details_for_line(self, line_id: int) -> dict:
+        """Prepara los detalles de las estaciones para una línea específica."""
+        cards = self._user_repo.get_station_cards_for_line(line_id)
         line_name = self._user_repo.get_line_name_by_id(line_id)
 
-        total_capacity = 0
-        total_employees = 0
-
-        for card in cards_data:
-            if card.get('status'):
-                for side in card.get('sides', []):
-                    total_capacity += side.get('employee_capacity', 0)
-                    total_employees += side.get('employees_working', 0)
-
-        # El cálculo original era `max((total_capacity - 1) - total_employees, 0)`
-        available_capacity = max(total_capacity - total_employees, 0)
-
         return {
-            "cards": cards_data,
-            "line_name": line_name or "Línea desconocida",
-            "total_capacity": available_capacity,
-            "total_employees": total_employees,
-            "station_type": self._get_station_type_from_line(line_id),
+            "line": line_name,
+            "cards": cards,
+            "tipo": self._get_station_type_from_line(line_id)
         }
+
+    def get_active_operators_for_station(self, station_id: int) -> list:
+        """Obtiene los operadores activos para una estación."""
+        return self._user_repo.get_active_operators(station_id)
 
     def _get_station_type_from_line(self, line_id: int) -> str:
         """Determina el nombre del tipo de estación basado en la línea."""

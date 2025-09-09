@@ -38,73 +38,95 @@ class UserRepositorySQL(IUserRepository):
 
     def get_line_name_by_id(self, line_id: int) -> Optional[str]:
         query = "SELECT type_zone || ' ' || name FROM zones WHERE line_id = %s"
+        query = sql.SQL("""
+        SELECT type_zone || ' ' || name
+        FROM {schema}.zones
+                        """).format(schema=sql.Identifier(self.schema))
+
         cursor = self._get_cursor()
         cursor.execute(query, (line_id,))
         result = cursor.fetchone()
         cursor.close()
         return result[0] if result else None
 
-    def get_station_cards_for_line(self, line_id: int) -> List[Dict[str, Any]]:
+    def get_station_cards_for_line(self, line_id: int) -> list[dict[str, any]]:
         """
-        Implementación de la consulta compleja para obtener los datos de las tarjetas.
-        Esta es una adaptación de tu lógica original.
+        Obtiene y procesa los datos de las estaciones para una línea específica,
+        uniendo las tablas por sus IDs de clave foránea.
         """
-        # Esta consulta es compleja y puede necesitar ajustes finos
-        # según tu esquema exacto, pero la estructura es la correcta.
-        query = """
-                SELECT p.position_id, \
-                       p.position_name, \
-                       p.status, \
-                       s.side_id, \
-                       s.name_side, \
-                       s.employee_capacity, \
-                       (SELECT COUNT(*) FROM registers r WHERE r.position_id_fk = s.side_id) as employees_working
-                FROM positions p
-                         JOIN tbl_sides_of_positions tsp ON p.position_id = tsp.position_id_fk
-                         JOIN sides s ON tsp.side_id = s.side_id
-                WHERE p.line_id_fk = %s
-                ORDER BY p.position_name, s.name_side; \
-                """
+
+        query = sql.SQL("""
+                        WITH employees_working AS (SELECT r.position_id_fk,
+                                                          COUNT(r.id_register) as employee_count
+                                                   FROM {schema}.registers r
+                                                   WHERE r.exit_hour IS NULL
+                                                   GROUP BY r.position_id_fk)
+                        SELECT p.position_name,
+                               s.side_title,
+                               s.employee_capacity,
+                               COALESCE(ew.employee_count, 0) as operators
+                        FROM {schema}.positions p
+            JOIN {schema}.tbl_sides_of_positions s
+                        ON p.position_id = s.position_id_fk
+                            LEFT JOIN employees_working ew ON s.side_id = ew.position_id_fk
+                        WHERE p.line_id = %s
+                        ORDER BY p.position_name, s.side_title;
+                        """).format(schema=sql.Identifier(self.schema))
+
         cursor = self._get_cursor()
         cursor.execute(query, (line_id,))
         results = cursor.fetchall()
         cursor.close()
 
-        # Agrupar resultados por posición para construir la estructura de tarjetas
+        # Agrupar los resultados por estación en Python
         cards = {}
-        for row in results:
-            pos_id, pos_name, status, side_id, side_name, capacity, working = row
-            if pos_id not in cards:
-                cards[pos_id] = {
-                    "position_name": pos_name,
-                    "status": status,
+        # El nombre de la variable aquí también cambia para mayor claridad
+        for station_name, side_title, capacity, operators in results:
+            if station_name not in cards:
+                cards[station_name] = {
+                    "position_name": station_name,
+                    "status": True,
                     "sides": []
                 }
-            cards[pos_id]["sides"].append({
-                "side_id": side_id,
-                "name_side": side_name,
+
+            cards[station_name]["sides"].append({
+                "name_side": side_title,
+                # <-- La clave del diccionario se mantiene como 'name_side' para consistencia
                 "employee_capacity": capacity,
-                "employees_working": working
+                "employees_working": operators
             })
 
         return list(cards.values())
 
-    def get_last_register_type(self, card_number: int) -> Optional[str]:
+    def get_last_register_type(self, card_number: int) -> str:
         """
-        Obtiene el tipo del último registro ('Entry' o 'Exit') para un número de tarjeta.
+        Determina si la próxima acción del usuario debe ser 'Entrada' o 'Salida'.
+        Se basa en la lógica original: si el último registro no tiene hora de salida,
+        la próxima acción es una 'Salida'. En cualquier otro caso, es una 'Entrada'.
         """
-        # Esta query es una adaptación de tu lógica en `functions.py`
-        query = """
-        SELECT tipo_registro FROM registros
-        WHERE numero_tarjeta = %s
-        ORDER BY fecha_hora DESC
-        LIMIT 1;
-        """
+        query = sql.SQL("""
+                        SELECT exit_hour
+                        FROM {schema}.registers
+                        WHERE id_employee = %s
+                        ORDER BY id_register DESC
+                        LIMIT 1
+                        """)
+
+        formatted_query = query.format(schema=sql.Identifier(self.schema))
+
         cursor = self._get_cursor()
-        cursor.execute(query, (card_number,))
+        cursor.execute(formatted_query, (card_number,))
         result = cursor.fetchone()
         cursor.close()
-        return result[0] if result else None
+
+        # Si se encontró un registro y su 'exit_hour' es NULA,
+        # significa que el usuario está "dentro", por lo que la próxima acción es 'Exit'.
+        if result and result[0] is None:
+            return 'Exit'
+
+        # Si no hay registros, o si el último registro ya tiene una 'exit_hour',
+        # significa que el usuario está "fuera", por lo que la próxima acción es 'Entry'.
+        return 'Entry'
 
     def get_last_station_for_user(self, user_id: int) -> Optional[str]:
         # Implementación aquí
@@ -145,3 +167,55 @@ class UserRepositorySQL(IUserRepository):
             return None
 
         return User(id=result[0], name=result[1], last_name=result[2])
+
+    def get_all_lines_summary(self) -> list[dict]:
+        """
+        Obtiene un resumen de todas las líneas con sus operadores y capacidad.
+        (Esta es la nueva implementación para lines_dashboards.html)
+        """
+        # Esta consulta es un ejemplo y necesitará ser ajustada a tu lógica de negocio exacta
+        query = sql.SQL("""
+                        SELECT z.line_id,
+                               z.type_zone || ' ' || z.name  as line_name,
+                               COUNT(DISTINCT r.id_employee) as current_operators,
+                               SUM(s.employee_capacity)      as total_capacity
+                        FROM {schema}.zones z
+            LEFT JOIN {schema}.positions p
+                        ON z.line_id = p.line_id
+                            LEFT JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
+                            LEFT JOIN {schema}.registers r ON s.side_id = r.position_id_fk AND r.exit_hour IS NULL
+                        GROUP BY z.line_id, line_name
+                        ORDER BY z.line_id;
+                        """).format(schema=sql.Identifier(self.schema))
+
+        cursor = self._get_cursor()
+        cursor.execute(query)
+        results = cursor.fetchall()
+        cursor.close()
+
+        lines = [
+            {"id": row[0], "name": row[1], "operators": row[2],
+             "capacity": row[3]}
+            for row in results
+        ]
+        return lines
+
+    def get_active_operators(self, station_id: int) -> list:
+        """
+        Obtiene los nombres de los empleados activos en una estación específica.
+        """
+        query = sql.SQL("""
+                        SELECT e.nombre_empleado, e.apellidos_empleado
+                        FROM {schema}.registers r
+            JOIN {schema}.table_empleados_tarjeta e
+                        ON r.id_employee = e.numero_tarjeta
+                        WHERE r.position_id_fk = %s AND r.exit_hour IS NULL;
+                        """).format(schema=sql.Identifier(self.schema))
+
+        cursor = self._get_cursor()
+        cursor.execute(query, (station_id,))
+        results = cursor.fetchall()
+        cursor.close()
+
+        # Devolvemos una lista simple de nombres, como en el original
+        return [f"{row[0]} {row[1]}" for row in results]

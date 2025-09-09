@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href=" {{ css_file }}">
+        <title>Visualizaciones</title>
+
+
+
+    <script>
+    function showPopup(content) {
+        // Create the popup container
+        console.log('El contenido que estoy recibiendo es: ' + content);
+
+        var popupContainer = document.createElement('div');
+        popupContainer.id = 'popupContainer';
+        popupContainer.style.position = 'fixed';
+        popupContainer.style.top = '0';
+        popupContainer.style.left = '0';
+        popupContainer.style.width = '100%';
+        popupContainer.style.height = '100%';
+        popupContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        popupContainer.style.display = 'flex';
+        popupContainer.style.justifyContent = 'center';
+        popupContainer.style.alignItems = 'center';
+        popupContainer.style.zIndex = '1000';
+
+        // Create the popup content
+        var popupContent = document.createElement('div');
+        popupContent.style.backgroundColor = 'white';
+        popupContent.style.padding = '20px';
+        popupContent.style.borderRadius = '5px';
+        popupContent.innerHTML = '<p> Operadores activos: </p> <p>' + content.join('<br>') + '</p><button onclick="closePopup()">Cerrar</button>';
+
+        // Add the content to the container
+        popupContainer.appendChild(popupContent);
+
+        // Add the container to the document body
+        document.body.appendChild(popupContainer);
+    }
+
+    function closePopup() {
+        var popupContainer = document.getElementById('popupContainer');
+        if (popupContainer) {
+            document.body.removeChild(popupContainer);
+        }
+    }
+    </script>
+
+    </head>
+
+    <body>
+        <div class="header-ajustes"> <!-- Div de Header ajustes -->
+            <h1>Resumen actual (Gente)</h1>
+            {% if selection_type == 'línea' %}
+                <button class="button-4 button-4-small" onclick="window.location.href = '/'">Inicio</button>
+            {% else %}
+            <div class="botones"> <!-- Div de botones -->
+                <button class="button-4 button-4-half" onclick="window.location.href = '/visualizaciones'">Regresar</button>
+                <button class="button-4 button-4-half" onclick="window.location.href = '/'">Inicio</button>
+            </div> <!-- Fin de Div de botones -->
+
+            {% endif %}
+        </div> <!-- Fin de Div de Header ajustes -->
+
+        <div class="header">
+            {% if selected_line  %}
+
+                <div class="h3-contexto">
+                    <h3 class="separate-h3">Estándar: {{ employees_necessary }}</h3>
+                    <h3 class="separate-h3"><i class="fi fi-sr-user "></i> Real: {{employees_for_line}} </h3>
+                    <h3><i class="fi fi-rr-user"></i>
+                        Fuera de estándar:
+
+                        {% if employees_necessary - employees_for_line < 0 %}
+                            {{ employees_for_line - employees_necessary }}
+                        {% else %}
+                            {{ employees_necessary - employees_for_line }}
+                        {% endif %}
+                    </h3>
+                </div>
+
+                <h1 class="uppercase">
+                    {{ selected_line }}
+                </h1>
+
+            {% endif %}
+        </div>
+
+
+
+        {% if selection_type == 'línea' %}
+            <div class="menu "> <!-- Div de menu -->
+            {% for i  in range (num_cards) %}
+                <a href="/visualizaciones_estación?line={{inline_operator_capacity[i][0]}}" class="a-estilos
+                {% if inline_operator_capacity[i][1] == -1 and inline_operator_capacity[i][2] == 0   %}
+                disabled
+                {% endif %}"><div class="card card-high-height
+                    {% if (inline_operator_capacity[i][2] / inline_operator_capacity[i][1] * 100) == 100 %}
+                        empleado-ok
+                    {% elif (inline_operator_capacity[i][2] / inline_operator_capacity[i][1] * 100) <= 101 %}
+                        empleado-nook
+                    {% else %}
+                        empleado-warning
+                    {% endif %}
+                    {% if inline_operator_capacity[i][1] == -1 and inline_operator_capacity[i][2] == 0 %}
+                        empleado-disabled
+                    {% endif %}
+                    "> <!-- Div de card -->
+
+                    <h3 class="capitalize">{{ inline_operator_capacity[i][0] }}</h3>
+
+                    <div class="texto-de-botones">
+                        <p class="big-text">
+                            {{ (inline_operator_capacity[i][2] / inline_operator_capacity[i][1] * 100) | round(2) }}%
+
+                            {% if inline_operator_capacity[i][3] is false and
+                                (inline_operator_capacity[i][2] / inline_operator_capacity[i][1] * 100) | round(2) == 100 %}
+                                ⚠️
+                            {% endif %}
+                        </p>
+                    </div>
+                </div></a>
+                {% endfor %}
+            </div>
+
+
+
+            {% else %}
+
+
+
+            <div class="menu direction-row">
+                {% for i  in range (num_cards) %}
+                    <div class="card card-mitad
+                    {% if selected_line == 'inyectoras' %}
+                        card-injectors
+                    {% endif %}
+                    ">
+
+                    {% if lineas[i] == 'nva' %}
+                    <h3 class="uppercase">{{lineas[i]}}</h3>
+                    {% elif selected_line == 'área inyección' %}
+                        <h3>INY-{{lineas[i]}}</h3>
+                    {% elif selected_line == 'área metalizado' %}
+                        <h3 class="capitalize">{{ lineas[i] }}</h3>
+                    {% else %}
+                        <h3>Estación {{ lineas[i] }}</h3>
+                    {% endif %}
+
+                    <div class="texto-de-botones">
+                        <div onclick="showPopup({{ inline_operator_capacity[i][5] }});" class="lado
+                        {% if inline_operator_capacity[i][1] == 0 %}
+                            empleado-ok
+                        {% elif inline_operator_capacity[i][1] > 0 %}
+                            empleado-nook
+                        {% else %}
+                            empleado-warning
+                        {% endif %}
+                        ">
+                        {% if inline_operator_capacity[i][3] != 0 or inline_operator_capacity[i][4] >= 1 %}
+                            <p>
+                                LH
+                            </p>
+                        {% endif %}
+
+                            <p>
+                                <i class="fi fi-rr-user"></i> {% if inline_operator_capacity[i][1] < 0 %} 0 {% else %} {{ inline_operator_capacity[i][1] }} {% endif %}
+                                <i class="fi fi-sr-user"></i> {{ inline_operator_capacity[i][2] }}
+                            </p>
+                    </div>
+
+                    {% if inline_operator_capacity[i][3] != 0 or inline_operator_capacity[i][4] >= 1 %}
+                    <div onclick="showPopup({{ inline_operator_capacity[i][6] }})" class="lado
+                    {% if inline_operator_capacity[i][3] == 0 %}
+                        empleado-ok
+                    {% elif inline_operator_capacity[i][3] > 0 %}
+                        empleado-nook
+                    {% else %}
+                        empleado-warning
+                    {% endif %}
+                ">
+                            <p>
+                                RH
+                            </p>
+                            <p>
+                                <i class="fi fi-rr-user"></i> {% if inline_operator_capacity[i][3] < 0 %} 0 {% else %} {{ inline_operator_capacity[i][3] }} {% endif %}
+                                <i class="fi fi-sr-user"></i> {{ inline_operator_capacity[i][4] }}
+                            </p>
+                    </div>
+                    {% endif %}
+                    </div>
+            </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+    </body>
+</html>

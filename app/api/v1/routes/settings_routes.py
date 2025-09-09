@@ -1,3 +1,8 @@
+"""
+    src/api/v1/routes/settings_routes.py
+    Rutas para la configuración de línea y estación.
+"""
+
 from flask import Blueprint, render_template, request, make_response, redirect, \
     url_for
 from app.domain.services.user_service import UserService
@@ -13,8 +18,17 @@ user_service: UserService
 def configure_line_and_station():
     """
     Gestiona la selección de línea y estación por parte del usuario.
-    En GET, muestra las opciones.
-    En POST, guarda las selecciones en cookies y redirige.
+
+    Métodos:
+        - GET: Muestra las opciones de líneas disponibles.
+        - POST: Guarda la línea seleccionada en una cookie y
+        redirige a la página principal.
+
+    Returns:
+        - En GET: Renderiza la plantilla 'ajustes.html' con las
+        líneas disponibles.
+        - En POST: Redirige a la página principal con la línea
+        seleccionada almacenada en una cookie.
     """
     if request.method == 'POST':
         # 1. Extraer los datos del formulario enviado por el usuario

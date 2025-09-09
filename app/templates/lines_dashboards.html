@@ -1,44 +1,59 @@
 {% extends "base/base_dashboards.html" %}
 
-{% block title %} Dashboard líneas {% endblock %}
+{% block title %} Dashboard Líneas {% endblock %}
 
-{% block header %}
-    <h1>Dashboard líneas</h1>
+{% block styles %}
+  {# Apunta al nuevo archivo de estilos #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_styles.css') }}">
 {% endblock %}
 
 {% block content %}
-    <div class="loading-screen">
-        <div class="loading-spinner"></div>
-        <p>Loading...</p>
+  {# Envuelve tu contenido en un div para aplicar el padding y max-width #}
+  <div class="content-wrapper">
+
+    <div class="dashboard-header">
+      <h1>Dashboard Líneas</h1>
     </div>
 
     <div class="information">
-        <p>🟡Falta personal</p>
-        <p>🟢Dentro del estándar</p>
-        <p>🔴Excede el estándar</p>
-        <p>⚠️Dentro del estándar, personal mal posicionado</p>
+      {# Se eliminaron los emojis de aquí, el CSS los pone como círculos de color #}
+      <p>Falta personal</p>
+      <p>Dentro del estándar</p>
+      <p>Excede el estándar</p>
+      <p>Personal mal posicionado</p>
     </div>
 
     <div class="menu">
-        {% for line in lines%}
-            {% if line.percentage %}
-            <a href="/dashboard_estaciones?line={{line.id}}" class="card-dashboard capitalize {{line.class}}">
-                <h2>{{ line.name }}</h2>
-                <h1>
-                    {{ line.percentage }}%
-                    {% if line.status == False %}
-                        ⚠️
-                    {% endif %}
-                </h1>
-            </a>
-            {% endif %}
-        {% endfor %}
+      {% for line in lines%}
+        {# Asumimos que `line.class` es una de las clases de estado (employee-ok, etc.) #}
+        <a href="/dashboard_estaciones?line={{line.id}}" class="card-dashboard capitalize {{line.class}}">
+          <div>
+            <h2>{{ line.name }}</h2>
+            <h1>
+              {{ line.percentage }}%
+              {# Usamos una clase para el icono de advertencia #}
+              {% if line.status == False %}
+                <span class="warning-icon">⚠️</span>
+              {% endif %}
+            </h1>
+          </div>
+        </a>
+      {% endfor %}
     </div>
 
-    <script>
-        // Mostrar la ventana de carga al cargar la página
-        window.addEventListener('load', function() {
-            document.querySelector('.loading-screen').style.display = 'none';
-        });
-    </script>
+  </div>
+
+  {# Mantenemos la pantalla de carga (opcional) #}
+  <div class="loading-screen">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <script>
+    window.addEventListener('load', function() {
+      const loadingScreen = document.querySelector('.loading-screen');
+      if (loadingScreen) {
+        loadingScreen.style.display = 'none';
+      }
+    });
+  </script>
 {% endblock %}
