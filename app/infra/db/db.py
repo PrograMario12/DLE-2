@@ -26,5 +26,6 @@ def close_db(e=None):
         db.close()
 
 def init_app(app):
-    """Registra las funciones de la base de datos con la aplicación Flask."""
+    """Registra las funciones de la base de datos con la aplicación
+    Flask."""
     app.teardown_appcontext(close_db)

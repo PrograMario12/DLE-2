@@ -4,13 +4,13 @@ Fábrica de la aplicación Flask.
 """
 
 from flask import Flask
-from .config.settings import settings
-from .extensions import login_manager
-from .api.v1.blueprints import register_all_blueprints
-from .domain.services.user_service import UserService
-from .domain.services.dashboard_service import DashboardService
-from .infra.db.user_repository_sql import UserRepositorySQL
-from .infra.db import db as db_setup  # Importamos nuestro nuevo módulo
+from .config.settings import settings  # Importa la configuración de la aplicación
+from .extensions import login_manager  # Importa el manejador de inicio de sesión
+from .api.v1.blueprints import register_all_blueprints  # Función para registrar blueprints
+from .domain.services.user_service import UserService  # Servicio de lógica de negocio para usuarios
+from .domain.services.dashboard_service import DashboardService  # Servicio de lógica de negocio para tableros
+from .infra.db.user_repository_sql import UserRepositorySQL  # Repositorio SQL para usuarios
+from .infra.db import db as db_setup  # Inicialización de la base de datos
 
 def create_app(config=settings):
     """
@@ -23,8 +23,8 @@ def create_app(config=settings):
     Returns:
         Flask: Una instancia de la aplicación Flask configurada.
     """
-    app = Flask(__name__)
-    app.config.from_object(config)
+    app = Flask(__name__)  # Crea una instancia de Flask
+    app.config.from_object(config)  # Configura la aplicación con el objeto de configuración
 
     # Inicializa la base de datos con la configuración de la aplicación
     db_setup.init_app(app)
@@ -33,14 +33,14 @@ def create_app(config=settings):
     login_manager.init_app(app)
 
     # Obtiene el esquema de la base de datos desde la configuración
-    schema = app.config.get('DB_SCHEMA', 'public')
+    schema = app.config.get('DB_SCHEMA', 'public')  # Por defecto, usa el esquema 'public'
 
     # Crea una instancia del repositorio de usuarios con el esquema configurado
     user_repo = UserRepositorySQL(schema=schema)
 
     # Crea instancias de los servicios de usuario y tablero
-    user_service = UserService(user_repo)
-    dashboard_service = DashboardService(user_repo)
+    user_service = UserService(user_repo)  # Servicio de usuarios con el repositorio inyectado
+    dashboard_service = DashboardService(user_repo)  # Servicio de tableros con el repositorio inyectado
 
     @login_manager.user_loader
     def load_user(user_id: str):
@@ -54,11 +54,11 @@ def create_app(config=settings):
             User: Una instancia del usuario cargado desde la base de datos,
                   o None si no se encuentra.
         """
-        with app.app_context():
+        with app.app_context():  # Asegura que se use el contexto de la aplicación
             # Usa la instancia de user_repo para buscar al usuario por su ID
             return user_repo.find_by_id(int(user_id))
 
     # Registra todos los blueprints en la aplicación
     register_all_blueprints(app, user_service, dashboard_service)
 
-    return app
+    return app  # Devuelve la instancia de la aplicación Flask

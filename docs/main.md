@@ -28,7 +28,7 @@ Con el patrón *factory*, Flask necesita saber **cómo construir** la app:
 
 **Linux/macOS**
 
-```bash
+``` bash
 export FLASK_APP="app.main:create_app"
 export FLASK_ENV=development   # opcional: recarga automática y debug
 flask run
