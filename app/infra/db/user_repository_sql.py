@@ -21,10 +21,12 @@ class UserRepositorySQL(IUserRepository):
     def find_user_by_card_number(self, card_number: int) -> Optional[User]:
         query = """
                 SELECT id_empleado, nombre_empleado, apellidos_empleado
-                FROM table_empleados_tarjeta
+                FROM {schema}.table_empleados_tarjeta
                 WHERE numero_tarjeta = %s \
                 LIMIT 1 \
                 """
+
+        query = sql.SQL(query).format(schema=sql.Identifier(self.schema))
         cursor = self._get_cursor()
         # Usamos parámetros para prevenir inyección SQL
         cursor.execute(query, (card_number,))
@@ -37,7 +39,6 @@ class UserRepositorySQL(IUserRepository):
         return User(id=result[0], name=result[1], last_name=result[2])
 
     def get_line_name_by_id(self, line_id: int) -> Optional[str]:
-        query = "SELECT type_zone || ' ' || name FROM zones WHERE line_id = %s"
         query = sql.SQL("""
         SELECT type_zone || ' ' || name
         FROM {schema}.zones

@@ -11,6 +11,8 @@ from .domain.services.user_service import UserService  # Servicio de lógica de 
 from .domain.services.dashboard_service import DashboardService  # Servicio de lógica de negocio para tableros
 from .infra.db.user_repository_sql import UserRepositorySQL  # Repositorio SQL para usuarios
 from .infra.db import db as db_setup  # Inicialización de la base de datos
+from .infra.http.auth import register_login
+
 
 def create_app(config=settings):
     """
@@ -24,7 +26,8 @@ def create_app(config=settings):
         Flask: Una instancia de la aplicación Flask configurada.
     """
     app = Flask(__name__)  # Crea una instancia de Flask
-    app.config.from_object(config)  # Configura la aplicación con el objeto de configuración
+    app.config.from_object(config)  # Configura la aplicación con el
+    # objeto de configuración
 
     # Inicializa la base de datos con la configuración de la aplicación
     db_setup.init_app(app)
@@ -42,21 +45,7 @@ def create_app(config=settings):
     user_service = UserService(user_repo)  # Servicio de usuarios con el repositorio inyectado
     dashboard_service = DashboardService(user_repo)  # Servicio de tableros con el repositorio inyectado
 
-    @login_manager.user_loader
-    def load_user(user_id: str):
-        """
-        Carga un usuario desde la base de datos dado su ID.
-
-        Args:
-            user_id (str): El ID del usuario a cargar.
-
-        Returns:
-            User: Una instancia del usuario cargado desde la base de datos,
-                  o None si no se encuentra.
-        """
-        with app.app_context():  # Asegura que se use el contexto de la aplicación
-            # Usa la instancia de user_repo para buscar al usuario por su ID
-            return user_repo.find_by_id(int(user_id))
+    register_login(app, user_service)
 
     # Registra todos los blueprints en la aplicación
     register_all_blueprints(app, user_service, dashboard_service)
