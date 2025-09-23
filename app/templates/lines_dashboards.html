@@ -7,13 +7,13 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_styles.css') }}">
 {% endblock %}
 
+{% block header %}
+      <h1>Dashboard Líneas</h1>
+{% endblock %}
+
 {% block content %}
   {# Envuelve tu contenido en un div para aplicar el padding y max-width #}
   <div class="content-wrapper">
-
-    <div class="dashboard-header">
-      <h1>Dashboard Líneas</h1>
-    </div>
 
     <div class="information">
       {# Se eliminaron los emojis de aquí, el CSS los pone como círculos de color #}
@@ -26,7 +26,7 @@
     <div class="menu">
       {% for line in lines%}
         {# Asumimos que `line.class` es una de las clases de estado (employee-ok, etc.) #}
-        <a href="/dashboard_estaciones?line={{line.id}}" class="card-dashboard capitalize {{line.class}}">
+        <a href="{{ url_for('dashboards.show_stations_dashboard') }}?line={{ line.id }}" class="card-dashboard capitalize {{line.class}}">
           <div>
             <h2>{{ line.name }}</h2>
             <h1>

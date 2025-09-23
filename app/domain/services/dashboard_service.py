@@ -37,10 +37,25 @@ class DashboardService:
         return processed_lines
 
     def get_station_details_for_line(self, line_id: int) -> dict:
-        """Prepara los detalles de las estaciones para una línea específica."""
+        """
+        Prepara los detalles de las estaciones para una línea específica.
+
+        Args:
+            line_id (int): El identificador único de la línea.
+
+        Returns:
+            dict: Un diccionario que contiene:
+                - "line" (str): El nombre de la línea.
+                - "cards" (list): Una lista de tarjetas asociadas a la línea.
+                - "tipo" (str): El tipo de estación basado en la línea.
+        """
+        # Obtiene las tarjetas asociadas a la línea desde el repositorio
         cards = self._user_repo.get_station_cards_for_line(line_id)
+
+        # Obtiene el nombre de la línea desde el repositorio
         line_name = self._user_repo.get_line_name_by_id(line_id)
 
+        # Retorna un diccionario con los detalles de la línea y las estaciones asociadas
         return {
             "line": line_name,
             "cards": cards,

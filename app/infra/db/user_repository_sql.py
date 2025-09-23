@@ -20,11 +20,11 @@ class UserRepositorySQL(IUserRepository):
 
     def find_user_by_card_number(self, card_number: int) -> Optional[User]:
         query = """
-                SELECT id_empleado, nombre_empleado, apellidos_empleado
-                FROM {schema}.table_empleados_tarjeta
-                WHERE numero_tarjeta = %s \
-                LIMIT 1 \
-                """
+        SELECT id_empleado, nombre_empleado, apellidos_empleado
+        FROM {schema}.table_empleados_tarjeta
+        WHERE numero_tarjeta = %s \
+        LIMIT 1 \
+        """
 
         query = sql.SQL(query).format(schema=sql.Identifier(self.schema))
         cursor = self._get_cursor()
@@ -39,16 +39,35 @@ class UserRepositorySQL(IUserRepository):
         return User(id=result[0], name=result[1], last_name=result[2])
 
     def get_line_name_by_id(self, line_id: int) -> Optional[str]:
-        query = sql.SQL("""
-        SELECT type_zone || ' ' || name
-        FROM {schema}.zones
-                        """).format(schema=sql.Identifier(self.schema))
+        """
+        Obtiene el nombre completo de una línea en la tabla 'zones' dado su ID.
 
-        cursor = self._get_cursor()
-        cursor.execute(query, (line_id,))
-        result = cursor.fetchone()
-        cursor.close()
-        return result[0] if result else None
+        Args:
+            line_id (int): El identificador único de la línea.
+
+        Returns:
+            Optional[str]: El nombre completo de la línea en formato 'type_zone name',
+            o None si no se encuentra la línea.
+        """
+        # Consulta SQL para obtener el nombre completo de la línea
+        query = sql.SQL("""
+            SELECT TRIM(CONCAT_WS(' ', type_zone, name)) AS full_name
+            FROM {schema}.zones
+            WHERE line_id = %s
+            LIMIT 1
+            """).format(schema=sql.Identifier(self.schema))
+
+        # Obtiene un cursor para ejecutar la consulta
+        cur = self._get_cursor()
+        try:
+            # Ejecuta la consulta con el ID de la línea como parámetro
+            cur.execute(query, (line_id,))
+            row = cur.fetchone()
+            # Retorna el nombre completo si existe, de lo contrario retorna None
+            return row[0] if row and row[0] else None
+        finally:
+            # Asegura que el cursor se cierre después de la operación
+            cur.close()
 
     def get_station_cards_for_line(self, line_id: int) -> list[dict[str, any]]:
         """
@@ -57,21 +76,25 @@ class UserRepositorySQL(IUserRepository):
         """
 
         query = sql.SQL("""
-                        WITH employees_working AS (SELECT r.position_id_fk,
-                                                          COUNT(r.id_register) as employee_count
-                                                   FROM {schema}.registers r
-                                                   WHERE r.exit_hour IS NULL
-                                                   GROUP BY r.position_id_fk)
-                        SELECT p.position_name,
-                               s.side_title,
-                               s.employee_capacity,
-                               COALESCE(ew.employee_count, 0) as operators
-                        FROM {schema}.positions p
+            WITH employees_working AS (
+                SELECT r.position_id_fk,
+                       COUNT(r.id_register) as employee_count
+                FROM {schema}.registers r
+                WHERE r.exit_hour IS NULL
+                GROUP BY r.position_id_fk
+            )
+            SELECT p.position_name,
+                   s.side_id,
+                   s.side_title,
+                   s.employee_capacity,
+                   COALESCE(ew.employee_count, 0) as operators
+            FROM {schema}.positions p
             JOIN {schema}.tbl_sides_of_positions s
-                        ON p.position_id = s.position_id_fk
-                            LEFT JOIN employees_working ew ON s.side_id = ew.position_id_fk
-                        WHERE p.line_id = %s
-                        ORDER BY p.position_name, s.side_title;
+                 ON p.position_id = s.position_id_fk
+            LEFT JOIN employees_working ew
+                 ON s.side_id = ew.position_id_fk
+            WHERE p.line_id = %s
+            ORDER BY p.position_name, s.side_title;
                         """).format(schema=sql.Identifier(self.schema))
 
         cursor = self._get_cursor()
@@ -79,10 +102,12 @@ class UserRepositorySQL(IUserRepository):
         results = cursor.fetchall()
         cursor.close()
 
+        print("Los resultados son: ", results)
+
         # Agrupar los resultados por estación en Python
         cards = {}
         # El nombre de la variable aquí también cambia para mayor claridad
-        for station_name, side_title, capacity, operators in results:
+        for station_name, side_id, side_title, capacity, operators in results:
             if station_name not in cards:
                 cards[station_name] = {
                     "position_name": station_name,
@@ -91,8 +116,9 @@ class UserRepositorySQL(IUserRepository):
                 }
 
             cards[station_name]["sides"].append({
-                "name_side": side_title,
-                # <-- La clave del diccionario se mantiene como 'name_side' para consistencia
+                "side_id": side_id,                 # <-- clave necesaria para el frontend
+                "side_title": side_title,           # <-- útil para mostrar
+                "name_side": side_title,            # <-- compatibilidad con código existente
                 "employee_capacity": capacity,
                 "employees_working": operators
             })

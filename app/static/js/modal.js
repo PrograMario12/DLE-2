@@ -1,26 +1,44 @@
- function openModal(id) {
-    var modal = document.getElementById("myModal");
+function openModal(id) {
+  var modal = document.getElementById("myModal");
 
-    // Realizar petición AJAX a una ruta en Flask para obtener la información
-    // y mostrarla en el contenido del modal
-    fetch('/get_operators_actives?id=' + id)
-      .then(response => response.json())
-      .then(data => {
-        var modalContent = document.getElementById("modal-content");
-        modalContent.innerHTML = JSON.stringify(data); // Aquí puedes personalizar cómo mostrar la información
-        var htmlContent = '<ul>';
-        data.forEach(item => {
-          htmlContent += '<li><p>' + item + '</p></li>';
-        });
-        htmlContent += '</ul>';
-        modalContent.innerHTML = htmlContent;
-        modal.style.display = "block";
-      })
-      .catch(error => console.error(error));
+  // Validación del ID antes de llamar al backend
+  if (id === undefined || id === null || id === '' || Number.isNaN(Number(id))) {
+    console.error("openModal llamado sin un id válido:", id);
+    // No abrir el modal si el ID no es válido
+    return;
   }
 
-  // Función para cerrar el modal
-  function closeModal() {
-    var modal = document.getElementById("myModal");
-    modal.style.display = "none";
-  }
+  // Realizar petición AJAX a la ruta correcta del blueprint
+  fetch('/dashboards/api/operators?id=' + encodeURIComponent(id))
+    .then(async (response) => {
+      if (!response.ok) {
+        const text = await response.text().catch(() => '');
+        throw new Error(`Error ${response.status}: ${text || 'No encontrado'}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      var modalContent = document.getElementById("modal-content");
+      // Render sencillo de lista
+      var htmlContent = '<h3>Operadores activos</h3><ul>';
+      (Array.isArray(data) ? data : []).forEach(item => {
+        htmlContent += '<li><p>' + item + '</p></li>';
+      });
+      htmlContent += '</ul>';
+      if (modalContent) modalContent.innerHTML = htmlContent;
+      if (modal) modal.style.display = "block";
+    })
+    .catch(error => {
+      console.error("Fallo al obtener operadores:", error);
+      var modalContent = document.getElementById("modal-content");
+      if (modalContent) {
+        modalContent.textContent = "Fallo al obtener operadores: " + error.message;
+      }
+      if (modal) modal.style.display = "block";
+    });
+}
+
+function closeModal() {
+  var modal = document.getElementById("myModal");
+  modal.style.display = "none";
+}

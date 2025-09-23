@@ -1,28 +1,43 @@
+{#stations_dashboards.html#}
+
 {% extends "base/base_dashboards.html" %}
 
 {%block title%}Dashboard estaciones{%endblock%}
 
+{%block styles%}
+    <!-- Enlace a la hoja de estilos específica para este dashboard -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stations_styles.css') }}">
+{%endblock%}
+
 {%block header%}
+    <!-- Título del dashboard -->
     <h1>Dashboard estaciones</h1>
-    <script src="../static/js/modal.js"></script>
+    <!-- Inclusión correcta del script para manejar modales -->
+    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 {%endblock%}
 
 {%block content%}
+    <!-- Pantalla de carga que se muestra mientras se carga el contenido -->
     <div class="loading-screen">
         <div class="loading-spinner"></div>
         <p>Loading...</p>
     </div>
 
+    <!-- Título principal del dashboard, con formato capitalizado -->
     <h1 class="capitalize">{{line}}</h1>
 
+    <!-- Contenedor del menú principal -->
     <div class="menu">
         {% for card in cards %}
+            <!-- Cada tarjeta representa una posición, oculta si el estado es falso -->
             <div class="card uppercase {% if card.status == false%} hidden {%endif%}">
                 <h2>{{tipo}} {{card.position_name}}</h2>
                 <div class="select-position">
                     {%for side in card.sides%}
-                        <div class="card-dashboard small-card-dashboard uppercase {{side.class}}" onclick="openModal({{side.side_id}})">
+                        <!-- Pasa un ID válido: usa side.side_id si existe, si no side.id -->
+                        <div class="card-dashboard small-card-dashboard uppercase {{side.class}}" onclick="openModal({{ side.side_id or side.id }})">
                             <h3>{{side.side_title}}</h3>
+                            <!-- Información sobre la capacidad de empleados y los empleados trabajando -->
                             <p><i class="fi fi-rr-user"></i>{{side.employee_capacity}} <i class="fi fi-sr-user"></i> {{side.employees_working}}</p>
                         </div>
                     {%endfor%}
@@ -31,15 +46,18 @@
         {%endfor%}
     </div>
 
+    <!-- Modal para mostrar información adicional -->
     <div id="myModal" class="modal">
         <div class="modal-content">
+          <!-- Botón para cerrar el modal -->
           <span class="close" onclick="closeModal()">❎</span>
+          <!-- Contenido dinámico del modal -->
           <div id="modal-content"></div>
         </div>
     </div>
 
     <script>
-        // Mostrar la ventana de carga al cargar la página
+        // Ocultar la pantalla de carga una vez que la página ha terminado de cargar
         window.addEventListener('load', function() {
             document.querySelector('.loading-screen').style.display = 'none';
         });

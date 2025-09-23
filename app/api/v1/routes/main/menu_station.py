@@ -1,4 +1,7 @@
-"""GET/POST /menuStation — Menú de estación por línea."""
+"""
+app/api/v1/routes/main/menu_station.py
+GET/POST /menuStation — Menú de estación por línea.
+"""
 from flask import Blueprint, render_template, request, make_response, redirect, url_for
 from app.domain.services.user_service import UserService
 from app.domain.services.dashboard_service import DashboardService
@@ -34,6 +37,7 @@ def register_menu_station(bp: Blueprint,
         """
         # Obtiene y valida la cookie 'line'
         line_raw = request.cookies.get("line")
+
         if not line_raw:
             return redirect(url_for("settings.configure_line_and_station"))
         try:

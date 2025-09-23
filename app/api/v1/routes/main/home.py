@@ -21,6 +21,6 @@ def register_home(bp: Blueprint) -> None:
             Response: La respuesta HTTP con la plantilla renderizada y la cookie configurada.
         """
         css = url_for("static", filename="css/init_styles.css")  # Genera la URL para el archivo CSS
-        resp = make_response(render_template("index.html", css_href=css))  # Renderiza la plantilla y crea la respuesta
+        resp = make_response(render_template("index.html"))  # Renderiza la plantilla y crea la respuesta
         resp.set_cookie("employee_number", "0", httponly=True, samesite="Lax")  # Configura la cookie
         return resp

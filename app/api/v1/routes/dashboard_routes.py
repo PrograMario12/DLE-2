@@ -17,7 +17,6 @@ def show_lines_dashboard():
     """
 
     lines_data = dashboards_bp.dashboard_service.get_lines_summary()
-    print("Las líneas", lines_data)
     return render_template('lines_dashboards.html', lines=lines_data)
 
 @dashboards_bp.route('/stations')
@@ -33,6 +32,7 @@ def show_stations_dashboard():
 
     # Llama al servicio para obtener los datos de las estaciones de esa línea
     station_data = dashboards_bp.dashboard_service.get_station_details_for_line(line_id)
+    print("La data es: ", station_data)
     return render_template('stations_dashboards.html', **station_data)
 
 

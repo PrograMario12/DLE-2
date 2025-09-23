@@ -96,7 +96,7 @@ body {
   text-decoration: none;
   color: var(--color-text-primary);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  border-left: 5px solid transparent; /* Borde de estado */
+  /* border-left: 5px solid transparent; <-- ELIMINA ESTA LÍNEA */
 }
 
 .card-dashboard:hover {
@@ -120,9 +120,9 @@ body {
 }
 
 /* --- 5. Clases de Estado para las Tarjetas --- */
-.employee-ok { border-left-color: var(--status-green); }
-.employee-nook { border-left-color: var(--status-yellow); }
-.employee-warning { border-left-color: var(--status-red); }
+.employee-ok { background-color: var(--status-green); }
+.employee-nook { background-color: var(--status-yellow); }
+.employee-warning { background-color: var(--status-red); }
 
 /* Icono de advertencia para personal mal posicionado */
 .card-dashboard h1 .warning-icon {
@@ -159,4 +159,20 @@ body {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Cambia el color del texto a blanco dentro de las tarjetas con estado */
+.employee-ok h1,
+.employee-ok h2,
+.employee-nook h1,
+.employee-nook h2,
+.employee-warning h1,
+.employee-warning h2 {
+  color: #fff;
+}
+
+/* El amarillo necesita texto oscuro para ser legible */
+.employee-nook h1,
+.employee-nook h2 {
+    color: var(--color-text-primary);
 }
