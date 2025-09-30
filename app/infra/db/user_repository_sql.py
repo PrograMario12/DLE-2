@@ -2,11 +2,13 @@
 src/infra/db/user_repository_sql.py
 Implementación del repositorio de usuarios usando Psycopg2.
 """
+
 from .db import get_db
 from app.domain.entities.user import User, StationInfo
 from app.domain.repositories.user_repository import IUserRepository
 from typing import List, Dict, Any, Optional
 from psycopg2 import sql
+from datetime import datetime
 
 class UserRepositorySQL(IUserRepository):
     """Implementación del repositorio con Psycopg2."""
@@ -246,3 +248,67 @@ class UserRepositorySQL(IUserRepository):
 
         # Devolvemos una lista simple de nombres, como en el original
         return [f"{row[0]} {row[1]}" for row in results]
+
+    def register_entry_or_assignment(self, user_id: int, side_id: int) -> None:
+        """
+        Si el usuario tiene un registro abierto, lo cierra (Exit).
+        En caso contrario, crea un registro de entrada (Entry) en el side indicado.
+        """
+        conn = get_db()
+        cur = conn.cursor()
+
+        try:
+            # 1) Buscar registro abierto
+            q_open = sql.SQL("""
+                SELECT id_register
+                FROM {schema}.registers
+                WHERE id_employee = %s AND exit_hour IS NULL
+                ORDER BY id_register DESC
+                LIMIT 1
+            """).format(schema=sql.Identifier(self.schema))
+            cur.execute(q_open, (user_id,))
+            open_row = cur.fetchone()
+
+            now_time = datetime.now().strftime("%H:%M:%S")
+            today_date = datetime.now().strftime("%Y-%m-%d")
+
+            if open_row:
+                # 2) Cerrar registro abierto (Salida)
+                q_close = sql.SQL("""
+                    UPDATE {schema}.registers
+                    SET exit_hour = %s
+                    WHERE id_register = %s
+                """).format(schema=sql.Identifier(self.schema))
+                cur.execute(q_close, (now_time, open_row[0]))
+                conn.commit()
+                cur.close()
+                return
+
+            # 3) No hay registro abierto: crear Entrada en el side indicado
+            #    Necesitamos obtener line_id y position_id de ese side
+            q_side = sql.SQL("""
+                SELECT p.line_id, p.position_id
+                FROM {schema}.tbl_sides_of_positions s
+                JOIN {schema}.positions p ON p.position_id = s.position_id_fk
+                WHERE s.side_id = %s
+                LIMIT 1
+            """).format(schema=sql.Identifier(self.schema))
+            cur.execute(q_side, (side_id,))
+            side_row = cur.fetchone()
+            if not side_row:
+                raise ValueError("Side no encontrado")
+
+            line_id, position_id = side_row[0], side_row[1]
+
+            q_insert = sql.SQL("""
+                INSERT INTO {schema}.registers
+                    (id_employee, date_register, entry_hour, line_id_fk, position_id_fk)
+                VALUES (%s, %s, %s, %s, %s)
+            """).format(schema=sql.Identifier(self.schema))
+            cur.execute(q_insert, (user_id, today_date, now_time, line_id, side_id))
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        finally:
+            cur.close()

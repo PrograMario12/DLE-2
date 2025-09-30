@@ -33,3 +33,18 @@ class UserService:
         Obtiene el tipo del último registro de un empleado.
         """
         return self._user_repo.get_last_register_type(card_number)
+
+    def register_entry_or_assignment(self, employee_number: int,
+                                     side_id: int) -> None:
+        """
+        Registra la entrada o asignación del operador en la estación/side indicado.
+        La implementación concreta se delega al repositorio.
+        """
+        # 1) Resolver el usuario por tarjeta
+        user = self._user_repo.find_user_by_card_number(employee_number)
+        if not user:
+            raise ValueError("Empleado no encontrado")
+
+        # 2) Delegar la persistencia (el repo debe implementar esta operación)
+        self._user_repo.register_entry_or_assignment(user_id=user.id,
+                                                     side_id=side_id)

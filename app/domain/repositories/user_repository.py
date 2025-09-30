@@ -45,3 +45,12 @@ class IUserRepository(ABC):
 
     def get_active_operators(self, station_id: int) -> list:
         pass
+
+    @abstractmethod
+    def register_entry_or_assignment(self, user_id: int, side_id: int) -> None:
+        """
+        Persiste el registro de entrada/asignación para un usuario en un side (posición).
+        Si el usuario tiene un registro abierto (exit_hour IS NULL), lo cierra (marca salida).
+        Si no lo tiene, crea un nuevo registro de entrada en el side indicado.
+        """
+        pass

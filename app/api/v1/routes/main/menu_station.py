@@ -8,8 +8,8 @@ from app.domain.services.dashboard_service import DashboardService
 from app.api.v1.schemas.main import LineCookie, MenuStationForm
 
 def register_menu_station(bp: Blueprint,
-                          user_service: UserService,
-                          dashboard_service: DashboardService) -> None:
+    user_service: UserService,
+    dashboard_service: DashboardService) -> None:
     """
     Registra la ruta para el menú de estación en el blueprint proporcionado.
 
@@ -64,6 +64,50 @@ def register_menu_station(bp: Blueprint,
 
         # Obtiene detalles de la estación y renderiza la plantilla
         data = dashboard_service.get_station_details_for_line(line)
+
+        # Calcula clases por side y por card, y totales para "Real" y "Fuera de estándar"
+        cards = data.get("cards") or []
+
+        def side_status_class(cap: int, act: int) -> str:
+            if act < cap:
+                return "employee-nook"      # falta personal (amarillo)
+            elif act == cap:
+                return "employee-ok"        # justo (verde)
+            else:
+                return "employee-warning"   # excede (rojo)
+
+        total_capacity, total_active = 0, 0
+        for card in cards:
+            # Agregado por tarjeta
+            card_cap, card_act = 0, 0
+            for side in card.get("sides", []):
+                cap = int(side.get("employee_capacity") or 0)
+                act = int(side.get("employees_working") or 0)
+                card_cap += cap
+                card_act += act
+
+                # asignar clase de side si no viene definida
+                if not side.get("class"):
+                    side["class"] = side_status_class(cap, act)
+
+            # clase de fondo para la tarjeta grande, solo si está visible
+            if card.get("status", True) is not False:
+                if card_act < card_cap:
+                    card["class"] = (card.get("class") or "") + " card--under"
+                elif card_act == card_cap:
+                    card["class"] = (card.get("class") or "") + " card--ok"
+                else:
+                    card["class"] = (card.get("class") or "") + " card--over"
+
+                # acumular totales globales
+                total_capacity += card_cap
+                total_active  += card_act
+
+        # Preparar variables esperadas por el template
+        data["cards"] = cards
+        data["total_capacity"] = total_capacity       # Fuera de estándar
+        data["total_employees"] = total_active        # Real
+
         resp = make_response(render_template("menu.html", **data))
         resp.set_cookie("employee_number", str(form.employee_number), httponly=True, samesite="Lax")
         return resp
