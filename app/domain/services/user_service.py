@@ -2,19 +2,37 @@
 src/domain/services/user_service.py
 Servicio para la lógica de negocio relacionada con usuarios.
 """
+
 from app.domain.repositories.user_repository import IUserRepository
 from typing import Optional
 
 class UserService:
-    """Servicio para la lógica de negocio relacionada con usuarios."""
+    """
+    Servicio para la lógica de negocio relacionada con usuarios.
+
+    Este servicio actúa como intermediario entre la capa de presentación y la
+    capa de acceso a datos, delegando las operaciones relacionadas con usuarios
+    al repositorio inyectado. Implementa la lógica de negocio específica para
+    usuarios, como el formato de datos y validaciones.
+    """
 
     def __init__(self, user_repo: IUserRepository):
+        """
+        Inicializa el servicio con un repositorio de usuarios.
+
+        :param user_repo: Instancia de un repositorio que implementa la interfaz
+                          IUserRepository, utilizada para acceder a los datos
+                          relacionados con usuarios.
+        """
         self._user_repo = user_repo
 
     def get_user_info_for_display(self, card_number: int) -> dict:
         """
-        Obtiene y formatea la información de un usuario para la pantalla
-        de éxito.
+        Obtiene y formatea la información de un usuario para la pantalla de éxito.
+
+        :param card_number: Número de tarjeta del usuario.
+        :return: Un diccionario con el nombre completo del usuario y su ID. Si el
+                 usuario no está registrado, devuelve un mensaje predeterminado.
         """
         user = self._user_repo.find_user_by_card_number(card_number)
         if not user:
@@ -25,12 +43,17 @@ class UserService:
     def get_all_lines_for_settings(self) -> list[dict]:
         """
         Obtiene la lista de líneas para mostrar en la página de configuración.
+
+        :return: Una lista de diccionarios que representan las líneas disponibles.
         """
         return self._user_repo.get_all_lines()
 
     def get_user_last_register_type(self, card_number: int) -> Optional[str]:
         """
         Obtiene el tipo del último registro de un empleado.
+
+        :param card_number: Número de tarjeta del usuario.
+        :return: El tipo del último registro como cadena, o None si no hay registros.
         """
         return self._user_repo.get_last_register_type(card_number)
 
@@ -38,7 +61,10 @@ class UserService:
                                      side_id: int) -> None:
         """
         Registra la entrada o asignación del operador en la estación/side indicado.
-        La implementación concreta se delega al repositorio.
+
+        :param employee_number: Número de empleado asociado al usuario.
+        :param side_id: Identificador de la estación o side donde se registra la entrada.
+        :raises ValueError: Si el empleado no es encontrado en el repositorio.
         """
         # 1) Resolver el usuario por tarjeta
         user = self._user_repo.find_user_by_card_number(employee_number)
@@ -48,3 +74,6 @@ class UserService:
         # 2) Delegar la persistencia (el repo debe implementar esta operación)
         self._user_repo.register_entry_or_assignment(user_id=user.id,
                                                      side_id=side_id)
+
+    def get_line_name_by_id(self, line_int: int) -> Optional[str]:
+        return self._user_repo.get_line_name_by_id(line_int)

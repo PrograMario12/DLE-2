@@ -51,8 +51,8 @@
   </section>
 
   <nav class="botones-esquina" aria-label="Acciones rápidas">
-    <p class="actual-line capitalize">
-      {{ actual_line }} {{ station }}
+    <p class="actual-line capitalize {{ 'without-line' if not line else '' }}">
+      {{ line if line else '¡Seleciona una línea!' }}
     </p>
 
     <button class="boton" type="button" onclick="location.href='{{ url_for('settings.configure_line_and_station') }}'" aria-label="Configuración">

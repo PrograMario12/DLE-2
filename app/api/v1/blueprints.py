@@ -1,8 +1,31 @@
 """
 app/api/v1/blueprints.py
-Centraliza el registro de blueprints e inyecta las dependencias
-necesarias.
+
+Este módulo centraliza el registro de blueprints y la inyección de
+dependencias en la aplicación Flask. Su objetivo es facilitar la
+organización y el mantenimiento
+de las rutas y servicios, permitiendo que cada blueprint reciba las
+dependencias necesarias de forma explícita.
+
+Blueprints gestionados:
+- main_bp: Rutas principales de la aplicación (creado dinámicamente con
+servicios).
+- dashboards_bp: Rutas relacionadas con los tableros, requiere
+`dashboard_service`.
+- settings_bp: Rutas para la configuración de línea y estación, requiere
+`user_service`.
+
+Uso:
+Importa y llama a `register_all_blueprints(app, user_service,
+dashboard_service)` desde el punto de entrada de la aplicación para
+registrar todos los blueprints y asegurar la correcta inyección de
+dependencias.
+
+Dependencias:
+- Flask
+- Servicios: UserService, DashboardService
 """
+
 
 from .routes.main import create_main_bp  # Importa el blueprint principal
 from .routes.dashboard_routes import dashboards_bp  # Importa el blueprint de tableros
