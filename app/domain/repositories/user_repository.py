@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import Optional, List, Dict, Any
 from app.domain.entities.user import User, StationInfo
 
-
 class IUserRepository(ABC):
     """Interfaz (contrato) para el repositorio de usuarios (DIP)."""
 
@@ -41,9 +40,15 @@ class IUserRepository(ABC):
         pass
 
     def get_all_lines_summary(self) -> list[dict]:
+        """
+        Obtiene un resumen de todas las líneas de producción
+        """
         pass
 
     def get_active_operators(self, station_id: int) -> list:
+        """
+        Obtiene una lista de operadores activos en una estación específica.
+        """
         pass
 
     @abstractmethod

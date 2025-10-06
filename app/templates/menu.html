@@ -40,15 +40,18 @@ Date: [2024-07-16]
                 <div class="card {% if card.status == false%} hidden {%endif%}">
                     <h2>{{tipo}} {{card.position_name}}</h2>
                     <div class="select-position">
-                        {%for side in card.sides%}
-                            <a href="/successful?id={{side.side_id}}" class="card-dashboard small-card-dashboard uppercase {{side.class}}">
+                        {% for side in card.sides %}
+                            <a href="/successful?id={{side.side_id}}"
+                               class="card-dashboard small-card-dashboard uppercase {{side.class}}"
+                               data-position="{{card.position_name}}"
+                               data-side-id="{{side.side_id}}">
                                 <h3>{{side.side_title}}</h3>
                                 <p><i class="fi fi-rr-user"></i>{{side.employee_capacity}} <i class="fi fi-sr-user"></i> {{side.employees_working}}</p>
                             </a>
-                        {%endfor%}
+                        {% endfor %}
                     </div>
                 </div>
-            {%endfor%}
+            {% endfor %}
         </div>
 
         <div class="div-button-cancel">
@@ -60,5 +63,19 @@ Date: [2024-07-16]
             <p><i class="fi fi-sr-user"></i> Personal actual</p>
         </div>
     </body>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.card-dashboard').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            console.log('data-position:', btn.dataset.position); // Depuración
+            if (btn.dataset.position && btn.dataset.position.trim().toUpperCase() === 'AFE') {
+                e.preventDefault();
+                window.location.href = '/afeMenu?side_id=' + btn.dataset.sideId;
+            }
+        });
+    });
+});
+</script>
 
 </html>

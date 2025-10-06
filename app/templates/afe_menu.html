@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Actividades fuera de estándar - AFE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="body-center">
+    <div class="header">
+        <h1 class="uppercase">AFE - Actividades fuera de estándar</h1>
+        <h2>Selecciona la(s) actividad(es) que vas a realizar</h2>
+    </div>
+    <form method="post" action="/registrarActividadAFE?side_id={{ side_id }}">
+        <div class="activities-list">
+            {% for activity in activities %}
+                <div class="activity-item">
+                    <input type="checkbox" id="activity_{{ activity.id }}" name="activity_ids" value="{{ activity.id }}">
+                    <label for="activity_{{ activity.id }}">{{ activity.name }}</label>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="confirm-button">Confirmar</button>
+    </form>
+    <div class="div-button-cancel">
+        <button onclick="window.location.href='/menuStation'" class="cancel-button">Cancelar</button>
+    </div>
+</body>
+</html>

@@ -1,6 +1,4 @@
-from datetime import datetime
 from app.domain.repositories.user_repository import IUserRepository
-
 
 class StationService:
     """
@@ -9,10 +7,28 @@ class StationService:
     """
 
     def __init__(self, user_repo: IUserRepository):
+        """
+        Inicializa el servicio de estaciones con un repositorio de usuarios.
+
+        :param user_repo: Implementación de la interfaz IUserRepository para
+                          interactuar con los datos de los usuarios.
+        """
         self._user_repo = user_repo
 
     def get_user_status_for_display(self, card_number: int):
-        """Prepara los datos para la pantalla de éxito."""
+        """
+        Prepara los datos del usuario para la pantalla de éxito.
+
+        Este método obtiene la información del usuario asociada al número de tarjeta
+        proporcionado y determina si el último registro fue una entrada o una salida.
+        Luego, prepara un diccionario con los datos necesarios para mostrar en la
+        pantalla, incluyendo el nombre del usuario, el tipo de registro, el color
+        asociado y la información de la estación.
+
+        :param card_number: Número de tarjeta del usuario.
+        :return: Diccionario con los datos del usuario para la pantalla de éxito.
+                 Si el usuario no es encontrado, retorna un diccionario con un error.
+        """
         user = self._user_repo.find_by_card_number(card_number)
         if not user:
             # Manejar el caso de usuario no encontrado apropiadamente

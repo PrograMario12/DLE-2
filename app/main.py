@@ -13,7 +13,6 @@ from .infra.db.user_repository_sql import UserRepositorySQL  # Repositorio SQL p
 from .infra.db import db as db_setup  # Inicialización de la base de datos
 from .infra.http.auth import register_login
 
-
 def create_app(config=settings):
     """
     Fábrica de la aplicación Flask.
@@ -44,10 +43,11 @@ def create_app(config=settings):
     # Crea instancias de los servicios de usuario y tablero
     user_service = UserService(user_repo)  # Servicio de usuarios con el repositorio inyectado
     dashboard_service = DashboardService(user_repo)  # Servicio de tableros con el repositorio inyectado
+    station_service = None  # Aquí deberías inicializar tu StationService si lo tienes
 
     register_login(app, user_service)
 
     # Registra todos los blueprints en la aplicación
-    register_all_blueprints(app, user_service, dashboard_service)
+    register_all_blueprints(app, user_service, dashboard_service, station_service)
 
     return app  # Devuelve la instancia de la aplicación Flask
