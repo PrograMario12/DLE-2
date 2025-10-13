@@ -129,9 +129,17 @@ class UserRepositorySQL(IUserRepository):
 
     def get_last_register_type(self, card_number: int) -> str:
         """
-        Determina si la próxima acción del usuario debe ser 'Entrada' o 'Salida'.
-        Se basa en la lógica original: si el último registro no tiene hora de salida,
-        la próxima acción es una 'Salida'. En cualquier otro caso, es una 'Entrada'.
+        Determina si la próxima acción del usuario debe ser 'Entry' (entrada) o 'Exit' (salida).
+
+        Consulta el último registro del usuario en la base de datos. Si el campo 'exit_hour' es NULL,
+        significa que el usuario aún no ha registrado su salida, por lo que la próxima acción será 'Exit'.
+        Si no hay registros, o el último registro ya tiene una hora de salida, la próxima acción será 'Entry'.
+
+        Args:
+            card_number (int): Número de tarjeta del empleado.
+
+        Returns:
+            str: 'Exit' si el usuario está dentro (sin salida registrada), 'Entry' en caso contrario.
         """
         query = sql.SQL("""
                         SELECT exit_hour
@@ -148,13 +156,10 @@ class UserRepositorySQL(IUserRepository):
         result = cursor.fetchone()
         cursor.close()
 
-        # Si se encontró un registro y su 'exit_hour' es NULA,
-        # significa que el usuario está "dentro", por lo que la próxima acción es 'Exit'.
+        print("Resultado de la consulta: ", result)
+
         if result and result[0] is None:
             return 'Exit'
-
-        # Si no hay registros, o si el último registro ya tiene una 'exit_hour',
-        # significa que el usuario está "fuera", por lo que la próxima acción es 'Entry'.
         return 'Entry'
 
     def get_last_station_for_user(self, user_id: int) -> Optional[str]:

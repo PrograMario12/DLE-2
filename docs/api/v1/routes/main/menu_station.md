@@ -187,6 +187,56 @@ Data --> "many" Card
 Card --> "many" Side
 ```
 
+### c) Diagrama de flujo de la función `menu_station`
+``` mermaid
+    flowchart TD
+    A[Inicio: menu_station] --> B{¿Existe cookie 'line'?}
+    B -->|No| C[Redirigir a configuración de línea y estación]
+    B -->|Sí| D{Validar cookie con LineCookie}
+    D -->|Error| C
+    D -->|Éxito| E{¿Método HTTP?}
+    
+    E -->|GET| F[Redirigir a home]
+    
+    E -->|POST| G{Validar formulario con MenuStationForm}
+    G -->|Error| F
+    
+    G -->|Éxito| H[Obtener último registro de usuario]
+    H --> I{¿Último registro es 'Exit'?}
+    
+    I -->|Sí| J[Crear respuesta con redirección a successful]
+    J --> K[Establecer cookie employee_number]
+    K --> L[Devolver respuesta]
+    
+    I -->|No| M[Obtener detalles de estación para la línea]
+    M --> N[Inicializar contadores total_capacity y total_active]
+    
+    N --> O[Recorrer tarjetas]
+    O --> P[Inicializar contadores card_cap y card_act]
+    P --> Q[Recorrer lados]
+    
+    Q --> R[Calcular capacidad y activos para cada lado]
+    R --> S[Actualizar contadores de tarjeta]
+    S --> T[Asignar clase CSS al lado]
+    T --> U{¿Más lados?}
+    
+    U -->|Sí| Q
+    U -->|No| V{¿Tarjeta visible?}
+    
+    V -->|Sí| W[Asignar clase CSS a la tarjeta]
+    W --> X[Actualizar contadores globales]
+    X --> Y{¿Más tarjetas?}
+    
+    V -->|No| Y
+    
+    Y -->|Sí| O
+    Y -->|No| Z[Preparar datos para template]
+    
+    Z --> AA[Renderizar menu.html]
+    AA --> BB[Establecer cookie employee_number]
+    BB --> CC[Devolver respuesta]
+```
+
 ---
 
 ## 🧰 Ejemplo de datos del `DashboardService`

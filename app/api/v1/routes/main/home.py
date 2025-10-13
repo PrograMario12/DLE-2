@@ -11,7 +11,6 @@ from flask import (
     Blueprint,
     render_template,
     make_response,
-    url_for,
     request
 )
 from app.domain.services.user_service import UserService
@@ -24,6 +23,9 @@ def register_home(bp: Blueprint, user_service: UserService ) -> None:
 
     Args:
         bp (Blueprint): El blueprint en el que se registrará la ruta.
+        user_service (UserService): Servicio para operaciones
+        relacionadas con usuarios.
+
     """
     @bp.get("/", endpoint="home")
     def home():
@@ -45,7 +47,6 @@ def register_home(bp: Blueprint, user_service: UserService ) -> None:
         line_int = request.cookies.get("line")
         line_name = user_service.get_line_name_by_id(int(line_int)) if (
             line_int) else None
-        print(line_name)
         resp = make_response(
             render_template(
                 "index.html",
