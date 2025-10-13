@@ -30,7 +30,8 @@ from .routes.main import create_main_bp  # Importa el blueprint principal
 from .routes.dashboard_routes import dashboards_bp  # Importa el blueprint de tableros
 from .routes.settings_routes import settings_bp  # Importa el blueprint de configuración
 
-def register_all_blueprints(app, user_service, dashboard_service, station_service):
+def register_all_blueprints(app, user_service, dashboard_service,
+                            station_service, active_staff_service):
     """
     Centraliza el registro de blueprints e inyecta las dependencias
     necesarias.
@@ -63,7 +64,8 @@ def register_all_blueprints(app, user_service, dashboard_service, station_servic
     app.register_blueprint(create_main_bp(
         user_service,
         dashboard_service,
-        station_service
+        station_service,
+        active_staff_service
     ))  # Registra el blueprint principal
     app.register_blueprint(dashboards_bp)  # Registra el blueprint de
     # tableros

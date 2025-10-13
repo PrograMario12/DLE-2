@@ -2,69 +2,81 @@
 
 {% block styles %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/login_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login_styles.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="vertical-layout">
-  <section aria-label="Reloj" class="reloj-section">
-    <div class="reloj" role="timer" aria-live="polite">
-      <span id="tiempo">00 : 00</span>
+    <div class="vertical-layout">
+        <section aria-label="Reloj" class="reloj-section">
+            <div class="reloj" role="timer" aria-live="polite">
+                <span id="tiempo">00 : 00</span>
+            </div>
+        </section>
+
+        <section aria-label="Formulario de registro" class="center-section">
+            <form
+                    method="post"
+                    action="{{ url_for('main.menu_station') }}"
+                    id="login-form"
+                    class="login-form"
+                    autocomplete="off"
+                    role="form"
+            >
+                <picture>
+                    <source srcset="{{ url_for('static', filename='img/magna-logo.png') }}"/>
+                    <img src="{{ url_for('static', filename='img/magna-logo.png') }}" alt="Logo de la empresa"
+                         class="img"/>
+                </picture>
+
+                <div>
+                    <label for="employee_number" class="label-email">
+                        <input
+                                type="password"
+                                class="text"
+                                name="employee_number"
+                                id="employee_number"
+                                tabindex="1"
+                                required
+                                autofocus
+                                autocomplete="new-password"
+                                minlength="10"
+                                inputmode="numeric"
+                                pattern="[0-9]{10}"
+                                aria-label="Número de empleado"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+                        />
+                        <span class="required">Escanea tu credencial</span>
+                    </label>
+                </div>
+            </form>
+        </section>
+
+        <nav class="botones-esquina" aria-label="Acciones rápidas">
+            <p class="actual-line capitalize {{ 'without-line' if not line else '' }}">
+                {{ line if line else '¡Seleciona una línea!' }}
+            </p>
+
+
+            <button class="boton" type="button"
+                    onclick="location.href='{{ url_for('main.employees_list') }}'"
+                    aria-label="Configuración">
+                <span aria-hidden="true">👤</span>
+            </button>
+
+            <button class="boton" type="button"
+                    onclick="location.href='{{ url_for('settings.configure_line_and_station') }}'"
+                    aria-label="Configuración">
+                <span aria-hidden="true">🛠️</span>
+            </button>
+
+            <button class="boton" type="button"
+                    onclick="location.href='{{ url_for('dashboards.show_lines_dashboard') }}'"
+                    aria-label="Visualizaciones">
+                <span aria-hidden="true">📊</span>
+            </button>
+        </nav>
+
+        <script src="{{ url_for('static', filename='js/clock.js') }}"></script>
+
     </div>
-  </section>
-
-  <section aria-label="Formulario de registro" class="center-section">
-    <form
-      method="post"
-      action="{{ url_for('main.menu_station') }}"
-      id="login-form"
-      class="login-form"
-      autocomplete="off"
-      role="form"
-    >
-      <picture>
-        <source srcset="{{ url_for('static', filename='img/magna-logo.png') }}" />
-        <img src="{{ url_for('static', filename='img/magna-logo.png') }}" alt="Logo de la empresa" class="img" />
-      </picture>
-
-      <div>
-        <label for="employee_number" class="label-email">
-          <input
-            type="password"
-            class="text"
-            name="employee_number"
-            id="employee_number"
-            tabindex="1"
-            required
-            autofocus
-            autocomplete="new-password"
-            minlength="10"
-            inputmode="numeric"
-            pattern="[0-9]{10}"
-            aria-label="Número de empleado"
-            oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
-          />
-          <span class="required">Escanea tu credencial</span>
-        </label>
-      </div>
-    </form>
-  </section>
-
-  <nav class="botones-esquina" aria-label="Acciones rápidas">
-    <p class="actual-line capitalize {{ 'without-line' if not line else '' }}">
-      {{ line if line else '¡Seleciona una línea!' }}
-    </p>
-
-    <button class="boton" type="button" onclick="location.href='{{ url_for('settings.configure_line_and_station') }}'" aria-label="Configuración">
-      <span aria-hidden="true">🛠️</span>
-    </button>
-
-    <button class="boton" type="button" onclick="location.href='{{ url_for('dashboards.show_lines_dashboard') }}'" aria-label="Visualizaciones">
-      <span aria-hidden="true">📊</span>
-    </button>
-  </nav>
-
-    <script src="{{ url_for('static', filename='js/clock.js') }}"></script>
-
-</div>
 {% endblock %}

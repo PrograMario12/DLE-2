@@ -3,13 +3,17 @@ from flask import Blueprint
 from app.domain.services.user_service import UserService
 from app.domain.services.dashboard_service import DashboardService
 from app.domain.services.station_service import StationService
+from app.domain.services.active_staff_service import ActiveStaffService
 from .home import register_home
 from .successful import register_successful
 from .menu_station import register_menu_station
+from .employees import register_employees
 
 def create_main_bp(user_service: UserService,
-   dashboard_service: DashboardService,
-   station_service: StationService) -> Blueprint:
+    dashboard_service: DashboardService,
+    station_service: StationService,
+    active_staff_service: ActiveStaffService
+    ) -> Blueprint:
     """
     Crea y configura el blueprint principal de la aplicación.
 
@@ -20,6 +24,8 @@ def create_main_bp(user_service: UserService,
         lógica de negocio relacionada con tableros.
         station_service (StationService): Servicio para manejar la
         lógica de negocio relacionada con estaciones.
+        active_staff_service (ActiveStaffService): Servicio para manejar
+        la lógica de negocio relacionada con empleados activos.
 
     Returns:
         Blueprint: El blueprint principal configurado con sus rutas
@@ -31,4 +37,6 @@ def create_main_bp(user_service: UserService,
     register_home(bp, user_service)
     register_menu_station(bp, user_service, dashboard_service)
     register_successful(bp, user_service, station_service)
+    register_employees(bp, active_staff_service)
+
     return bp
