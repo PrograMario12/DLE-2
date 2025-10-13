@@ -8,9 +8,19 @@ from .presenter import build_menu_view_model
 
 def menu_station_post(*, user_service: UserService,
                       dashboard_service: DashboardService):
-    """Handler para GET/POST de /menuStation
-    - GET: redirige a main.home
-    - POST: valida form, revisa último registro y arma ViewModel para la plantilla
+    """
+    Maneja las solicitudes GET y POST al endpoint /menuStation.
+
+    Args:
+        user_service (UserService): Servicio para manejar la lógica relacionada con usuarios.
+        dashboard_service (DashboardService): Servicio para manejar la lógica del dashboard.
+
+    Returns:
+        Response: Respuesta HTTP basada en la lógica del endpoint.
+
+    Notas:
+        - GET: Redirige al endpoint main.home.
+        - POST: Valida el formulario, revisa el último registro del usuario y genera un ViewModel para la plantilla.
     """
     # 1) Validar cookie 'line' (redirigir si no es válida)
     line = read_valid_line_cookie()
@@ -45,7 +55,16 @@ def menu_station_post(*, user_service: UserService,
     return resp
 
 def afe_menu_get():
-    """GET /afeMenu: devuelve la lista de AFE y el side_id opcional."""
+    """
+    Maneja las solicitudes GET al endpoint /afeMenu.
+
+    Returns:
+        Response: Renderiza la plantilla afe_menu.html con la lista de actividades y el side_id opcional.
+
+    Notas:
+        - Devuelve una lista de actividades predefinidas.
+        - Incluye el parámetro opcional side_id obtenido de los argumentos de la solicitud.
+    """
     activities = [
         {"id": 1, "name": "Contenciones / Retrabajos"},
         {"id": 2, "name": "Entrenamiento esporádico"},
