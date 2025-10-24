@@ -1,6 +1,7 @@
 """
 Registro de rutas para el menú de estación.
 Mantiene endpoints: /menuStation (GET/POST) y /afeMenu (GET).
+app/api/v1/routes/main/menu_station/__init__.py
 """
 
 from __future__ import annotations

@@ -33,6 +33,8 @@ def menu_station_post(*, user_service: UserService,
 
     # 3) Validar formulario (redirigir si no es válido)
     form = validate_menu_station_form(request.form)
+    print("En menu_station/controllers.py: form = " + str(form))
+    print("y form.employee_number = " + str(form.employee_number) + "")
     if form is None:
         return redirect(url_for("main.home"))
 

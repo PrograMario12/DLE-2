@@ -262,6 +262,9 @@ class UserRepositorySQL(IUserRepository):
         conn = get_db()
         cur = conn.cursor()
 
+        print ("En el módulo user_repository_sql, el número de empleado que "
+               "se utiliza es ", user_id, "y el side es ", side_id,)
+
         try:
             # 1) Buscar registro abierto
             q_open = sql.SQL("""

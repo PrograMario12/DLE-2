@@ -55,6 +55,7 @@ class UserService:
         :param card_number: Número de tarjeta del usuario.
         :return: El tipo del último registro como cadena, o None si no hay registros.
         """
+        print("En user_service.py el card_number es " + str(card_number) + "")
         return self._user_repo.get_last_register_type(card_number)
 
     def register_entry_or_assignment(self, employee_number: int,
