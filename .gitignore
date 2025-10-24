@@ -3,6 +3,8 @@ node_modules/
 __pycache__/
 env/
 img/
+.idea/
+.vscode/
 
 
 /limpieza-datos-nomina/
