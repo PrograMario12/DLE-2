@@ -37,14 +37,14 @@ def build_menu_view_model(raw_data: Dict[str, Any]) -> Dict[str, Any]:
         Transforma los datos crudos en un ViewModel para la plantilla `menu.html`.
         """
         data = dict(raw_data or {})
-        print("En presenter.py el data es\n" + json.dumps(data, indent=2, ensure_ascii=False))
+        # print("En presenter.py el data es\n" + json.dumps(data, indent=2, ensure_ascii=False))
         cards = data.get("cards", [])
 
         total_capacity = total_active = 0
 
         for card in cards:
             card_cap = card_act = 0
-            print(card)
+            # print(card)
 
             for side in card.get("sides", []):
                 cap = int(side.get("employee_capacity", 0))
