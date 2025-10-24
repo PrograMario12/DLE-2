@@ -5,6 +5,8 @@ Este módulo define y registra la ruta principal ("/") asociada a la
 página de inicio.
 Se encarga de renderizar la plantilla inicial, configurar estilos
 básicos y establecer una cookie de control de sesión (`employee_number`).
+
+api/v1/routes/main/home.py
 """
 
 from flask import (

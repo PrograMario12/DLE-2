@@ -1,73 +1,50 @@
-"""
-app/api/v1/blueprints.py
-
-Este módulo centraliza el registro de blueprints y la inyección de
-dependencias en la aplicación Flask. Su objetivo es facilitar la
-organización y el mantenimiento
-de las rutas y servicios, permitiendo que cada blueprint reciba las
-dependencias necesarias de forma explícita.
-
-Blueprints gestionados:
-- main_bp: Rutas principales de la aplicación (creado dinámicamente con
-servicios).
-- dashboards_bp: Rutas relacionadas con los tableros, requiere
-`dashboard_service`.
-- settings_bp: Rutas para la configuración de línea y estación, requiere
-`user_service`.
-
-Uso:
-Importa y llama a `register_all_blueprints(app, user_service,
-dashboard_service)` desde el punto de entrada de la aplicación para
-registrar todos los blueprints y asegurar la correcta inyección de
-dependencias.
-
-Dependencias:
-- Flask
-- Servicios: UserService, DashboardService
-"""
-
-from .routes.main import create_main_bp  # Importa el blueprint principal
-from .routes.dashboard_routes import dashboards_bp  # Importa el blueprint de tableros
-from .routes.settings_routes import settings_bp  # Importa el blueprint de configuración
+# app/api/v1/blueprints.py
+# Importa la función para crear el blueprint principal
+from .routes.main import create_main_bp
+# Importa el blueprint de dashboards
+from .routes.dashboard_routes import dashboards_bp
+# Importa el blueprint de configuración
+from .routes.settings_routes import settings_bp
 
 def register_all_blueprints(app, user_service, dashboard_service,
                             station_service, active_staff_service):
     """
-    Centraliza el registro de blueprints e inyecta las dependencias
-    necesarias.
+    Registra todos los blueprints en la aplicación Flask.
+
+    Este método asocia servicios específicos a los blueprints y los registra
+    en la aplicación Flask proporcionada.
 
     Args:
-     app (Flask): La instancia de la aplicación Flask donde se
-     registrarán los blueprints.
-     user_service (UserService): Servicio de usuario que será
-     inyectado en los blueprints.
-     dashboard_service (DashboardService): Servicio de tablero que
-     será inyectado en los blueprints.
+        app (Flask): La instancia de la aplicación Flask donde se
+        registrarán los blueprints.
+        user_service: Servicio para manejar la lógica relacionada con
+        usuarios.
+        dashboard_service: Servicio para manejar la lógica de los
+        dashboards.
+        station_service: Servicio para manejar la lógica de las
+        estaciones (opcional).
+        active_staff_service: Servicio para manejar la lógica del
+        personal activo.
 
-    Funcionalidad:
-     - Importa los blueprints principales de la aplicación.
-     - Inyecta las dependencias requeridas en cada blueprint.
-     - Registra los blueprints en la aplicación Flask.
-
-    Blueprints registrados:
-     - main_bp: Rutas principales de la aplicación.
-     - dashboards_bp: Rutas relacionadas con los tableros.
-     - settings_bp: Rutas para la configuración de línea y estación.
+    Returns:
+        None
     """
+    # Asocia el servicio de dashboard al blueprint de dashboards
+    dashboards_bp.dashboard_service = dashboard_service
 
-    dashboards_bp.dashboard_service = dashboard_service  # Asigna el
-    # servicio de tablero al blueprint de tableros
-    settings_bp.user_service = user_service  # Asigna el servicio de
-    # usuario al blueprint de configuración
+    # Asocia el servicio de usuario al blueprint de configuración
+    settings_bp.user_service = user_service
 
-    # Registrar los blueprints en la aplicación Flask
+    # Registra el blueprint principal, pasando los servicios necesarios
     app.register_blueprint(create_main_bp(
         user_service,
         dashboard_service,
         station_service,
         active_staff_service
-    ))  # Registra el blueprint principal
-    app.register_blueprint(dashboards_bp)  # Registra el blueprint de
-    # tableros
-    app.register_blueprint(settings_bp)  # Registra el blueprint de
-    # configuración
+    ))
+
+    # Registra el blueprint de dashboards
+    app.register_blueprint(dashboards_bp)
+
+    # Registra el blueprint de configuración
+    app.register_blueprint(settings_bp)

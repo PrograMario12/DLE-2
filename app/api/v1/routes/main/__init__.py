@@ -1,4 +1,7 @@
-"""Fábrica del blueprint principal (Main)."""
+"""
+Fábrica del blueprint principal (Main).
+api/v1/routes/main/__init__.py
+"""
 from flask import Blueprint
 from app.domain.services.user_service import UserService
 from app.domain.services.dashboard_service import DashboardService
