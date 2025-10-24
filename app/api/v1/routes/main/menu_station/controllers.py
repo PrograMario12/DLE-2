@@ -34,35 +34,36 @@ def menu_station_post(*, user_service: UserService,
         return redirect(url_for("settings.configure_line_and_station"))  # Redirige si no es válida
 
     # 2) GET -> redirige a home (compatibilidad con comportamiento actual)
-    if request.method == "GET":
-        flash("Ocurrió un error al procesar tu solicitud. Intenta de nuevo.",
+    form = validate_menu_station_form(request.form)  # Valida los datos del formulario
+
+    if request.method == "GET" or form is None:
+        flash("Ocurrió un error al procesar tu solicitud. "
+              "Intenta de nuevo.",
               "error")
         return redirect(url_for("main.home"))
 
-    # 3) Validar formulario (redirigir si no es válido)
-    form = validate_menu_station_form(request.form)  # Valida los datos del formulario
-    print("En menu_station/controllers.py: form = " + str(form))
-    print("y form.employee_number = " + str(form.employee_number) + "")
-    if form is None:
-        return redirect(url_for("main.home"))  # Redirige si el formulario no es válido
-
     # 4) Regla de negocio: si el último registro del usuario es "Exit" -> success
-    last = user_service.get_user_last_register_type(form.employee_number)  # Obtiene el último registro del usuario
+    # Este tiene problemas porque no está arrojando el exit
+    last = user_service.get_user_last_register_type(form.employee_number)
+
     if last == "Exit":
-        resp = make_response(redirect(url_for("main.successful")))  # Redirige al endpoint main.successful
-        resp.set_cookie("employee_number", str(form.employee_number), httponly=True,
-                        samesite="Lax")  # Establece una cookie con el número de empleado
-        return resp
+        # Prepara la respuesta de redirección
+        resp = make_response(redirect(url_for("main.successful")))
+    else:
+        # 4) Flujo normal: Obtener detalles y renderizar
+        data = dashboard_service.get_station_details_for_line(line)
+        view_model = build_menu_view_model(data)
+        # Prepara la respuesta de renderizado
+        resp = make_response(render_template("menu.html", **view_model))
 
-    # 5) Obtener detalles de estación y transformar a ViewModel listo para la vista
-    data = dashboard_service.get_station_details_for_line(line)  # Obtiene los detalles de la estación
-    view_model = build_menu_view_model(data)  # Construye el ViewModel para la plantilla
+    # 5) ESTABLECER LA COOKIE (UN SOLO LUGAR)
+    # No importa cuál fue la respuesta (redirect o render),
+    # le establecemos la cookie.
+    resp.set_cookie("employee_number", str(form.employee_number),
+                    httponly=True,
+                    samesite="Lax")
 
-    # 6) Render y cookie
-    resp = make_response(render_template("menu.html", **view_model))  # Renderiza la plantilla con el ViewModel
-    resp.set_cookie("employee_number", str(form.employee_number), httponly=True,
-                    samesite="Lax")  # Establece una cookie con el número de empleado
-    return resp  # Devuelve la respuesta HTTP generada
+    return resp
 
 
 def afe_menu_get():

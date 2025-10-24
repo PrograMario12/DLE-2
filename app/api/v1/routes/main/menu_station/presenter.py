@@ -1,5 +1,11 @@
+"""
+Presenter para la vista del menú de estaciones.
+app/api/v1/routes/main/menu_station/presenter.py
+"""
+
 from __future__ import annotations
 from typing import Dict, Any, List
+import json
 
 # Reglas de presentación (UI): clases CSS y totales
 
@@ -21,63 +27,39 @@ def _side_status_class(cap: int, act: int) -> str:
     """
     if act < cap:
         return EMPLOYEE_NOK
-    elif act == cap:
+    if act == cap:
         return EMPLOYEE_OK
     return EMPLOYEE_WRN
 
 
 def build_menu_view_model(raw_data: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Transforma los datos crudos del servicio en un ViewModel listo para la plantilla `menu.html`.
+        """
+        Transforma los datos crudos en un ViewModel para la plantilla `menu.html`.
+        """
+        data = dict(raw_data or {})
+        print("En presenter.py el data es\n" + json.dumps(data, indent=2, ensure_ascii=False))
+        cards = data.get("cards", [])
 
-    Args:
-        raw_data (Dict[str, Any]): Datos crudos que contienen información de tarjetas y lados.
+        total_capacity = total_active = 0
 
-    Returns:
-        Dict[str, Any]: ViewModel con las siguientes claves:
-            - cards (List[Dict]): Lista de tarjetas con clases CSS asignadas.
-            - total_capacity (int): Capacidad total esperada de empleados.
-            - total_employees (int): Número total de empleados activos.
+        for card in cards:
+            card_cap = card_act = 0
+            print(card)
 
-    Notas:
-        - Cada tarjeta puede contener múltiples lados, y cada lado tiene una capacidad y empleados activos.
-        - Se asignan clases CSS a cada lado y tarjeta según su estado.
-    """
-    data = dict(raw_data or {})
-    cards: List[dict] = data.get("cards") or []
+            for side in card.get("sides", []):
+                cap = int(side.get("employee_capacity", 0))
+                act = int(side.get("employees_working", 0))
+                card_cap += cap
+                card_act += act
 
-    total_capacity = 0  # Capacidad total esperada
-    total_active = 0  # Total de empleados activos
+                side.setdefault("class", _side_status_class(cap, act))
 
-    for card in cards:
-        card_cap = 0  # Capacidad total de la tarjeta
-        card_act = 0  # Empleados activos en la tarjeta
-
-        for side in card.get("sides", []):
-            cap = int(side.get("employee_capacity") or 0)  # Capacidad del lado
-            act = int(side.get("employees_working") or 0)  # Empleados activos en el lado
-            card_cap += cap
-            card_act += act
-
-            # Asigna una clase CSS al lado si no tiene una
-            if not side.get("class"):
-                side["class"] = _side_status_class(cap, act)
-
-        # Asigna una clase CSS a la tarjeta si está visible
-        if not card.get("status", True):
-            base = (card.get("class") or "")
-            if card_act < card_cap:
-                card["class"] = f"{base} card--under".strip()
-            elif card_act == card_cap:
-                card["class"] = f"{base} card--ok".strip()
-            else:
-                card["class"] = f"{base} card--over".strip()
+            if not card.get("status", True):
+                base_class = card.get("class", "")
+                card["class"] = f"{base_class} card--{'under' if card_act < card_cap else 'ok' if card_act == card_cap else 'over'}".strip()
 
             total_capacity += card_cap
             total_active += card_act
 
-    # Actualiza el ViewModel con los datos procesados
-    data["cards"] = cards
-    data["total_capacity"] = total_capacity
-    data["total_employees"] = total_active
-    return data
+        data.update({"cards": cards, "total_capacity": total_capacity, "total_employees": total_active})
+        return data
