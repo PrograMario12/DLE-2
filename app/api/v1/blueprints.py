@@ -1,4 +1,9 @@
-# app/api/v1/blueprints.py
+"""
+Registra todos los blueprints en la aplicación Flask, asociando los
+servicios necesarios a cada uno.
+app/api/v1/blueprints.py
+"""
+
 # Importa la función para crear el blueprint principal
 from .routes.main import create_main_bp
 # Importa el blueprint de dashboards
@@ -22,7 +27,7 @@ def register_all_blueprints(app, user_service, dashboard_service,
         dashboard_service: Servicio para manejar la lógica de los
         dashboards.
         station_service: Servicio para manejar la lógica de las
-        estaciones (opcional).
+            estaciones (opcional).
         active_staff_service: Servicio para manejar la lógica del
         personal activo.
 

@@ -1,12 +1,6 @@
 """
-Módulo de rutas para la página de inicio de la aplicación.
-
-Este módulo define y registra la ruta principal ("/") asociada a la
-página de inicio.
-Se encarga de renderizar la plantilla inicial, configurar estilos
-básicos y establecer una cookie de control de sesión (`employee_number`).
-
-api/v1/routes/main/home.py
+Genera las rutas principales de la aplicación.
+app/api/v1/routes/main/home.py
 """
 
 from flask import (
@@ -17,38 +11,36 @@ from flask import (
 )
 from app.domain.services.user_service import UserService
 
-def register_home(bp: Blueprint, user_service: UserService ) -> None:
+def register_home(bp: Blueprint, user_service: UserService) -> None:
     """
-    Registra la ruta de la página de inicio en el blueprint proporcionado.
-
-    La ruta asociada es `/` con el nombre de endpoint `"home"`.
+    Registra la ruta principal (home) en el blueprint proporcionado.
 
     Args:
         bp (Blueprint): El blueprint en el que se registrará la ruta.
-        user_service (UserService): Servicio para operaciones
-        relacionadas con usuarios.
+        user_service (UserService): Servicio para manejar la lógica relacionada con usuarios.
 
+    Returns:
+        None
     """
+
     @bp.get("/", endpoint="home")
     def home():
         """
-        Maneja solicitudes GET para la página de inicio.
+        Controlador para la ruta principal ("/").
 
-        Flujo principal:
-            1. Construye la ruta al archivo CSS inicial (`init_styles.css`).
-            2. Renderiza la plantilla `index.html`.
-            3. Lee la cookie `"line"` (si existe) y la imprime en
-            consola (solo para debug).
-            4. Establece la cookie `"employee_number"` con valor `"0"`,
-            accesible únicamente por HTTP y con política `SameSite=Lax`.
+        Obtiene el nombre de la línea basado en la cookie "line" y renderiza
+        la plantilla "index.html". También establece una cookie "employee_number".
 
         Returns:
-            flask.Response: Objeto de respuesta HTTP con la plantilla renderizada y
-            la cookie configurada.
+            Response: Respuesta HTTP con la plantilla renderizada.
         """
+        # Obtiene el valor de la cookie "line"
         line_int = request.cookies.get("line")
-        line_name = user_service.get_line_name_by_id(int(line_int)) if (
-            line_int) else None
+
+        # Si la cookie "line" existe, obtiene el nombre de la línea usando el servicio de usuario
+        line_name = user_service.get_line_name_by_id(int(line_int)) if line_int else None
+
+        # Renderiza la plantilla "index.html" con el nombre de la línea
         resp = make_response(
             render_template(
                 "index.html",
@@ -56,5 +48,7 @@ def register_home(bp: Blueprint, user_service: UserService ) -> None:
             )
         )
 
+        # Establece una cookie "employee_number" con valor "0"
         resp.set_cookie("employee_number", "0", httponly=True, samesite="Lax")
+
         return resp
