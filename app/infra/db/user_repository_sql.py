@@ -130,43 +130,37 @@ class UserRepositorySQL(IUserRepository):
     def get_last_register_type(self, card_number: int) -> str:
         """
         Obtiene el tipo del último registro (entrada o salida) de un empleado
-        basado en su número de tarjeta.
-
-        Args:
-            card_number (int): Número de tarjeta del empleado.
-
-        Returns:
-            str: 'Exit' si el último registro es una entrada sin salida registrada,
-                 'Entry' en caso contrario.
+        basado en su número de tarjeta. Si hay una salida pendiente, la actualiza.
         """
-        # Imprime el número de tarjeta recibido para depuración
-        print('En el user_repository, la card_numer es: ', card_number, )
+        print('En el user_repository, la card_numer es: ', card_number)
 
-        # Consulta SQL para obtener la última hora de salida del empleado
+        # Consulta el último registro
         query = sql.SQL("""
-                        SELECT exit_hour
+                        SELECT id_register, exit_hour
                         FROM {schema}.registers
                         WHERE id_employee = %s
                         ORDER BY id_register DESC
                         LIMIT 1
-                        """)
+                        """).format(schema=sql.Identifier(self.schema))
 
-        # Formatea la consulta con el esquema correspondiente
-        formatted_query = query.format(schema=sql.Identifier(self.schema))
-
-        # Obtiene un cursor para ejecutar la consulta
         cursor = self._get_cursor()
-        cursor.execute(formatted_query, (card_number,))
+        cursor.execute(query, (card_number,))
         result = cursor.fetchone()
-        cursor.close()
 
-        # Imprime el resultado de la consulta para depuración
-        print("Resultado de la consulta en user_repository: ", result)
-
-        # Si el resultado existe y la hora de salida es None, retorna 'Exit'
-        if result and result[0] is None:
+        if result and result[1] is None:
+            # Actualiza el exit_hour con la hora actual
+            now_time = datetime.now().strftime("%H:%M:%S")
+            update_query = sql.SQL("""
+                                   UPDATE {schema}.registers
+                                   SET exit_hour = %s WHERE id_register = %s
+                                   """).format(
+                schema=sql.Identifier(self.schema))
+            cursor.execute(update_query, (now_time, result[0]))
+            cursor.connection.commit()
+            cursor.close()
             return 'Exit'
-        # En caso contrario, retorna 'Entry'
+
+        cursor.close()
         return 'Entry'
 
     def get_last_station_for_user(self, user_id: int) -> Optional[str]:

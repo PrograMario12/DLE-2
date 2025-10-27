@@ -1,4 +1,9 @@
-"""GET /successful — Vista de éxito con datos del usuario y su estado/asignación."""
+"""
+GET /successful — Vista de éxito con datos del usuario y su
+estado/asignación.
+
+app/api/v1/routes/main/successful.py
+"""
 from typing import Any, Dict
 from flask import Blueprint, render_template, request, url_for, redirect
 from app.domain.services.user_service import UserService
@@ -20,7 +25,7 @@ def register_successful(
     - Renderiza `successful.html`.
     """
 
-    @bp.get("/successful", endpoint="successful")
+    @bp.route("/successful", methods=["GET", "POST"], endpoint="successful")
     def successful():
         # 1) Validar cookie de empleado
         try:
