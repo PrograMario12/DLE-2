@@ -37,6 +37,7 @@ def register_successful(
                          employee_number_raw)
             return redirect(url_for("main.home"))
 
+
         # 1) Validar cookie de empleado
         try:
             data = EmployeeCookie.model_validate(
@@ -63,7 +64,8 @@ def register_successful(
         except Exception as e:
             print("Error al obtener info de usuario:", e, file=sys.stderr)
             traceback.print_exc()
-            info = {}
+
+        print('En sucessful: info = ', info)
 
         try:
             display = station_service.get_user_status_for_display(

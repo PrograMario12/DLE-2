@@ -23,16 +23,14 @@ class UserRepositorySQL(IUserRepository):
         return get_db().cursor()
 
     def find_user_by_card_number(self, card_number: int) -> Optional[User]:
-        query = """
-        SELECT id_empleado, nombre_empleado, apellidos_empleado
-        FROM {schema}.table_empleados_tarjeta
-        WHERE numero_tarjeta = %s \
-        LIMIT 1 \
-        """
+        query = sql.SQL(
+            "SELECT id_empleado, nombre_empleado, apellidos_empleado "
+            "FROM {schema}.table_empleados_tarjeta "
+            "WHERE numero_tarjeta = %s "
+            "LIMIT 1"
+        ).format(schema=sql.Identifier(self.schema))
 
-        query = sql.SQL(query).format(schema=sql.Identifier(self.schema))
         cursor = self._get_cursor()
-        # Usamos parámetros para prevenir inyección SQL
         cursor.execute(query, (card_number,))
         result = cursor.fetchone()
         cursor.close()
