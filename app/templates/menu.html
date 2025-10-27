@@ -40,23 +40,45 @@ Date: [2024-07-16]
         </div>
 
         <div class="menu">
-            {% for card in cards %}
-                <div class="card {% if card.status == false%} hidden {%endif%}">
-                    <h2>{{tipo}} {{card.position_name}}</h2>
+            {% for card in cards_main %}
+                <div class="card {% if card.status == false %} hidden {% endif %}">
+                    <h2>{{ tipo }} {{ card.position_name }}</h2>
                     <div class="select-position">
                         {% for side in card.sides %}
-                            <a href="/successful?id={{side.side_id}}"
-                               class="card-dashboard small-card-dashboard uppercase {{side.class}}"
-                               data-position="{{card.position_name}}"
-                               data-side-id="{{side.side_id}}">
-                                <h3>{{side.side_title}}</h3>
-                                <p><i class="fi fi-rr-user"></i>{{side.employee_capacity}} <i class="fi fi-sr-user"></i> {{side.employees_working}}</p>
+                            <a href="/successful?id={{ side.side_id }}"
+                               class="card-dashboard small-card-dashboard uppercase {{ side.class }}"
+                               data-position="{{ card.position_name }}"
+                               data-side-id="{{ side.side_id }}">
+                                <h3>{{ side.side_title }}</h3>
+                                <p><i class="fi fi-rr-user"></i>{{ side.employee_capacity }} <i class="fi fi-sr-user"></i> {{ side.employees_working }}</p>
                             </a>
                         {% endfor %}
                     </div>
                 </div>
             {% endfor %}
         </div>
+
+        {% if has_afe %}
+            <div class="menu-separator"><span>Estaciones AFE</span></div>
+            <div class="menu menu--afe">
+                {% for card in cards_afe %}
+                    <div class="card {% if card.status == false %} hidden {% endif %}">
+                        <h2>{{ card.position_name }}</h2>
+                        <div class="select-position">
+                            {% for side in card.sides %}
+                                <a href="/successful?id={{ side.side_id }}"
+                                   class="card-dashboard small-card-dashboard uppercase {{ side.class }}"
+                                   data-position="{{ card.position_name }}"
+                                   data-side-id="{{ side.side_id }}">
+                                    <h3>{{ side.side_title }}</h3>
+                                    <p><i class="fi fi-rr-user"></i>{{ side.employee_capacity }} <i class="fi fi-sr-user"></i> {{ side.employees_working }}</p>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <div class="div-button-cancel">
             <button onclick="window.location.href='/'" class="cancel-button">Cancelar</button>

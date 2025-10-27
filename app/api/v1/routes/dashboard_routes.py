@@ -94,8 +94,6 @@ def show_stations_dashboard():
 
     return render_template('stations_dashboards.html', **station_data)
 
-
-
 @dashboards_bp.route('/api/operators')
 def get_active_operators():
     """

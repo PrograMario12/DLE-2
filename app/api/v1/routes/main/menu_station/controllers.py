@@ -47,13 +47,28 @@ def menu_station_post(*, user_service: UserService,
     last = user_service.get_user_last_register_type(form.employee_number)
 
     if last == "Exit":
-        # Prepara la respuesta de redirección
         resp = make_response(redirect(url_for("main.successful")))
     else:
-        # 4) Flujo normal: Obtener detalles y renderizar
         data = dashboard_service.get_station_details_for_line(line)
+        cards = data.get("cards") or []
+
+        # Separar AFE y normales
+        cards_main, cards_afe = [], []
+        for card in cards:
+            name = (card.get("position_name") or "")
+            is_afe = bool(card.get("is_afe")) or ("afe" in name.lower())
+            (cards_afe if is_afe else cards_main).append(card)
+
+        has_afe = len(cards_afe) > 0
+
+        # Puedes seguir usando tu build_menu_view_model si lo necesitas
         view_model = build_menu_view_model(data)
-        # Prepara la respuesta de renderizado
+        view_model.update({
+            "cards_main": cards_main,
+            "cards_afe": cards_afe,
+            "has_afe": has_afe
+        })
+
         resp = make_response(render_template("menu.html", **view_model))
 
     # 5) ESTABLECER LA COOKIE (UN SOLO LUGAR)
