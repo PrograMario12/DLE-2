@@ -10,6 +10,7 @@ from app.domain.services.user_service import UserService
 from app.domain.services.station_service import StationService
 from app.api.v1.schemas.main import EmployeeCookie
 import traceback, sys
+import logging
 
 def register_successful(
     bp: Blueprint,
@@ -27,12 +28,16 @@ def register_successful(
 
     @bp.route("/successful", methods=["GET", "POST"], endpoint="successful")
     def successful():
+        logger = logging.getLogger(__name__)
+
         # 1) Validar cookie de empleado
         try:
             data = EmployeeCookie.model_validate(
-                {"employee_number": request.cookies.get("employee_number", "0")}
+                {"employee_number": request.cookies.get("employee_number",
+                                                        "0")}
             )
-        except Exception:
+        except ValueError as e:
+            logger.error("Error de validación de cookie: %s", e)
             return redirect(url_for("main.home"))
 
         side_id = request.args.get("id", type=int)
