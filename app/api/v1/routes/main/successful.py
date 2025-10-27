@@ -30,12 +30,17 @@ def register_successful(
     def successful():
         logger = logging.getLogger(__name__)
 
+        employee_number_raw = request.cookies.get("employee_number")
+        if not employee_number_raw or not employee_number_raw.isdigit() or int(
+                employee_number_raw) <= 0:
+            logger.error("Cookie 'employee_number' inválida: %s",
+                         employee_number_raw)
+            return redirect(url_for("main.home"))
+
         # 1) Validar cookie de empleado
         try:
             data = EmployeeCookie.model_validate(
-                {"employee_number": request.cookies.get("employee_number",
-                                                        "0")}
-            )
+                {"employee_number": employee_number_raw})
         except ValueError as e:
             logger.error("Error de validación de cookie: %s", e)
             return redirect(url_for("main.home"))
@@ -77,7 +82,6 @@ def register_successful(
         ctx: Dict[str, Any] = {
             # ambos nombres para compatibilidad con tu plantilla
             "css_href": url_for("static", filename="css/styles.css"),
-            "css_file": url_for("static", filename="css/styles.css"),
             "user": display.get("user") or info.get("name"),
             "line": display.get("line_name"),
             "station": display.get("station_name"),

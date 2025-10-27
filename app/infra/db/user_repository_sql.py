@@ -260,21 +260,20 @@ class UserRepositorySQL(IUserRepository):
         Si el usuario tiene un registro abierto, lo cierra (Exit).
         En caso contrario, crea un registro de entrada (Entry) en el side indicado.
         """
-        conn = get_db()
-        cur = conn.cursor()
+        cur = self._get_cursor()
 
-        print ("En el módulo user_repository_sql, el número de empleado que "
-               "se utiliza es ", user_id, "y el side es ", side_id,)
+        print("En el módulo user_repository_sql, el número de empleado que "
+              "se utiliza es ", user_id, "y el side es ", side_id, )
 
         try:
             # 1) Buscar registro abierto
             q_open = sql.SQL("""
-                SELECT id_register
-                FROM {schema}.registers
-                WHERE id_employee = %s AND exit_hour IS NULL
-                ORDER BY id_register DESC
-                LIMIT 1
-            """).format(schema=sql.Identifier(self.schema))
+                             SELECT id_register
+                             FROM {schema}.registers
+                             WHERE id_employee = %s AND exit_hour IS NULL
+                             ORDER BY id_register DESC
+                             LIMIT 1
+                             """).format(schema=sql.Identifier(self.schema))
             cur.execute(q_open, (user_id,))
             open_row = cur.fetchone()
 
@@ -284,24 +283,24 @@ class UserRepositorySQL(IUserRepository):
             if open_row:
                 # 2) Cerrar registro abierto (Salida)
                 q_close = sql.SQL("""
-                    UPDATE {schema}.registers
-                    SET exit_hour = %s
-                    WHERE id_register = %s
-                """).format(schema=sql.Identifier(self.schema))
+                                  UPDATE {schema}.registers
+                                  SET exit_hour = %s WHERE id_register = %s
+                                  """).format(
+                    schema=sql.Identifier(self.schema))
                 cur.execute(q_close, (now_time, open_row[0]))
-                conn.commit()
+                cur.connection.commit()
                 cur.close()
                 return
 
             # 3) No hay registro abierto: crear Entrada en el side indicado
-            #    Necesitamos obtener line_id y position_id de ese side
             q_side = sql.SQL("""
-                SELECT p.line_id, p.position_id
-                FROM {schema}.tbl_sides_of_positions s
-                JOIN {schema}.positions p ON p.position_id = s.position_id_fk
-                WHERE s.side_id = %s
-                LIMIT 1
-            """).format(schema=sql.Identifier(self.schema))
+                             SELECT p.line_id, p.position_id
+                             FROM {schema}.tbl_sides_of_positions s
+                JOIN {schema}.positions p
+                             ON p.position_id = s.position_id_fk
+                             WHERE s.side_id = %s
+                             LIMIT 1
+                             """).format(schema=sql.Identifier(self.schema))
             cur.execute(q_side, (side_id,))
             side_row = cur.fetchone()
             if not side_row:
@@ -310,14 +309,15 @@ class UserRepositorySQL(IUserRepository):
             line_id, position_id = side_row[0], side_row[1]
 
             q_insert = sql.SQL("""
-                INSERT INTO {schema}.registers
-                    (id_employee, date_register, entry_hour, line_id_fk, position_id_fk)
-                VALUES (%s, %s, %s, %s, %s)
-            """).format(schema=sql.Identifier(self.schema))
-            cur.execute(q_insert, (user_id, today_date, now_time, line_id, side_id))
-            conn.commit()
+                               INSERT INTO {schema}.registers
+                                   (id_employee, date_register, entry_hour, line_id_fk, position_id_fk)
+                               VALUES (%s, %s, %s, %s, %s)
+                               """).format(schema=sql.Identifier(self.schema))
+            cur.execute(q_insert,
+                        (user_id, today_date, now_time, line_id, side_id))
+            cur.connection.commit()
         except Exception:
-            conn.rollback()
+            cur.connection.rollback()
             raise
         finally:
             cur.close()
