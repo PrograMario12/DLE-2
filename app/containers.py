@@ -8,6 +8,7 @@ from .infra.db.mock_staff_active_repository import (
 from .domain.services.user_service import UserService
 from .domain.services.dashboard_service import DashboardService
 from .domain.services.active_staff_service import ActiveStaffService
+from .domain.services.station_service import StationService
 
 class Container(containers.DeclarativeContainer):
     """
@@ -40,6 +41,9 @@ class Container(containers.DeclarativeContainer):
     # Singleton provider for the DashboardService, which depends on the
     # user repository
     dashboard_service = providers.Singleton(DashboardService, user_repo)
+
+    # Singleton provider for the StationService
+    station_service = providers.Singleton(StationService, user_repo)
 
     # Singleton provider for the ActiveStaffService, which depends on
     # the active staff repository

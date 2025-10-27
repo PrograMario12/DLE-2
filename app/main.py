@@ -54,7 +54,8 @@ def create_app(config=settings):
         app,
         container.user_service(),  # Servicio de usuario
         container.dashboard_service(),  # Servicio de dashboard
-        None,  # Parámetro opcional (sin uso en este caso)
+        container.station_service(),  # Parámetro opcional (sin uso en este
+        # caso)
         container.active_staff_service()  # Servicio de personal activo
     )
 

@@ -132,8 +132,6 @@ class UserRepositorySQL(IUserRepository):
         Obtiene el tipo del último registro (entrada o salida) de un empleado
         basado en su número de tarjeta. Si hay una salida pendiente, la actualiza.
         """
-        print('En el user_repository, la card_numer es: ', card_number)
-
         # Consulta el último registro
         query = sql.SQL("""
                         SELECT id_register, exit_hour
@@ -262,9 +260,6 @@ class UserRepositorySQL(IUserRepository):
         """
         cur = self._get_cursor()
 
-        print("En el módulo user_repository_sql, el número de empleado que "
-              "se utiliza es ", user_id, "y el side es ", side_id, )
-
         try:
             # 1) Buscar registro abierto
             q_open = sql.SQL("""
@@ -321,3 +316,21 @@ class UserRepositorySQL(IUserRepository):
             raise
         finally:
             cur.close()
+
+    def get_user_status_for_display(self, card_number: int) -> Optional[
+        StationInfo]:
+        user = self.find_user_by_card_number(card_number)
+        if not user:
+            return None
+
+        last_register_type = self.get_last_register_type(card_number)
+        station_info = self.get_last_station_for_user(user.id)
+
+        # Puedes ajustar los campos según la definición de StationInfo
+        return StationInfo(
+            user_name=user.full_name,
+            register_type=last_register_type,
+            color="employee-ok" if last_register_type == "Entry" else "employee-warning",
+            image=f"{user.id}.png",
+            station=station_info
+        )
