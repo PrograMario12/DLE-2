@@ -192,6 +192,24 @@ graph TD
   * **Dependencias Duras (importadas):** `Flask`, `.cookies`, `.validators`, `.presenter`.
   * **Dependencias Suaves (inyectadas):** `UserService`, `DashboardService`.
 
+
+#### Diagrama de flujo 
+```mermaid
+flowchart TD
+    A[Inicio: Llamada a menu_station_post] --> B[Validar cookie 'line']
+    B -- Cookie inválida --> C[Redirigir a settings.configure_line_and_station]
+    B -- Cookie válida --> D[Validar formulario]
+    D -- request.method == GET o formulario inválido --> E[Mostrar mensaje de error y redirigir a main.home]
+    D -- request.method == POST y formulario válido --> F[Obtener último registro del usuario]
+    F -- Último registro es Exit --> G[Redirigir a main.successful]
+    F -- Último registro distinto de Exit --> H[Obtener detalles de estación]
+    H --> I[Separar tarjetas AFE y normales]
+    I --> J[Construir ViewModel y renderizar menu.html]
+    C & E & G & J --> K[Establecer cookie 'employee_number']
+    K --> L[Retornar respuesta]
+
+```
+
 #### Flujo de Control Detallado (`menu_station_post` - Escenario POST Exitoso)
 
 1.  **Solicitud:** `POST /menuStation` con `Content-Type: application/x-www-form-urlencoded` y una cookie `line` válida.

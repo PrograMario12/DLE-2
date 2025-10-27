@@ -1,6 +1,8 @@
 """
 src/infra/db/user_repository_sql.py
 Implementación del repositorio de usuarios usando Psycopg2.
+
+todo: Refactorizar este cagadero
 """
 
 from .db import get_db
@@ -104,8 +106,6 @@ class UserRepositorySQL(IUserRepository):
         results = cursor.fetchall()
         cursor.close()
 
-        print("Los resultados son: ", results)
-
         # Agrupar los resultados por estación en Python
         cards = {}
         # El nombre de la variable aquí también cambia para mayor claridad
@@ -129,18 +129,20 @@ class UserRepositorySQL(IUserRepository):
 
     def get_last_register_type(self, card_number: int) -> str:
         """
-        Determina si la próxima acción del usuario debe ser 'Entry' (entrada) o 'Exit' (salida).
-
-        Consulta el último registro del usuario en la base de datos. Si el campo 'exit_hour' es NULL,
-        significa que el usuario aún no ha registrado su salida, por lo que la próxima acción será 'Exit'.
-        Si no hay registros, o el último registro ya tiene una hora de salida, la próxima acción será 'Entry'.
+        Obtiene el tipo del último registro (entrada o salida) de un empleado
+        basado en su número de tarjeta.
 
         Args:
             card_number (int): Número de tarjeta del empleado.
 
         Returns:
-            str: 'Exit' si el usuario está dentro (sin salida registrada), 'Entry' en caso contrario.
+            str: 'Exit' si el último registro es una entrada sin salida registrada,
+                 'Entry' en caso contrario.
         """
+        # Imprime el número de tarjeta recibido para depuración
+        print('En el user_repository, la card_numer es: ', card_number, )
+
+        # Consulta SQL para obtener la última hora de salida del empleado
         query = sql.SQL("""
                         SELECT exit_hour
                         FROM {schema}.registers
@@ -149,17 +151,22 @@ class UserRepositorySQL(IUserRepository):
                         LIMIT 1
                         """)
 
+        # Formatea la consulta con el esquema correspondiente
         formatted_query = query.format(schema=sql.Identifier(self.schema))
 
+        # Obtiene un cursor para ejecutar la consulta
         cursor = self._get_cursor()
         cursor.execute(formatted_query, (card_number,))
         result = cursor.fetchone()
         cursor.close()
 
-        print("Resultado de la consulta: ", result)
+        # Imprime el resultado de la consulta para depuración
+        print("Resultado de la consulta en user_repository: ", result)
 
+        # Si el resultado existe y la hora de salida es None, retorna 'Exit'
         if result and result[0] is None:
             return 'Exit'
+        # En caso contrario, retorna 'Entry'
         return 'Entry'
 
     def get_last_station_for_user(self, user_id: int) -> Optional[str]:

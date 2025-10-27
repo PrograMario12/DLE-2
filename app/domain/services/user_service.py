@@ -55,7 +55,6 @@ class UserService:
         :param card_number: Número de tarjeta del usuario.
         :return: El tipo del último registro como cadena, o None si no hay registros.
         """
-        print("En user_service.py el card_number es " + str(card_number) + "")
         return self._user_repo.get_last_register_type(card_number)
 
     def register_entry_or_assignment(self, employee_number: int,
@@ -67,13 +66,9 @@ class UserService:
         :param side_id: Identificador de la estación o side donde se registra la entrada.
         :raises ValueError: Si el empleado no es encontrado en el repositorio.
         """
-        # 1) Resolver el usuario por tarjeta
-        user = self._user_repo.find_user_by_card_number(employee_number)
-        if not user:
-            raise ValueError("Empleado no encontrado")
 
         # 2) Delegar la persistencia (el repo debe implementar esta operación)
-        self._user_repo.register_entry_or_assignment(user_id=user.id,
+        self._user_repo.register_entry_or_assignment(user_id=employee_number,
                                                      side_id=side_id)
 
     def get_line_name_by_id(self, line_int: int) -> Optional[str]:
