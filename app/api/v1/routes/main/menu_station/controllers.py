@@ -45,7 +45,6 @@ def menu_station_post(*, user_service: UserService,
     # 4) Regla de negocio: si el último registro del usuario es "Exit" -> success
     # Este tiene problemas porque no está arrojando el exit
     last = user_service.get_user_last_register_type(form.employee_number)
-    print("last = ", last)
 
     if last == "Exit":
         resp = make_response(redirect(url_for("main.successful")))
@@ -78,7 +77,6 @@ def menu_station_post(*, user_service: UserService,
     resp.set_cookie("employee_number", str(form.employee_number),
                     httponly=True,
                     samesite="Lax")
-
     return resp
 
 
@@ -93,6 +91,10 @@ def afe_menu_get():
         - Devuelve una lista de actividades predefinidas.
         - Incluye el parámetro opcional side_id obtenido de los argumentos de la solicitud.
     """
+    side_id = request.args.get("side_id")
+
+    print("El side_id es ", side_id)
+
     activities = [
         {"id": 1, "name": "Contenciones / Retrabajos"},
         {"id": 2, "name": "Entrenamiento esporádico"},
