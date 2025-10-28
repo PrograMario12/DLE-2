@@ -58,7 +58,7 @@ class UserService:
         return self._user_repo.get_last_register_type(card_number)
 
     def register_entry_or_assignment(self, employee_number: int,
-                                     side_id: int) -> None:
+                                     side_id: int = 0) -> None:
         """
         Registra la entrada o asignación del operador en la estación/side indicado.
 
@@ -67,7 +67,8 @@ class UserService:
         :raises ValueError: Si el empleado no es encontrado en el repositorio.
         """
 
-        # 2) Delegar la persistencia (el repo debe implementar esta operación)
+        # 2) Delegar la persistencia (el repo debe implementar esta
+        # operación)
         self._user_repo.register_entry_or_assignment(user_id=employee_number,
                                                      side_id=side_id)
 

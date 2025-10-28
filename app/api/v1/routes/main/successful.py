@@ -37,7 +37,6 @@ def register_successful(
                          employee_number_raw)
             return redirect(url_for("main.home"))
 
-
         # 1) Validar cookie de empleado
         try:
             data = EmployeeCookie.model_validate(
@@ -47,7 +46,6 @@ def register_successful(
             return redirect(url_for("main.home"))
 
         side_id = request.args.get("id", type=int)
-        print('En sucessful: side_id = ', side_id)
         if side_id:
             try:
                 user_service.register_entry_or_assignment(
@@ -55,17 +53,21 @@ def register_successful(
                     side_id=side_id,
                 )
             except Exception as e:
-                print("Error al registrar asignación:", e, file=sys.stderr)
                 traceback.print_exc()
                 return redirect(url_for("main.home"))
+        else:
+            try:
+                user_service.register_entry_or_assignment(
+                    employee_number=data.employee_number
+                )
+            except Exception as e:
+                traceback.print_exc()
 
         try:
             info = user_service.get_user_info_for_display(data.employee_number) or {}
         except Exception as e:
             print("Error al obtener info de usuario:", e, file=sys.stderr)
             traceback.print_exc()
-
-        print('En sucessful: info = ', info)
 
         try:
             display = station_service.get_user_status_for_display(
@@ -76,6 +78,8 @@ def register_successful(
             traceback.print_exc()
             display = {}
 
+        print('En sucessful: display = ', display)
+
         # 4) Resolver imagen: prioriza la venida de display; si no, usa id de usuario
         image_filename = display.get("image")
         if not image_filename and "id" in info:
@@ -85,7 +89,7 @@ def register_successful(
         ctx: Dict[str, Any] = {
             # ambos nombres para compatibilidad con tu plantilla
             "css_href": url_for("static", filename="css/styles.css"),
-            "user": display.get("user") or info.get("name"),
+            "user": info.get("name"),
             "line": display.get("line_name"),
             "station": display.get("station_name"),
             "tipo": display.get("type"),

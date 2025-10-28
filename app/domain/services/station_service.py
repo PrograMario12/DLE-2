@@ -29,26 +29,21 @@ class StationService:
         :return: Diccionario con los datos del usuario para la pantalla de éxito.
                  Si el usuario no es encontrado, retorna un diccionario con un error.
         """
-        user = self._user_repo.find_by_card_number(card_number)
+        user = self._user_repo.find_user_by_card_number(card_number)
         if not user:
-            # Manejar el caso de usuario no encontrado apropiadamente
             return {"error": "User not found"}
 
         last_register = self._user_repo.get_last_register_type(card_number)
 
         if last_register == 'Entry':
-            # Lógica para registrar entrada (simplificada)
-            # self._user_repo.register_entry(...)
-            station_info = self._user_repo.get_last_station_info(user.id)
+            station_info = self._user_repo.get_last_station_for_user(user.id)
             return {
                 "user": user.full_name, "type": "Entrada",
                 "color": "employee-ok", "image": f"{user.id}.png",
                 **station_info.__dict__
             }
 
-        # Lógica para registrar salida (simplificada)
-        # self._user_repo.register_exit(...)
-        station_info = self._user_repo.get_last_station_info(user.id)
+        station_info = self._user_repo.get_last_station_for_user(user.id)
         return {
             "user": user.full_name, "type": "Salida",
             "color": "employee-warning", "image": f"{user.id}.png",

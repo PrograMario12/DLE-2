@@ -127,12 +127,14 @@ class UserRepositorySQL(IUserRepository):
 
     def get_last_register_type(self, card_number: int) -> str:
         """
-        Obtiene el tipo del último registro (entrada o salida) de un empleado
-        basado en su número de tarjeta. Si hay una salida pendiente, la actualiza.
+        Obtiene el tipo del último registro (Entry o Exit) de un empleado
+        basado en su número de tarjeta.
         """
-        # Consulta el último registro
         query = sql.SQL("""
-                        SELECT id_register, exit_hour
+                        SELECT CASE
+                            WHEN exit_hour IS NULL THEN 'Exit'
+                            ELSE 'Entry'
+                            END AS register_type
                         FROM {schema}.registers
                         WHERE id_employee = %s
                         ORDER BY id_register DESC
@@ -142,26 +144,42 @@ class UserRepositorySQL(IUserRepository):
         cursor = self._get_cursor()
         cursor.execute(query, (card_number,))
         result = cursor.fetchone()
+        cursor.close()
 
-        if result and result[1] is None:
-            # Actualiza el exit_hour con la hora actual
-            now_time = datetime.now().strftime("%H:%M:%S")
-            update_query = sql.SQL("""
-                                   UPDATE {schema}.registers
-                                   SET exit_hour = %s WHERE id_register = %s
-                                   """).format(
-                schema=sql.Identifier(self.schema))
-            cursor.execute(update_query, (now_time, result[0]))
-            cursor.connection.commit()
-            cursor.close()
+        print(result)
+
+        if result[0] == 'Entry':
+            return 'Entry'
+        elif result[0] == 'Exit':
+            return 'Exit'
+        else:
             return 'Exit'
 
-        cursor.close()
-        return 'Entry'
-
     def get_last_station_for_user(self, user_id: int) -> Optional[str]:
-        # Implementación aquí
-        pass
+        """
+        Obtiene la última estación (position_name) donde el usuario
+        con id_empleado específico realizó una entrada.
+        """
+        query = sql.SQL("""
+                        SELECT p.position_name
+                        FROM {schema}.registers r
+            JOIN {schema}.positions p
+                        ON r.position_id_fk = p.position_id
+                        WHERE r.id_employee = %s
+                          AND r.exit_hour IS NULL
+                        ORDER BY r.id_register DESC
+                        LIMIT 1
+                        """).format(schema=sql.Identifier(self.schema))
+
+        cursor = self._get_cursor()
+        cursor.execute(query, (user_id,))
+        result = cursor.fetchone()
+        cursor.close()
+
+        if not result:
+            return None
+
+        return result[0]
 
     def get_all_lines(self) -> list[dict]:
         """Implementación que obtiene todas las líneas de la tabla de zonas."""
@@ -183,12 +201,13 @@ class UserRepositorySQL(IUserRepository):
 
     def find_by_id(self, user_id: int) -> Optional[User]:
         """Encuentra un usuario por su id_empleado."""
-        query = """
-                SELECT id_empleado, nombre_empleado, apellidos_empleado
-                FROM table_empleados_tarjeta
-                WHERE id_empleado = %s \
-                LIMIT 1 \
-                """
+        query = sql.SQL(
+            "SELECT id_empleado, nombre_empleado, apellidos_empleado "
+            "FROM {schema}.table_empleados_tarjeta "
+            "WHERE id_empleado = %s "
+            "LIMIT 1"
+        ).format(schema=sql.Identifier(self.schema))
+
         cursor = self._get_cursor()
         cursor.execute(query, (user_id,))
         result = cursor.fetchone()
@@ -251,7 +270,8 @@ class UserRepositorySQL(IUserRepository):
         # Devolvemos una lista simple de nombres, como en el original
         return [f"{row[0]} {row[1]}" for row in results]
 
-    def register_entry_or_assignment(self, user_id: int, side_id: int) -> None:
+    def register_entry_or_assignment(self, user_id: int, side_id: int = 0) -> \
+            None:
         """
         Si el usuario tiene un registro abierto, lo cierra (Exit).
         En caso contrario, crea un registro de entrada (Entry) en el side indicado.
