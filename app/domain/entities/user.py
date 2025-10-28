@@ -8,6 +8,7 @@ class User(UserMixin): # <-- 2. HEREDA de UserMixin
     id: int
     name: str
     last_name: str
+    numero_tarjeta: int
 
     @property
     def full_name(self) -> str:

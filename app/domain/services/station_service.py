@@ -35,17 +35,13 @@ class StationService:
 
         last_register = self._user_repo.get_last_register_type(card_number)
 
-        if last_register == 'Entry':
-            station_info = self._user_repo.get_last_station_for_user(user.id)
+        if last_register == 'Exit':
             return {
                 "user": user.full_name, "type": "Entrada",
                 "color": "employee-ok", "image": f"{user.id}.png",
-                **station_info.__dict__
             }
 
-        station_info = self._user_repo.get_last_station_for_user(user.id)
         return {
             "user": user.full_name, "type": "Salida",
             "color": "employee-warning", "image": f"{user.id}.png",
-            **station_info.__dict__
         }

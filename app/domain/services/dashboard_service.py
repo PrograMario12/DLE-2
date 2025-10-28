@@ -13,7 +13,7 @@ class DashboardService:
         processed_lines = []
         for line in lines_from_repo:
             operators = line.get('operators', 0)
-            capacity = line.get('capacity', 0)
+            capacity = line.get('capacity', 0) or 0
 
             # 2. Calcula el porcentaje
             if capacity > 0:
@@ -25,7 +25,7 @@ class DashboardService:
             line['percentage'] = percentage
 
             # (Opcional) Puedes añadir la lógica para la clase CSS aquí también
-            if percentage < 80:
+            if percentage < 99:
                 line['class'] = 'employee-nook'  # Amarillo
             elif percentage > 100:
                 line['class'] = 'employee-warning'  # Rojo

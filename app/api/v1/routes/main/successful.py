@@ -78,7 +78,7 @@ def register_successful(
             traceback.print_exc()
             display = {}
 
-        print('En sucessful: display = ', display)
+        print(display)
 
         # 4) Resolver imagen: prioriza la venida de display; si no, usa id de usuario
         image_filename = display.get("image")

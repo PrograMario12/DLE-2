@@ -24,7 +24,7 @@ class UserRepositorySQL(IUserRepository):
 
     def find_user_by_card_number(self, card_number: int) -> Optional[User]:
         query = sql.SQL(
-            "SELECT id_empleado, nombre_empleado, apellidos_empleado "
+            "SELECT id_empleado, nombre_empleado, apellidos_empleado, numero_tarjeta "
             "FROM {schema}.table_empleados_tarjeta "
             "WHERE numero_tarjeta = %s "
             "LIMIT 1"
@@ -38,7 +38,8 @@ class UserRepositorySQL(IUserRepository):
         if not result:
             return None
 
-        return User(id=result[0], name=result[1], last_name=result[2])
+        return User(id=result[0], name=result[1], last_name=result[2],
+                    numero_tarjeta=result[3])
 
     def get_line_name_by_id(self, line_id: int) -> Optional[str]:
         """
@@ -146,7 +147,8 @@ class UserRepositorySQL(IUserRepository):
         result = cursor.fetchone()
         cursor.close()
 
-        print(result)
+        if not result:
+            return 'Entry'
 
         if result[0] == 'Entry':
             return 'Entry'
