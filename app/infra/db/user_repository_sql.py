@@ -7,7 +7,7 @@ todo: Refactorizar este cagadero
 
 from .db import get_db
 from app.domain.entities.user import User, StationInfo
-from app.domain.repositories.user_repository import IUserRepository
+from app.domain.repositories.IUserRepository import IUserRepository
 from typing import List, Dict, Any, Optional
 from psycopg2 import sql
 from datetime import datetime
@@ -40,37 +40,6 @@ class UserRepositorySQL(IUserRepository):
 
         return User(id=result[0], name=result[1], last_name=result[2],
                     numero_tarjeta=result[3])
-
-    def get_line_name_by_id(self, line_id: int) -> Optional[str]:
-        """
-        Obtiene el nombre completo de una línea en la tabla 'zones' dado su ID.
-
-        Args:
-            line_id (int): El identificador único de la línea.
-
-        Returns:
-            Optional[str]: El nombre completo de la línea en formato 'type_zone name',
-            o None si no se encuentra la línea.
-        """
-        # Consulta SQL para obtener el nombre completo de la línea
-        query = sql.SQL("""
-            SELECT TRIM(CONCAT_WS(' ', type_zone, name)) AS full_name
-            FROM {schema}.zones
-            WHERE line_id = %s
-            LIMIT 1
-            """).format(schema=sql.Identifier(self.schema))
-
-        # Obtiene un cursor para ejecutar la consulta
-        cur = self._get_cursor()
-        try:
-            # Ejecuta la consulta con el ID de la línea como parámetro
-            cur.execute(query, (line_id,))
-            row = cur.fetchone()
-            # Retorna el nombre completo si existe, de lo contrario retorna None
-            return row[0] if row and row[0] else None
-        finally:
-            # Asegura que el cursor se cierre después de la operación
-            cur.close()
 
     def get_station_cards_for_line(self, line_id: int) -> list[dict[str, any]]:
         """

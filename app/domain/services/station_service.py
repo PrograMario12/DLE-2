@@ -1,4 +1,4 @@
-from app.domain.repositories.user_repository import IUserRepository
+from app.domain.repositories.IUserRepository import IUserRepository
 
 class StationService:
     """

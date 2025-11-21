@@ -3,7 +3,8 @@ src/domain/services/user_service.py
 Servicio para la lógica de negocio relacionada con usuarios.
 """
 
-from app.domain.repositories.user_repository import IUserRepository  # Se importa la interfaz para asegurar que el servicio dependa de una abstracción y no de una implementación concreta.
+from app.domain.repositories.IUserRepository import IUserRepository  # Se importa la
+# interfaz para asegurar que el servicio dependa de una abstracción y no de una implementación concreta.
 from typing import Optional  # Se importa Optional para tipar correctamente los retornos que pueden ser None y así mejorar la legibilidad y robustez.
 
 class UserService:

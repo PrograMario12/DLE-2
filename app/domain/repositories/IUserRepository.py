@@ -25,11 +25,6 @@ class IUserRepository(ABC):
         pass
 
     @abstractmethod
-    def get_line_name_by_id(self, line_id: int) -> Optional[str]:
-        """Obtiene el nombre de una línea a partir de su ID."""
-        pass
-
-    @abstractmethod
     def get_all_lines(self) -> list[dict]:
         """Obtiene una lista de todas las líneas de producción."""
         pass
