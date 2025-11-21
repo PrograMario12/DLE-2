@@ -28,6 +28,7 @@ def menu_station_post(*, user_service: UserService,
         - GET: Redirige al endpoint main.home.
         - POST: Valida el formulario, revisa el último registro del usuario y genera un ViewModel para la plantilla.
     """
+
     # 1) Validar cookie 'line' (redirigir si no es válida)
     line = read_valid_line_cookie()  # Lee y valida la cookie 'line'
     if line is None:
@@ -95,11 +96,12 @@ def afe_menu_get():
 
     print("El side_id es ", side_id)
 
+
+
     activities = [
         {"id": 1, "name": "Contenciones / Retrabajos"},
         {"id": 2, "name": "Entrenamiento esporádico"},
         {"id": 3, "name": "Pruebas de ingeniería / Corridas especiales"},
         {"id": 4, "name": "Juntas o reuniones especiales"},
     ]
-    side_id = request.args.get("side_id")
     return render_template("afe_menu.html", activities=activities, side_id=side_id)

@@ -13,7 +13,6 @@ settings_bp = Blueprint('settings', __name__, url_prefix='/settings')
 # Placeholder para el servicio que será inyectado
 user_service: UserService
 
-
 @settings_bp.route('/', methods=['GET', 'POST'])
 def configure_line_and_station():
     """

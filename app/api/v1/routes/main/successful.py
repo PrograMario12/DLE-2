@@ -46,6 +46,7 @@ def register_successful(
             return redirect(url_for("main.home"))
 
         side_id = request.args.get("id", type=int)
+        print("En successful el side_id es:", side_id)
         if side_id:
             try:
                 user_service.register_entry_or_assignment(

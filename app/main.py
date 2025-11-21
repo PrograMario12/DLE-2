@@ -3,13 +3,13 @@ app/main.py
 Fábrica de la aplicación Flask.
 """
 
-from flask import Flask
-from .config.settings import settings  # Importa la configuración de la aplicación
-from .containers import Container  # Importa el contenedor de dependencias
-from .extensions import login_manager  # Importa el manejador de inicio de sesión
-from .api.v1.blueprints import register_all_blueprints  # Función para registrar blueprints
-from .infra.db import db as db_setup  # Inicialización de la base de datos
-from .infra.http.auth import register_login  # Función para registrar el inicio de sesión
+from flask import Flask  # Se importa Flask porque es el framework base para crear la aplicación web.
+from .config.settings import settings  # Se importa la configuración para centralizar parámetros y facilitar cambios.
+from .containers import Container  # Se importa el contenedor de dependencias para gestionar instancias y servicios.
+from .extensions import login_manager  # Se importa el manejador de login para controlar la autenticación de usuarios.
+from .api.v1.blueprints import register_all_blueprints  # Se importa la función para registrar rutas y modularizar la app.
+from .infra.db import db as db_setup  # Se importa la inicialización de la base de datos para conectar la app con el almacenamiento.
+from .infra.http.auth import register_login  # Se importa la función para registrar el login y asegurar el acceso.
 
 def create_app(config=settings):
     """
@@ -26,38 +26,37 @@ def create_app(config=settings):
     Returns:
         Flask: Una instancia de la aplicación Flask configurada.
     """
-    # Crea una instancia de Flask
+    # Se crea la instancia principal de Flask para iniciar la aplicación.
     app = Flask(__name__)
 
-    # Configura la aplicación con el objeto de configuración proporcionado
+    # Se carga la configuración para adaptar la app a distintos entornos y necesidades.
     app.config.from_object(config)
 
-    # Inicializa la base de datos con la configuración de la aplicación
+    # Se inicializa la base de datos para que la app pueda interactuar con los datos persistentes.
     db_setup.init_app(app)
 
-    # Configura el manejador de inicio de sesión
+    # Se inicializa el manejador de login para habilitar la autenticación de usuarios.
     login_manager.init_app(app)
 
-    # Crea e inicializa el contenedor de dependencias
+    # Se crea el contenedor de dependencias para desacoplar la lógica y facilitar pruebas/mantenimiento.
     container = Container()
     container.config.db_schema.from_value(
-        app.config.get('DB_SCHEMA', 'public'))  # Configura el esquema de la base de datos
+        app.config.get('DB_SCHEMA', 'public'))  # Se configura el esquema de la base de datos para adaptarse a diferentes entornos.
 
-    # Asocia el contenedor a la aplicación para su uso posterior
+    # Se asocia el contenedor a la app para que los servicios estén disponibles globalmente.
     app.container = container
 
-    # Registra el inicio de sesión en la aplicación
+    # Se registra el login usando el servicio de usuario para controlar el acceso.
     register_login(app, container.user_service())
 
-    # Registra todos los blueprints en la aplicación
+    # Se registran todos los blueprints para organizar las rutas y funcionalidades de la app.
     register_all_blueprints(
         app,
-        container.user_service(),  # Servicio de usuario
-        container.dashboard_service(),  # Servicio de dashboard
-        container.station_service(),  # Parámetro opcional (sin uso en este
-        # caso)
-        container.active_staff_service()  # Servicio de personal activo
+        container.user_service(),  # Se pasa el servicio de usuario para las rutas que lo requieran.
+        container.dashboard_service(),  # Se pasa el servicio de dashboard para las rutas relacionadas.
+        container.station_service(),  # Se pasa el servicio de estación aunque no se use, por compatibilidad.
+        container.active_staff_service()  # Se pasa el servicio de personal activo para las rutas correspondientes.
     )
 
-    # Devuelve la instancia de la aplicación Flask configurada
+    # Se retorna la instancia de la aplicación ya configurada para que pueda ejecutarse.
     return app
