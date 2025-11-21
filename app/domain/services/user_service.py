@@ -3,8 +3,8 @@ src/domain/services/user_service.py
 Servicio para la lógica de negocio relacionada con usuarios.
 """
 
-from app.domain.repositories.user_repository import IUserRepository
-from typing import Optional
+from app.domain.repositories.user_repository import IUserRepository  # Se importa la interfaz para asegurar que el servicio dependa de una abstracción y no de una implementación concreta.
+from typing import Optional  # Se importa Optional para tipar correctamente los retornos que pueden ser None y así mejorar la legibilidad y robustez.
 
 class UserService:
     """
@@ -24,7 +24,7 @@ class UserService:
                           IUserRepository, utilizada para acceder a los datos
                           relacionados con usuarios.
         """
-        self._user_repo = user_repo
+        self._user_repo = user_repo  # Se guarda el repositorio para que todas las operaciones del servicio sean delegadas y desacopladas.
 
     def get_user_info_for_display(self, card_number: int) -> dict:
         """
@@ -34,11 +34,11 @@ class UserService:
         :return: Un diccionario con el nombre completo del usuario y su ID. Si el
                  usuario no está registrado, devuelve un mensaje predeterminado.
         """
-        user = self._user_repo.find_user_by_card_number(card_number)
-        if not user:
-            return {'name': 'Usuario aún no registrado', 'id': None}
+        user = self._user_repo.find_user_by_card_number(card_number)  # Se consulta el repositorio para centralizar la lógica de acceso a datos.
+        if not user:  # Se verifica si el usuario existe para evitar errores y mostrar un mensaje amigable.
+            return {'name': 'Usuario aún no registrado', 'id': None}  # Se retorna un valor por defecto para mantener la experiencia de usuario.
 
-        return {'name': user.full_name, 'id': user.id}
+        return {'name': user.full_name, 'id': user.id}  # Se formatea la información para que la presentación sea consistente y clara.
 
     def get_all_lines_for_settings(self) -> list[dict]:
         """
@@ -46,7 +46,7 @@ class UserService:
 
         :return: Una lista de diccionarios que representan las líneas disponibles.
         """
-        return self._user_repo.get_all_lines()
+        return self._user_repo.get_all_lines()  # Se delega la obtención de datos al repositorio para mantener la lógica separada y reutilizable.
 
     def get_user_last_register_type(self, card_number: int) -> Optional[str]:
         """
@@ -55,7 +55,7 @@ class UserService:
         :param card_number: Número de tarjeta del usuario.
         :return: El tipo del último registro como cadena, o None si no hay registros.
         """
-        return self._user_repo.get_last_register_type(card_number)
+        return self._user_repo.get_last_register_type(card_number)  # Se consulta el repositorio para encapsular la lógica de negocio y facilitar cambios futuros.
 
     def register_entry_or_assignment(self, employee_number: int,
                                      side_id: int = 0) -> None:
@@ -70,7 +70,7 @@ class UserService:
         # 2) Delegar la persistencia (el repo debe implementar esta
         # operación)
         self._user_repo.register_entry_or_assignment(user_id=employee_number,
-                                                     side_id=side_id)
+                                                     side_id=side_id)  # Se delega la operación al repositorio para mantener la lógica de persistencia fuera del servicio.
 
     def get_line_name_by_id(self, line_int: int) -> Optional[str]:
-        return self._user_repo.get_line_name_by_id(line_int)
+        return self._user_repo.get_line_name_by_id(line_int)  # Se delega la obtención del nombre de línea para centralizar la lógica y facilitar el mantenimiento.
