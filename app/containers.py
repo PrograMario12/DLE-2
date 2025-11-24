@@ -34,6 +34,8 @@ class Container(containers.DeclarativeContainer):
         schema=config.db_schema
     )
 
+    production_line_repo = providers.Singleton(ProductionLineRepository, config.db_schema)
+
     # Singleton provider for the MockActiveStaffRepository
     active_staff_repo = providers.Singleton(MockActiveStaffRepository)
 
@@ -43,7 +45,8 @@ class Container(containers.DeclarativeContainer):
 
     # Singleton provider for the ProductionLinesService, which depends on the
     # production line repository
-    production_lines_service = providers.Singleton(ProductionLinesService, ProductionLineRepository)
+    production_lines_service = providers.Singleton(ProductionLinesService,
+                                                   production_line_repo)
 
     # Singleton provider for the DashboardService, which depends on the
     # user repository

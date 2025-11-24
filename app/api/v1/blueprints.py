@@ -12,7 +12,7 @@ from .routes.dashboard_routes import dashboards_bp
 from .routes.settings_routes import settings_bp
 
 def register_all_blueprints(app, user_service, dashboard_service,
-                            station_service, active_staff_service):
+                            station_service, active_staff_service, production_lines_service):
     """
     Registra todos los blueprints en la aplicación Flask.
 
@@ -20,6 +20,8 @@ def register_all_blueprints(app, user_service, dashboard_service,
     en la aplicación Flask proporcionada.
 
     Args:
+        production_lines_service: Servicio para manejar la lógica de las
+        líneas de producción.
         app (Flask): La instancia de la aplicación Flask donde se
         registrarán los blueprints.
         user_service: Servicio para manejar la lógica relacionada con
@@ -45,7 +47,8 @@ def register_all_blueprints(app, user_service, dashboard_service,
         user_service,
         dashboard_service,
         station_service,
-        active_staff_service
+        active_staff_service,
+        production_lines_service
     ))
 
     # Registra el blueprint de dashboards

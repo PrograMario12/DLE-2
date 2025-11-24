@@ -20,6 +20,7 @@ def register_home(bp: Blueprint, user_service: UserService,
     Registra la ruta principal (home) en el blueprint proporcionado.
 
     Args:
+        production_lines_service:
         bp (Blueprint): El blueprint en el que se registrará la ruta.
         user_service (UserService): Servicio para manejar la lógica relacionada con usuarios.
 

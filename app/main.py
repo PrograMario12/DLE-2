@@ -55,7 +55,8 @@ def create_app(config=settings):
         container.user_service(),  # Se pasa el servicio de usuario para las rutas que lo requieran.
         container.dashboard_service(),  # Se pasa el servicio de dashboard para las rutas relacionadas.
         container.station_service(),  # Se pasa el servicio de estación aunque no se use, por compatibilidad.
-        container.active_staff_service()  # Se pasa el servicio de personal activo para las rutas correspondientes.
+        container.active_staff_service(),  # Se pasa el servicio de personal activo para las rutas correspondientes.
+        container.production_lines_service() # Se pasa el servicio de líneas de producción para las rutas que lo necesiten.
     )
 
     # Se retorna la instancia de la aplicación ya configurada para que pueda ejecutarse.

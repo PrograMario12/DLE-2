@@ -1,5 +1,7 @@
 # app/infra/db/zones_repository_sql.py
 from abc import ABC
+from typing import Optional
+
 from psycopg2 import sql
 
 from app.domain.repositories.IProductionLinesRepository import (
@@ -15,9 +17,9 @@ class ProductionLineRepository(IProductionLinesRepository, ABC):
     def __init__(self, schema: str):
         self.schema = schema
 
-    def get_all_zones(self):
+    def get_all_productions_lines(self):
         cursor = get_db().cursor()
-        cursor.execute(f"SELECT * FROM {self.schema}.zones")
+        cursor.execute(f"SELECT * FROM {self.schema}.production_lines")
         results = cursor.fetchall()
         cursor.close()
         return results
@@ -29,7 +31,7 @@ class ProductionLineRepository(IProductionLinesRepository, ABC):
         """
         query = sql.SQL("""
                         SELECT TRIM(CONCAT_WS(' ', type_zone, name)) AS full_name
-                        FROM {schema}.zones
+                        FROM {schema}.production_lines
                         WHERE line_id = %s
                         LIMIT 1
                         """).format(schema=sql.Identifier(self.schema))
@@ -39,5 +41,18 @@ class ProductionLineRepository(IProductionLinesRepository, ABC):
             cur.execute(query, (line_id,))
             row = cur.fetchone()
             return row[0] if row and row[0] else None
+        finally:
+            cur.close()
+
+    def get_line_by_id(self, line_id: int) -> Optional[dict]:
+        query = sql.SQL("""
+                        SELECT * FROM {schema}.production_lines
+                        WHERE line_id = %s
+                        LIMIT 1
+                        """).format(schema=sql.Identifier(self.schema))
+        cur = _get_cursor()
+        try:
+            cur.execute(query, (line_id,))
+            return cur.fetchone()
         finally:
             cur.close()

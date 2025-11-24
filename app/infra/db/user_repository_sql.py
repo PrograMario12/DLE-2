@@ -156,7 +156,7 @@ class UserRepositorySQL(IUserRepository):
         """Implementación que obtiene todas las líneas de la tabla de zonas."""
         query = sql.SQL(
             "SELECT line_id, type_zone || ' ' || name as line_name "
-            "FROM {schema}.zones ORDER BY line_id"
+            "FROM {schema}.production_lines ORDER BY line_id"
         )
         formatted_query = query.format(
             schema=sql.Identifier(self.schema)

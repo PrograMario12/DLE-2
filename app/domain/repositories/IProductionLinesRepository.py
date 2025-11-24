@@ -4,7 +4,7 @@ from typing import Any, List, Optional
 
 class IProductionLinesRepository(ABC):
     @abstractmethod
-    def get_all_zones(self) -> List[Any]:
+    def get_all_productions_lines(self) -> List[Any]:
         """Devuelve todas las zonas de producción."""
         pass
 

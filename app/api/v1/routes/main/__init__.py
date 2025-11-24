@@ -25,6 +25,7 @@ def create_main_bp(user_service: UserService,
     Crea y configura el blueprint principal de la aplicación.
 
     Args:
+        production_lines_service:
         user_service (UserService): Servicio para manejar la lógica de
         negocio relacionada con usuarios.
         dashboard_service (DashboardService): Servicio para manejar la
