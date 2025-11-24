@@ -9,9 +9,13 @@ from flask import (
     make_response,
     request
 )
+
+from app.domain.repositories.IProductionLinesRepository import \
+    IProductionLinesRepository
 from app.domain.services.user_service import UserService
 
-def register_home(bp: Blueprint, user_service: UserService) -> None:
+def register_home(bp: Blueprint, user_service: UserService,
+                  production_lines_service: IProductionLinesRepository) -> None:
     """
     Registra la ruta principal (home) en el blueprint proporcionado.
 
@@ -38,7 +42,8 @@ def register_home(bp: Blueprint, user_service: UserService) -> None:
         line_int = request.cookies.get("line")
 
         # Si la cookie "line" existe, obtiene el nombre de la línea usando el servicio de usuario
-        line_name = user_service.get_line_name_by_id(int(line_int)) if line_int else None
+        line_name = production_lines_service.get_line_name_by_id(int(line_int)) if line_int else \
+            None
 
         # Renderiza la plantilla "index.html" con el nombre de la línea
         resp = make_response(

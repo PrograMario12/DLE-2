@@ -1,6 +1,9 @@
 # app/containers.py
 
 from dependency_injector import containers, providers
+
+from .domain.services.production_lines_service import ProductionLinesService
+from .infra.db.production_lines_repository_sql import ProductionLineRepository
 from .infra.db.user_repository_sql import UserRepositorySQL
 from .infra.db.mock_staff_active_repository import (
     MockActiveStaffRepository
@@ -37,6 +40,10 @@ class Container(containers.DeclarativeContainer):
     # Singleton provider for the UserService, which depends on the user
     # repository
     user_service = providers.Singleton(UserService, user_repo)
+
+    # Singleton provider for the ProductionLinesService, which depends on the
+    # production line repository
+    production_lines_service = providers.Singleton(ProductionLinesService, ProductionLineRepository)
 
     # Singleton provider for the DashboardService, which depends on the
     # user repository
