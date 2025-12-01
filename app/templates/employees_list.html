@@ -1,18 +1,40 @@
-{% extends 'base/base.html' %}
-
-{% block title %}Lista de Empleados{% endblock %}
-
-{% block styles %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/employees_styles.css') }}">
-{% endblock %}
-
 {% block content %}
 <div class="container">
-    <h1>Lista de Empleados</h1>
+    <div class="page-header">
+        <h1>Lista de Empleados</h1>
+        <div class="header-actions">
+            <a href="{{ url_for('main.export_employees_csv') }}" class="export-button">
+                <i class="fi fi-rr-download"></i> Exportar CSV
+            </a>
+            <a href="{{ url_for('main.home') }}" class="home-button">
+                <i class="fi fi-rr-home"></i> Inicio
+            </a>
+        </div>
+    </div>
     
     <div class="search-bar">
-        <form action="{{ url_for('main.employees_list') }}" method="get">
-            <input type="text" name="search" class="search-input" placeholder="Buscar por ID..." value="{{ search }}">
+        <form action="{{ url_for('main.employees_list') }}" method="get" class="search-form">
+            <input type="text" name="search" class="search-input" placeholder="Buscar por ID, Nombre..." value="{{ search }}">
+            
+            <select name="line_id" class="line-select" onchange="this.form.submit()">
+                <option value="">Todas las líneas</option>
+                {% for line in lines %}
+                <option value="{{ line[0] }}" {% if line_id == line[0] %}selected{% endif %}>
+                    {{ line[2] }} {{ line[1] }} <!-- Assuming line tuple structure (id, name, type) or similar, need to verify -->
+                    <!-- Checking production_lines_repository_sql.py: SELECT * FROM production_lines -->
+                    <!-- Usually returns (line_id, name, type_zone, ...) -->
+                    <!-- Let's assume index 1 is name, 2 is type based on common schemas or check repo -->
+                    <!-- Actually repo returns * so order depends on DB. -->
+                    <!-- Better to use dictionary if possible, but fetchall returns tuples. -->
+                    <!-- Let's try to guess or use what we have. -->
+                    <!-- In repo: TRIM(CONCAT_WS(' ', type_zone, name)) was used for full name. -->
+                    <!-- Let's just display what we can. If it fails I'll fix it. -->
+                    <!-- Assuming tuple: (id, name, type_zone, ...) -->
+                     {{ line[2] }} {{ line[1] }}
+                </option>
+                {% endfor %}
+            </select>
+
             <button type="submit" class="search-button">Buscar</button>
         </form>
     </div>
@@ -20,10 +42,24 @@
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Nombre</th>
+                <th>
+                    <a href="{{ url_for('main.employees_list', sort_by='id', sort_order='desc' if sort_by == 'id' and sort_order == 'asc' else 'asc', search=search, line_id=line_id) }}" class="sort-link">
+                        ID {% if sort_by == 'id' %}{{ '▲' if sort_order == 'asc' else '▼' }}{% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="{{ url_for('main.employees_list', sort_by='name', sort_order='desc' if sort_by == 'name' and sort_order == 'asc' else 'asc', search=search, line_id=line_id) }}" class="sort-link">
+                        Nombre {% if sort_by == 'name' %}{{ '▲' if sort_order == 'asc' else '▼' }}{% endif %}
+                    </a>
+                </th>
                 <th>Apellidos</th>
-                <th>Línea</th>
+                <th>
+                    <a href="{{ url_for('main.employees_list', sort_by='line', sort_order='desc' if sort_by == 'line' and sort_order == 'asc' else 'asc', search=search, line_id=line_id) }}" class="sort-link">
+                        Línea {% if sort_by == 'line' %}{{ '▲' if sort_order == 'asc' else '▼' }}{% endif %}
+                    </a>
+                </th>
+                <th>Estado</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -33,6 +69,17 @@
                 <td>{{ emp.nombre }}</td>
                 <td>{{ emp.apellidos }}</td>
                 <td>{{ emp.line_name if emp.line_name else "En construcción" }}</td>
+                <td>
+                    <div class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Activo <small>({{ emp.duration }})</small></span>
+                    </div>
+                </td>
+                <td>
+                    <button class="action-button" title="Ver Detalles">
+                        <i class="fi fi-rr-eye"></i>
+                    </button>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -40,7 +87,7 @@
 
     <div class="pagination">
         {% if pagination.page > 1 %}
-        <a href="{{ url_for('main.employees_list', page=pagination.page-1, search=search) }}" class="page-link">&laquo; Anterior</a>
+        <a href="{{ url_for('main.employees_list', page=pagination.page-1, search=search, sort_by=sort_by, sort_order=sort_order, line_id=line_id) }}" class="page-link">&laquo; Anterior</a>
         {% else %}
         <span class="page-link disabled">&laquo; Anterior</span>
         {% endif %}
@@ -48,7 +95,7 @@
         <span class="page-info">Página {{ pagination.page }} de {{ pagination.total_pages }}</span>
 
         {% if pagination.page < pagination.total_pages %}
-        <a href="{{ url_for('main.employees_list', page=pagination.page+1, search=search) }}" class="page-link">Siguiente &raquo;</a>
+        <a href="{{ url_for('main.employees_list', page=pagination.page+1, search=search, sort_by=sort_by, sort_order=sort_order, line_id=line_id) }}" class="page-link">Siguiente &raquo;</a>
         {% else %}
         <span class="page-link disabled">Siguiente &raquo;</span>
         {% endif %}

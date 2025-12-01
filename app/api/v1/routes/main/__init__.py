@@ -45,6 +45,6 @@ def create_main_bp(user_service: UserService,
     register_home(bp, user_service, production_lines_service)
     register_menu_station(bp, user_service, dashboard_service)
     register_successful(bp, user_service, station_service)
-    register_employees(bp, active_staff_service)
+    register_employees(bp, active_staff_service, production_lines_service)
 
     return bp

@@ -7,5 +7,10 @@ class IActiveStaffRepository(ABC):
     (DIP)."""
 
     @abstractmethod
-    def get_paginated(self, page: int, per_page: int, search_query: Optional[str] = None) -> Tuple[List[ActiveStaff], int]:
+    def get_paginated(self, page: int, per_page: int, search_query: Optional[str] = None, 
+                      sort_by: str = 'id', sort_order: str = 'asc', line_id: Optional[int] = None) -> Tuple[List[ActiveStaff], int]:
+        pass
+
+    @abstractmethod
+    def get_all_active(self) -> List[ActiveStaff]:
         pass
