@@ -25,7 +25,7 @@ class ProductionLinesService:
 
         :return: Lista de zonas.
         """
-        return self._lines_repo.get_all_productions_lines()
+        return self._lines_repo.get_all_lines()
 
     def get_line_by_id(self, line_id: int) -> Optional[Any]:
         """
