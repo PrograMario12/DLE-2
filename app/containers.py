@@ -3,11 +3,9 @@
 from dependency_injector import containers, providers
 
 from .domain.services.production_lines_service import ProductionLinesService
+from app.infra.db.active_staff_repository_sql import ActiveStaffRepositorySQL
 from .infra.db.production_lines_repository_sql import ProductionLineRepository
 from .infra.db.user_repository_sql import UserRepositorySQL
-from .infra.db.mock_staff_active_repository import (
-    MockActiveStaffRepository
-)
 from .domain.services.user_service import UserService
 from .domain.services.dashboard_service import DashboardService
 from .domain.services.active_staff_service import ActiveStaffService
@@ -37,7 +35,7 @@ class Container(containers.DeclarativeContainer):
     production_line_repo = providers.Singleton(ProductionLineRepository, config.db_schema)
 
     # Singleton provider for the MockActiveStaffRepository
-    active_staff_repo = providers.Singleton(MockActiveStaffRepository)
+    active_staff_repo = providers.Singleton(ActiveStaffRepositorySQL, config.db_schema)
 
     # Singleton provider for the UserService, which depends on the user
     # repository

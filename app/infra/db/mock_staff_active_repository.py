@@ -1,4 +1,3 @@
-# tests/mocks/MockActiveStaffRepository.py
 from app.domain.repositories.IActiveStaffRepository import IActiveStaffRepository
 from app.domain.entities.user import User
 
