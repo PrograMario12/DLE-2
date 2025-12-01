@@ -1,3 +1,12 @@
+{% extends "base/base.html" %}
+
+{% block head %}
+    {{ super() }}
+    {% block styles %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/employees_styles.css') }}">
+    {% endblock %}
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="page-header">
@@ -20,17 +29,7 @@
                 <option value="">Todas las líneas</option>
                 {% for line in lines %}
                 <option value="{{ line[0] }}" {% if line_id == line[0] %}selected{% endif %}>
-                    {{ line[2] }} {{ line[1] }} <!-- Assuming line tuple structure (id, name, type) or similar, need to verify -->
-                    <!-- Checking production_lines_repository_sql.py: SELECT * FROM production_lines -->
-                    <!-- Usually returns (line_id, name, type_zone, ...) -->
-                    <!-- Let's assume index 1 is name, 2 is type based on common schemas or check repo -->
-                    <!-- Actually repo returns * so order depends on DB. -->
-                    <!-- Better to use dictionary if possible, but fetchall returns tuples. -->
-                    <!-- Let's try to guess or use what we have. -->
-                    <!-- In repo: TRIM(CONCAT_WS(' ', type_zone, name)) was used for full name. -->
-                    <!-- Let's just display what we can. If it fails I'll fix it. -->
-                    <!-- Assuming tuple: (id, name, type_zone, ...) -->
-                     {{ line[2] }} {{ line[1] }}
+                    {{ line[2] }} {{ line[1] }}
                 </option>
                 {% endfor %}
             </select>
@@ -68,11 +67,17 @@
                 <td>{{ emp.id }}</td>
                 <td>{{ emp.nombre }}</td>
                 <td>{{ emp.apellidos }}</td>
-                <td>{{ emp.line_name if emp.line_name else "En construcción" }}</td>
+                <td>{{ emp.line_name if emp.line_name else "-" }}</td>
                 <td>
-                    <div class="status-indicator">
-                        <span class="status-dot"></span>
-                        <span class="status-text">Activo <small>({{ emp.duration }})</small></span>
+                    <div class="status-indicator {{ 'inactive' if not emp.is_active }}">
+                        <span class="status-dot {{ 'inactive' if not emp.is_active }}"></span>
+                        <span class="status-text">
+                            {% if emp.is_active %}
+                                Activo <small>({{ emp.duration }})</small>
+                            {% else %}
+                                Inactivo
+                            {% endif %}
+                        </span>
                     </div>
                 </td>
                 <td>

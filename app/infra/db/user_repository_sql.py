@@ -196,17 +196,17 @@ class UserRepositorySQL(IUserRepository):
         """
         # Esta consulta es un ejemplo y necesitará ser ajustada a tu lógica de negocio exacta
         query = sql.SQL("""
-                        SELECT z.line_id,
-                               z.type_zone || ' ' || z.name  as line_name,
+                        SELECT pl.line_id,
+                               pl.type_zone || ' ' || pl.name  as line_name,
                                COUNT(DISTINCT r.id_employee) as current_operators,
                                SUM(s.employee_capacity)      as total_capacity
-                        FROM {schema}.zones z
+                        FROM {schema}.production_lines pl
             LEFT JOIN {schema}.positions p
-                        ON z.line_id = p.line_id
+                        ON pl.line_id = p.line_id
                             LEFT JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
                             LEFT JOIN {schema}.registers r ON s.side_id = r.position_id_fk AND r.exit_hour IS NULL
-                        GROUP BY z.line_id, line_name
-                        ORDER BY z.line_id;
+                        GROUP BY pl.line_id, line_name
+                        ORDER BY pl.line_id;
                         """).format(schema=sql.Identifier(self.schema))
 
         cursor = self._get_cursor()

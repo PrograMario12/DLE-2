@@ -21,7 +21,7 @@ class ActiveStaffRepositorySQL(IActiveStaffRepository, ABC):
         offset = (page - 1) * per_page
         
         # Base query conditions
-        where_clause = sql.SQL("WHERE r.exit_hour IS NULL")
+        where_clause = sql.SQL("WHERE 1=1")
         params = []
         
         if search_query:
@@ -47,11 +47,11 @@ class ActiveStaffRepositorySQL(IActiveStaffRepository, ABC):
             SELECT DISTINCT e.id_empleado,
                    e.nombre_empleado,
                    e.apellidos_empleado,
-                   TRUE as is_active,
+                   CASE WHEN r.entry_hour IS NOT NULL THEN TRUE ELSE FALSE END as is_active,
                    r.entry_hour,
                    TRIM(CONCAT_WS(' ', pl.type_zone, pl.name)) AS line_name
-            FROM {schema}.registers r
-            JOIN {schema}.table_empleados_tarjeta e ON r.id_employee = e.numero_tarjeta
+            FROM {schema}.table_empleados_tarjeta e
+            LEFT JOIN {schema}.registers r ON e.numero_tarjeta = r.id_employee AND r.exit_hour IS NULL
             LEFT JOIN {schema}.production_lines pl ON r.line_id_fk = pl.line_id
             {where}
             ORDER BY {sort_col} {sort_dir}
@@ -66,8 +66,8 @@ class ActiveStaffRepositorySQL(IActiveStaffRepository, ABC):
         # Count query
         count_query = sql.SQL("""
             SELECT COUNT(DISTINCT e.id_empleado)
-            FROM {schema}.registers r
-            JOIN {schema}.table_empleados_tarjeta e ON r.id_employee = e.numero_tarjeta
+            FROM {schema}.table_empleados_tarjeta e
+            LEFT JOIN {schema}.registers r ON e.numero_tarjeta = r.id_employee AND r.exit_hour IS NULL
             LEFT JOIN {schema}.production_lines pl ON r.line_id_fk = pl.line_id
             {where}
         """).format(
@@ -105,13 +105,12 @@ class ActiveStaffRepositorySQL(IActiveStaffRepository, ABC):
             SELECT DISTINCT e.id_empleado,
                    e.nombre_empleado,
                    e.apellidos_empleado,
-                   TRUE as is_active,
+                   CASE WHEN r.entry_hour IS NOT NULL THEN TRUE ELSE FALSE END as is_active,
                    r.entry_hour,
                    TRIM(CONCAT_WS(' ', pl.type_zone, pl.name)) AS line_name
-            FROM {schema}.registers r
-            JOIN {schema}.table_empleados_tarjeta e ON r.id_employee = e.numero_tarjeta
-            LEFT JOIN {schema}.production_lines pl ON r.id_line = pl.line_id
-            WHERE r.exit_hour IS NULL
+            FROM {schema}.table_empleados_tarjeta e
+            LEFT JOIN {schema}.registers r ON e.numero_tarjeta = r.id_employee AND r.exit_hour IS NULL
+            LEFT JOIN {schema}.production_lines pl ON r.line_id_fk = pl.line_id
             ORDER BY e.id_empleado
         """).format(schema=sql.Identifier(self.schema))
 
