@@ -1,19 +1,21 @@
 from app.domain.repositories.IUserRepository import IUserRepository
+from app.domain.repositories.IRegisterRepository import IRegisterRepository
 
 class StationService:
     """
     Servicio con la lógica de negocio para las estaciones.
-    Depende de la abstracción IUserRepository (DIP).
+    Depende de las abstracciones IUserRepository e IRegisterRepository (DIP).
     """
 
-    def __init__(self, user_repo: IUserRepository):
+    def __init__(self, user_repo: IUserRepository, register_repo: IRegisterRepository):
         """
-        Inicializa el servicio de estaciones con un repositorio de usuarios.
+        Inicializa el servicio de estaciones con los repositorios necesarios.
 
-        :param user_repo: Implementación de la interfaz IUserRepository para
-                          interactuar con los datos de los usuarios.
+        :param user_repo: Implementación de IUserRepository.
+        :param register_repo: Implementación de IRegisterRepository.
         """
         self._user_repo = user_repo
+        self._register_repo = register_repo
 
     def get_user_status_for_display(self, card_number: int):
         """
@@ -33,7 +35,7 @@ class StationService:
         if not user:
             return {"error": "User not found"}
 
-        last_register = self._user_repo.get_last_register_type(card_number)
+        last_register = self._register_repo.get_last_register_type(card_number)
 
         if last_register == 'Exit':
             return {

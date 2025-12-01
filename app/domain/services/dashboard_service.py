@@ -1,14 +1,16 @@
 from app.domain.repositories.IUserRepository import IUserRepository
+from app.domain.repositories.IProductionLinesRepository import IProductionLinesRepository
 
 class DashboardService:
-    def __init__(self, user_repo: IUserRepository):
+    def __init__(self, user_repo: IUserRepository, production_line_repo: IProductionLinesRepository):
         self._user_repo = user_repo
+        self._production_line_repo = production_line_repo
 
     def get_lines_summary(self) -> list[dict]:
         """Prepara el resumen de todas las líneas, incluyendo el porcentaje."""
 
-        # 1. Obtiene los datos base del repositorio
-        lines_from_repo = self._user_repo.get_all_lines_summary()
+        # 1. Obtiene los datos base del repositorio de líneas
+        lines_from_repo = self._production_line_repo.get_all_lines_summary()
 
         processed_lines = []
         for line in lines_from_repo:
@@ -49,11 +51,11 @@ class DashboardService:
                 - "cards" (list): Una lista de tarjetas asociadas a la línea.
                 - "tipo" (str): El tipo de estación basado en la línea.
         """
-        # Obtiene las tarjetas asociadas a la línea desde el repositorio
-        cards = self._user_repo.get_station_cards_for_line(line_id)
+        # Obtiene las tarjetas asociadas a la línea desde el repositorio de líneas
+        cards = self._production_line_repo.get_station_cards_for_line(line_id)
 
-        # Obtiene el nombre de la línea desde el repositorio
-        line_name = self._user_repo.get_line_name_by_id(line_id)
+        # Obtiene el nombre de la línea desde el repositorio de líneas
+        line_name = self._production_line_repo.get_line_name_by_id(line_id)
 
         # Retorna un diccionario con los detalles de la línea y las estaciones asociadas
         return {
@@ -64,7 +66,7 @@ class DashboardService:
 
     def get_active_operators_for_station(self, station_id: int) -> list:
         """Obtiene los operadores activos para una estación."""
-        return self._user_repo.get_active_operators(station_id)
+        return self._production_line_repo.get_active_operators(station_id)
 
     def _get_station_type_from_line(self, line_id: int) -> str:
         """Determina el nombre del tipo de estación basado en la línea."""
