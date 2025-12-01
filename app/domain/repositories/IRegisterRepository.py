@@ -11,8 +11,8 @@ class IRegisterRepository(ABC):
         pass
 
     @abstractmethod
-    def get_last_station_for_user(self, user_id: int) -> Optional[str]:
-        """Obtiene la última estación donde el usuario realizó una entrada."""
+    def get_last_station_for_user(self, user_id: int) -> Optional[dict]:
+        """Obtiene la última estación y línea donde el usuario realizó una entrada."""
         pass
 
     @abstractmethod

@@ -32,20 +32,20 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
         cursor.close()
 
         if not result:
-            return 'Entry'
+            return 'Entry' # Si no hay registros, el próximo será una Entrada
 
-        if result[0] == 'Entry':
-            return 'Entry'
-        elif result[0] == 'Exit':
-            return 'Exit'
-        else:
-            return 'Exit'
+        # Si el resultado es 'Exit', significa que exit_hour es NULL, por lo tanto
+        # el usuario ESTÁ DENTRO y lo siguiente que debe hacer es SALIR (Exit).
+        # Si el resultado es 'Entry', significa que exit_hour NO es NULL (ya salió),
+        # por lo tanto el usuario ESTÁ FUERA y lo siguiente es ENTRAR (Entry).
+        return result[0]
 
-    def get_last_station_for_user(self, user_id: int) -> Optional[str]:
+    def get_last_station_for_user(self, user_id: int) -> Optional[dict]:
         query = sql.SQL("""
-            SELECT p.position_name
+            SELECT p.position_name, pl.name, pl.type_zone
             FROM {schema}.registers r
             JOIN {schema}.positions p ON r.position_id_fk = p.position_id
+            JOIN {schema}.production_lines pl ON p.line_id = pl.line_id
             WHERE r.id_employee = %s AND r.exit_hour IS NULL
             ORDER BY r.id_register DESC
             LIMIT 1
@@ -58,13 +58,20 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
 
         if not result:
             return None
-        return result[0]
+        
+        # Concatenar type_zone y name para el nombre completo de la línea
+        line_name = f"{result[2]} {result[1]}".strip()
+        
+        return {
+            "station_name": result[0],
+            "line_name": line_name
+        }
 
     def register_entry_or_assignment(self, user_id: int, side_id: int) -> None:
         cur = self._get_cursor()
 
         try:
-            # 1) Buscar registro abierto
+            # 1) Buscar registro abierto (usuario actualmente trabajando)
             q_open = sql.SQL("""
                 SELECT id_register
                 FROM {schema}.registers
@@ -78,18 +85,29 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
             now_time = datetime.now().strftime("%H:%M:%S")
             today_date = datetime.now().strftime("%Y-%m-%d")
 
+            # Escenario 1: El usuario tiene un registro abierto.
+            # Acción esperada: Cerrar ese registro (Salida).
             if open_row:
-                # 2) Cerrar registro abierto (Salida)
                 q_close = sql.SQL("""
                     UPDATE {schema}.registers
                     SET exit_hour = %s WHERE id_register = %s
                 """).format(schema=sql.Identifier(self.schema))
                 cur.execute(q_close, (now_time, open_row[0]))
                 cur.connection.commit()
-                cur.close()
+                # Nota: Si se quisiera permitir "cambio de estación" directo, aquí se podría
+                # verificar si side_id > 0 y crear un nuevo registro inmediatamente.
+                # Por ahora, asumimos que el flujo es estricto: Entrar -> Salir -> Entrar.
                 return
 
-            # 3) No hay registro abierto: crear Entrada en el side indicado
+            # Escenario 2: El usuario NO tiene registro abierto.
+            # Acción esperada: Crear un nuevo registro (Entrada).
+            # Validamos que se haya proporcionado un side_id válido para entrar.
+            if side_id <= 0:
+                 # Si no hay side_id y no hay registro abierto, no se puede hacer nada (o es un error).
+                 # Sin embargo, para evitar crashes si la UI manda 0, simplemente retornamos.
+                 # Opcionalmente podríamos lanzar un error: raise ValueError("Se requiere una estación para registrar entrada")
+                 return
+
             q_side = sql.SQL("""
                 SELECT p.line_id, p.position_id
                 FROM {schema}.tbl_sides_of_positions s
@@ -99,8 +117,9 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
             """).format(schema=sql.Identifier(self.schema))
             cur.execute(q_side, (side_id,))
             side_row = cur.fetchone()
+            
             if not side_row:
-                raise ValueError("Side no encontrado")
+                raise ValueError(f"Side con ID {side_id} no encontrado")
 
             line_id, position_id = side_row[0], side_row[1]
 
@@ -111,6 +130,7 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
             """).format(schema=sql.Identifier(self.schema))
             cur.execute(q_insert, (user_id, today_date, now_time, line_id, side_id))
             cur.connection.commit()
+
         except Exception:
             cur.connection.rollback()
             raise
