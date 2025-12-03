@@ -15,13 +15,25 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
 
     def get_all_lines(self) -> list[dict]:
         query = sql.SQL(
-            "SELECT line_id, type_zone || ' ' || name as line_name "
-            "FROM {schema}.production_lines ORDER BY line_id"
+            "SELECT line_id, name, type_zone, bu.bu_name "
+            "FROM {schema}.production_lines pl "
+            "LEFT JOIN {schema}.business_unit bu ON pl.business_unit_fk = bu.bu_id "
+            "ORDER BY bu.bu_name, "
+            "CAST(SUBSTRING(name FROM '^[0-9]+') AS INTEGER) ASC, "
+            "name ASC"
         ).format(schema=sql.Identifier(self.schema))
-        
+
         cursor = self._get_cursor()
         cursor.execute(query)
-        lines = [{"id": row[0], "name": row[1]} for row in cursor.fetchall()]
+        lines = [
+            {
+                "id": row[0],
+                "name": row[1],
+                "type_zone": row[2],
+                "group": row[3],       # metalizado / inyección / ensamble
+            }
+            for row in cursor.fetchall()
+        ]
         cursor.close()
         return lines
 

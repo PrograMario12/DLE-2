@@ -54,12 +54,13 @@ def create_settings_bp(user_service: UserService) -> Blueprint:
             return response  # Se retorna la respuesta para finalizar el flujo POST y redirigir al usuario.
 
         # Si la petición es GET, se ejecuta el siguiente bloque:
-        available_lines = user_service.get_all_lines_for_settings()  # Se consulta al servicio las líneas disponibles para mostrar opciones actualizadas.
-        print("\n\n")
-        print("Las líneas disponibles son:", available_lines)
-        print("\n\n")
+        available_lines = user_service.get_all_lines_for_settings()
 
-        return render_template('ajustes.html',
-                               lines=available_lines)  # Se renderiza la plantilla pasando las líneas para que el usuario pueda elegir.
+        grouped_lines: dict[str, list[dict]] = {}
+        for line in available_lines:
+            group = line.get("group") or "Otras"
+            grouped_lines.setdefault(group, []).append(line)
+
+        return render_template("ajustes.html", grouped_lines=grouped_lines)
 
     return settings_bp

@@ -1,42 +1,95 @@
-{% extends 'base/base_dashboards.html' %}
+{% extends 'base/base_dashboards.html' %} {% block title %} Ajustes {% endblock
+%} {% block styles %} {# Asumiendo que los estilos de .button-4 están en tu CSS
+principal #}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/ajustes_styles.css') }}"
+/>
+{% endblock %} {% block header %}
+<h1>Selecciona la línea</h1>
+{% endblock %} {% block content %}
+<form
+  class="settings-container"
+  method="POST"
+  action="{{ url_for('settings.configure_line_and_station') }}"
+>
+  <!-- Search Bar -->
+  <div class="search-container">
+    <input
+      type="text"
+      id="lineSearch"
+      class="search-input"
+      placeholder="Buscar línea..."
+      autocomplete="off"
+    />
+    <span class="search-icon">🔍</span>
+  </div>
 
-{% block title %} Ajustes {% endblock %}
+  {% for group, lines_in_group in grouped_lines.items() %}
+  <details class="group-accordion" {% if loop.first %}open{% endif %}>
+    <summary class="group-summary">
+      {{ group|capitalize }}
+      <span class="accordion-icon"></span>
+    </summary>
 
-{% block styles %}
-  {# Asumiendo que los estilos de .button-4 están en tu CSS principal #}
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/ajustes_styles.css') }}">
-{% endblock %}
-
-{% block header %}
-  <h1>Selecciona la línea</h1>
-{% endblock %}
-
-{% block content %}
-  <form
-    class="menu centrar-objetos"
-    method="POST"
-    action="{{ url_for('settings.configure_line_and_station') }}"
-  >
-    {% for line in lines %}
-      {#
-        2. El botón ahora es de tipo "submit".
-           Su `name` y `value` se enviarán como datos del formulario.
-      #}
+    <div class="settings-group-grid">
+      {% for line in lines_in_group %}
       <button
         class="button-4 button-4-settings capitalize {% if line['id'] == active_line %}button-4-select{% endif %}"
         type="submit"
         name="line"
         value="{{ line['id'] }}"
       >
-        {{ line['name'] }}
+        {# Puedes decidir aquí cómo se forma el texto visible #} {% if
+        line['type_zone'] == 'línea' %} Línea {{ line['name'] }} {% else %} {{
+        line['name'] }} {% endif %}
       </button>
-    {% endfor %}
+      {% endfor %}
+    </div>
+  </details>
+  {% endfor %}
 
-    <button class="button-4" disabled>
-      Salida general de línea
-    </button>
-    <button class="button-4" disabled>
-      Configuración de estación
-    </button>
-  </form>
+  <div class="extra-actions">
+    <button class="button-4" disabled>Salida general de línea</button>
+    <button class="button-4" disabled>Configuración de estación</button>
+  </div>
+</form>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("lineSearch");
+    const accordions = document.querySelectorAll(".group-accordion");
+
+    searchInput.addEventListener("input", function (e) {
+      const searchTerm = e.target.value.toLowerCase().trim();
+
+      accordions.forEach((accordion) => {
+        const buttons = accordion.querySelectorAll(".button-4-settings");
+        let hasVisibleButtons = false;
+
+        buttons.forEach((btn) => {
+          const text = btn.textContent.toLowerCase();
+          if (text.includes(searchTerm)) {
+            btn.style.display = ""; // Show
+            hasVisibleButtons = true;
+          } else {
+            btn.style.display = "none"; // Hide
+          }
+        });
+
+        // Show/Hide accordion based on matches
+        if (hasVisibleButtons) {
+          accordion.style.display = "";
+          // Open accordion if searching
+          if (searchTerm !== "") {
+            accordion.open = true;
+          }
+        } else {
+          accordion.style.display = "none";
+        }
+      });
+    });
+  });
+</script>
+
 {% endblock %}
