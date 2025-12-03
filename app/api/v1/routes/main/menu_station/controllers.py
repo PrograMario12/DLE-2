@@ -46,6 +46,7 @@ def menu_station_post(*, user_service: UserService,
     # 4) Regla de negocio: si el último registro del usuario es "Exit" -> success
     # Este tiene problemas porque no está arrojando el exit
     last = user_service.get_user_last_register_type(form.employee_number)
+    print(f"DEBUG_CONTROLLER: Last register type for {form.employee_number} is '{last}'")
 
     if last == "Exit":
         resp = make_response(redirect(url_for("main.successful")))

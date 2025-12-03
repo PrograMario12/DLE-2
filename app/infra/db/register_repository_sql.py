@@ -31,13 +31,13 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
         result = cursor.fetchone()
         cursor.close()
 
-        if not result:
-            return 'Entry' # Si no hay registros, el próximo será una Entrada
+        print(f"DEBUG_REPO: get_last_register_type for {card_number}. Result raw: {result}")
 
-        # Si el resultado es 'Exit', significa que exit_hour es NULL, por lo tanto
-        # el usuario ESTÁ DENTRO y lo siguiente que debe hacer es SALIR (Exit).
-        # Si el resultado es 'Entry', significa que exit_hour NO es NULL (ya salió),
-        # por lo tanto el usuario ESTÁ FUERA y lo siguiente es ENTRAR (Entry).
+        if not result:
+            print("DEBUG_REPO: No result -> Returning 'Entry'")
+            return 'Entry'
+
+        print(f"DEBUG_REPO: Returning {result[0]}")
         return result[0]
 
     def get_last_station_for_user(self, user_id: int) -> Optional[dict]:
@@ -81,6 +81,7 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
             """).format(schema=sql.Identifier(self.schema))
             cur.execute(q_open, (user_id,))
             open_row = cur.fetchone()
+            print(f"DEBUG_REPO: Open register search for user {user_id}. Found: {open_row}")
 
             now_time = datetime.now().strftime("%H:%M:%S")
             today_date = datetime.now().strftime("%Y-%m-%d")
@@ -127,9 +128,12 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
                 INSERT INTO {schema}.registers
                     (id_employee, date_register, entry_hour, line_id_fk, position_id_fk)
                 VALUES (%s, %s, %s, %s, %s)
+                RETURNING id_register
             """).format(schema=sql.Identifier(self.schema))
             cur.execute(q_insert, (user_id, today_date, now_time, line_id, side_id))
+            new_id = cur.fetchone()[0]
             cur.connection.commit()
+            print(f"DEBUG_REPO: Inserted new register with ID: {new_id}")
 
         except Exception:
             cur.connection.rollback()

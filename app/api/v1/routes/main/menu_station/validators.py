@@ -18,7 +18,9 @@ def validate_menu_station_form(form_like) -> Optional[MenuStationForm]:
         - Utiliza el método `model_validate` de Pydantic para validar y convertir los datos.
         - Si ocurre un error de validación (`ValidationError`) o cualquier otra excepción, devuelve `None`.
     """
+    print(f"DEBUG_VALIDATOR: Validating form data: {form_like}")
     try:
         return MenuStationForm.model_validate(dict(form_like))
-    except (ValidationError, Exception):
+    except (ValidationError, Exception) as e:
+        print(f"DEBUG_VALIDATOR: Validation failed: {e}")
         return None
