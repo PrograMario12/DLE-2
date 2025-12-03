@@ -29,7 +29,6 @@
 
 .search-input {
   width: 100%;
-  padding: 1rem 1rem 1rem 3rem;
   font-size: 1.6rem;
   border: 2px solid var(--color-gray);
   border-radius: 50px;
@@ -41,16 +40,6 @@
 .search-input:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 4px rgba(66, 152, 181, 0.2);
-}
-
-.search-icon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 1.6rem;
-  color: var(--color-gray);
-  pointer-events: none;
 }
 
 /* Accordion Styles */
