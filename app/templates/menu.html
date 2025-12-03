@@ -7,103 +7,172 @@ Author: [Abarca de Jesús Mario Adair]
 Date: [2024-07-16]
 -->
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Menú</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Selección de Estación</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/normalize.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/menu_styles.css') }}"
+    />
+    <!-- Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.4.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.4.0/uicons-solid-rounded/css/uicons-solid-rounded.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.4.0/uicons-bold-rounded/css/uicons-bold-rounded.css"
+    />
+  </head>
+  <body>
+    <header class="header-container">
+      <h2 class="line-title">{{ line }}</h2>
+      <h1 class="main-title">Selecciona tu estación</h1>
 
-    </head>
-
-    <body class="body-center">
-        <div class="header">
-            <h1 class="uppercase">
-                {{line}}
-            </h1>
-
-            <h2 class="uppercase">
-                Selecciona tu estación
-            </h2>
-
-            <div class="h3-contexto">
-                <h3>
-                    <i class="fi fi-sr-user"></i> Real:  {{total_employees}}
-                </h3>
-                <h3>
-                    <i class="fi fi-rr-user"></i> Estándar: {{total_capacity}}
-                </h3>
-                <h3>
-                    Fuera de estándar: {{total_capacity - total_employees}}
-                </h3>
-            </div>
+      <div class="summary-metrics">
+        <div class="metric-item">
+          <i class="fi fi-sr-users-alt"></i>
+          <span>Real: {{ total_employees }}</span>
         </div>
+        <div class="metric-item">
+          <i class="fi fi-rr-users-alt"></i>
+          <span>Estándar: {{ total_capacity }}</span>
+        </div>
+        <div class="metric-item">
+          <i class="fi fi-rr-exclamation"></i>
+          <span>Diferencia: {{ total_capacity - total_employees }}</span>
+        </div>
+      </div>
+    </header>
 
-        <div class="menu">
-            {% for card in cards_main %}
-                <div class="card {% if card.status == false %} hidden {% endif %}">
-                    <h2>{{ tipo }} {{ card.position_name }}</h2>
-                    <div class="select-position">
-                        {% for side in card.sides %}
-                            <a href="/successful?id={{ side.side_id }}"
-                               class="card-dashboard small-card-dashboard uppercase {{ side.class }}"
-                               data-position="{{ card.position_name }}"
-                               data-side-id="{{ side.side_id }}">
-                                <h3>{{ side.side_title }}</h3>
-                                <p><i class="fi fi-rr-user"></i>{{ side.employee_capacity }} <i class="fi fi-sr-user"></i> {{ side.employees_working }}</p>
-                            </a>
-                        {% endfor %}
-                    </div>
+    <main class="main-content">
+      <div class="stations-grid">
+        {% for card in cards_main %} {% for side in card.sides %} {% set
+        status_class = 'status-warning' %} {% if 'employee-ok' in side.class %}
+        {% set status_class = 'status-ok' %} {% elif 'employee-nook' in
+        side.class %} {% set status_class = 'status-warning' %} {% elif
+        'employee-warning' in side.class %} {% set status_class =
+        'status-danger' %} {% endif %}
+
+        <a
+          href="/successful?id={{ side.side_id }}"
+          class="station-card"
+          data-position="{{ card.position_name }}"
+          data-side-id="{{ side.side_id }}"
+        >
+          <div class="card-header">
+            <h3 class="station-name">
+              {{ card.position_name }} {{ side.side_title }}
+            </h3>
+          </div>
+
+          <div class="card-body">
+            <div class="status-indicator {{ status_class }}">
+              {% if status_class == 'status-ok' %}
+              <i class="fi fi-br-check"></i>
+              {% else %}
+              <i class="fi fi-br-exclamation"></i>
+              {% endif %}
+            </div>
+
+            <div class="staff-info">
+              <div class="staff-metric">
+                <i class="fi fi-rr-user staff-icon"></i>
+                <span class="staff-value">{{ side.employee_capacity }}</span>
+                <span class="staff-label">Estándar</span>
+              </div>
+              <div class="staff-metric">
+                <i class="fi fi-sr-user staff-icon"></i>
+                <span class="staff-value">{{ side.employees_working }}</span>
+                <span class="staff-label">Actual</span>
+              </div>
+            </div>
+          </div>
+        </a>
+        {% endfor %} {% endfor %}
+      </div>
+
+      {% if has_afe %}
+      <div class="afe-section">
+        <h2 class="afe-title">Estaciones AFE</h2>
+        <div class="stations-grid">
+          {% for card in cards_afe %} {% for side in card.sides %} {% set
+          status_class = 'status-warning' %} {% if 'employee-ok' in side.class
+          %} {% set status_class = 'status-ok' %} {% elif 'employee-nook' in
+          side.class %} {% set status_class = 'status-warning' %} {% elif
+          'employee-warning' in side.class %} {% set status_class =
+          'status-danger' %} {% endif %}
+
+          <a
+            href="/successful?id={{ side.side_id }}"
+            class="station-card"
+            data-position="{{ card.position_name }}"
+            data-side-id="{{ side.side_id }}"
+          >
+            <div class="card-header">
+              <h3 class="station-name">
+                {{ card.position_name }} {{ side.side_title }}
+              </h3>
+            </div>
+            <div class="card-body">
+              <div class="status-indicator {{ status_class }}">
+                {% if status_class == 'status-ok' %}
+                <i class="fi fi-br-check"></i>
+                {% else %}
+                <i class="fi fi-br-exclamation"></i>
+                {% endif %}
+              </div>
+              <div class="staff-info">
+                <div class="staff-metric">
+                  <i class="fi fi-rr-user staff-icon"></i>
+                  <span class="staff-value">{{ side.employee_capacity }}</span>
+                  <span class="staff-label">Estándar</span>
                 </div>
-            {% endfor %}
-        </div>
-
-        {% if has_afe %}
-            <div class="menu-separator"><span>Estaciones AFE</span></div>
-            <div class="menu menu--afe">
-                {% for card in cards_afe %}
-                    <div class="card {% if card.status == false %} hidden {% endif %}">
-                        <h2>{{ card.position_name }}</h2>
-                        <div class="select-position">
-                            {% for side in card.sides %}
-                                <a href="/successful?id={{ side.side_id }}"
-                                   class="card-dashboard small-card-dashboard uppercase {{ side.class }}"
-                                   data-position="{{ card.position_name }}"
-                                   data-side-id="{{ side.side_id }}">
-                                    <h3>{{ side.side_title }}</h3>
-                                    <p><i class="fi fi-rr-user"></i>{{ side.employee_capacity }} <i class="fi fi-sr-user"></i> {{ side.employees_working }}</p>
-                                </a>
-                            {% endfor %}
-                        </div>
-                    </div>
-                {% endfor %}
+                <div class="staff-metric">
+                  <i class="fi fi-sr-user staff-icon"></i>
+                  <span class="staff-value">{{ side.employees_working }}</span>
+                  <span class="staff-label">Actual</span>
+                </div>
+              </div>
             </div>
-        {% endif %}
-
-        <div class="div-button-cancel">
-            <button onclick="window.location.href='/'" class="cancel-button">Cancelar</button>
+          </a>
+          {% endfor %} {% endfor %}
         </div>
+      </div>
+      {% endif %}
+    </main>
 
-        <div class="left">
-            <p><i class="fi fi-rr-user"></i> Personal marcado en el estándar</p>
-            <p><i class="fi fi-sr-user"></i> Personal actual</p>
-        </div>
-    </body>
+    <footer class="footer-actions">
+      <button onclick="window.location.href='/'" class="btn-cancel">
+        Cancelar
+      </button>
+    </footer>
 
-<script>
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.card-dashboard').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            console.log('data-position:', btn.dataset.position); // Depuración
-            if (btn.dataset.position && btn.dataset.position.trim().toUpperCase() === 'AFE') {
-                e.preventDefault();
-                window.location.href = '/afeMenu?side_id=' + btn.dataset.sideId;
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".station-card").forEach(function (btn) {
+          btn.addEventListener("click", function (e) {
+            // Logic for AFE redirection if needed
+            if (
+              btn.dataset.position &&
+              btn.dataset.position.trim().toUpperCase() === "AFE"
+            ) {
+              e.preventDefault();
+              window.location.href = "/afeMenu?side_id=" + btn.dataset.sideId;
             }
+          });
         });
-    });
-});
-
-</script>
-
+      });
+    </script>
+  </body>
 </html>
