@@ -1,6 +1,12 @@
 from flask_login import LoginManager
-from .infra.db.database_manager import DBExtension
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from sqlalchemy.orm import DeclarativeBase
 
-# Instancias de las extensiones que se inicializarán en la fábrica
-db = DBExtension()
+class Base(DeclarativeBase):
+    pass
+
+# Initialize SQLAlchemy
+db = SQLAlchemy(model_class=Base)
+migrate = Migrate()
 login_manager = LoginManager()

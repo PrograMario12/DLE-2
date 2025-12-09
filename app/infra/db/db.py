@@ -1,31 +1,34 @@
-import psycopg2
-from flask import current_app, g
+"""
+src/infra/db/db.py
+Capa de compatibilidad para código legacy que usa psycopg2 directo.
+Redirige a la conexión de SQLAlchemy.
+DEPRECATED: Refactorizar repositorios a usar SQLAlchemy Models.
+"""
+
+from flask import g
+from app.extensions import db
 
 def get_db():
     """
-    Abre una nueva conexión a la base de datos si no existe una para
-    el contexto de la petición actual.
+    Obtiene una conexión raw (DBAPI) desde el pool de SQLAlchemy.
+    Se almacena en 'g' para reutilizarla en la misma request si se llama varias veces.
     """
-    if 'db' not in g:
-        g.db = psycopg2.connect(
-            host=current_app.config['DB_HOST'],
-            port=current_app.config['DB_PORT'],
-            dbname=current_app.config['DB_NAME'],
-            user=current_app.config['DB_USER'],
-            password=current_app.config['DB_PASSWORD']
-        )
-    return g.db
+    if 'db_legacy_conn' not in g:
+        # Obtenemos una conexión raw del engine.
+        # Esto check-out una conexión del pool.
+        g.db_legacy_conn = db.engine.raw_connection()
+    return g.db_legacy_conn
 
 def close_db(e=None):
     """
-    Cierra la conexión a la base de datos si existe en el contexto
-    de la petición.
+    Cierra la conexión legacy y la devuelve al pool.
     """
-    db = g.pop('db', None)
-    if db is not None:
-        db.close()
+    conn = g.pop('db_legacy_conn', None)
+    if conn:
+        conn.close()
 
 def init_app(app):
-    """Registra las funciones de la base de datos con la aplicación
-    Flask."""
+    """
+    Registra el cierre de la conexión legacy.
+    """
     app.teardown_appcontext(close_db)
