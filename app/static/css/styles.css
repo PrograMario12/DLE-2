@@ -659,3 +659,148 @@ input:checked + .label-c:after {
 .hidden {
     display: none;
 }
+
+/* 
+   --------------------------------------------------
+   MICRO-INTERACTIONS & ANIMATIONS (Entry/Exit)
+   --------------------------------------------------
+*/
+
+/* Message Box Styles */
+.message-box {
+    margin-bottom: 2rem;
+    text-align: center;
+    z-index: 20; /* Ensure text is above effects */
+    position: relative;
+    width: 100%;
+}
+
+.success-message {
+    font-size: 4rem;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    margin: 0;
+    font-weight: 800;
+}
+
+/* --- Keyframes --- */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    60% {
+        transform: scale(1.05); /* Bounce effect */
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: translate(-50%, -50%) scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.5);
+        box-shadow: 0 0 0 60px rgba(255, 255, 255, 0);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+@keyframes shine-pass {
+    0% {
+        left: -100%;
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        left: 200%;
+        opacity: 0;
+    }
+}
+
+@keyframes gentle-fade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* --- Entry Scenarios (.anim-entry) --- */
+
+/* Bounce/Pop for the main content on entry */
+.anim-entry .exito-final {
+    animation: popIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); /* Bouncy spring */
+}
+
+.anim-entry .success-message {
+    animation: fadeInUp 0.8s ease-out 0.2s backwards; /* Delay slightly */
+}
+
+/* Luminous Pulse Effect on the Wallpaper */
+.anim-entry.wallpaper::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+    animation: pulse-ring 2s infinite; 
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Optional Shine/Confetti simplified as a sweep */
+.anim-entry .overlay-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.anim-entry .overlay-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+    transform: skewX(-20deg);
+    animation: shine-pass 1.5s ease-out;
+}
+
+/* --- Exit Scenarios (.anim-exit) --- */
+
+/* Softer fade for exit */
+.anim-exit .exito-final {
+    animation: gentle-fade 1.2s ease-in-out;
+}
+
+.anim-exit .success-message {
+    animation: fadeInUp 1s ease-out;
+}

@@ -36,7 +36,7 @@ class StationService:
             return {"error": "User not found"}
 
         last_register = self._register_repo.get_last_register_type(card_number)
-        station_info = self._register_repo.get_last_station_for_user(user.id)
+        station_info = self._register_repo.get_last_station_for_user(card_number)
 
         line_name = station_info.get("line_name") if station_info else None
         station_name = station_info.get("station_name") if station_info else None

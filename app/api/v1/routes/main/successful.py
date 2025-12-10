@@ -88,7 +88,6 @@ def register_successful(
 
         # 5) Contexto unificado (mantiene claves de ambas implementaciones)
         ctx: Dict[str, Any] = {
-            # ambos nombres para compatibilidad con tu plantilla
             "css_href": url_for("static", filename="css/styles.css"),
             "user": info.get("name"),
             "line": display.get("line_name"),
@@ -100,6 +99,8 @@ def register_successful(
                 if image_filename
                 else None
             ),
+            "message": "¡Bienvenido, buen turno!" if display.get("type") == "Entrada" else "Gracias por tu esfuerzo hoy.",
+            "animation_type": "anim-entry" if display.get("type") == "Entrada" else "anim-exit",
         }
 
         return render_template("successful.html", **ctx)

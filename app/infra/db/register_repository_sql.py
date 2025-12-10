@@ -46,7 +46,7 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
             FROM {schema}.registers r
             JOIN {schema}.positions p ON r.position_id_fk = p.position_id
             JOIN {schema}.production_lines pl ON p.line_id = pl.line_id
-            WHERE r.id_employee = %s AND r.exit_hour IS NULL
+            WHERE r.id_employee = %s
             ORDER BY r.id_register DESC
             LIMIT 1
         """).format(schema=sql.Identifier(self.schema))
@@ -130,7 +130,7 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
                 VALUES (%s, %s, %s, %s, %s)
                 RETURNING id_register
             """).format(schema=sql.Identifier(self.schema))
-            cur.execute(q_insert, (user_id, today_date, now_time, line_id, side_id))
+            cur.execute(q_insert, (user_id, today_date, now_time, line_id, position_id))
             new_id = cur.fetchone()[0]
             cur.connection.commit()
             print(f"DEBUG_REPO: Inserted new register with ID: {new_id}")

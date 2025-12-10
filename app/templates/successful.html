@@ -1,31 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Usuario registrado</title>
-    <link rel="stylesheet" href="{{ css_href }}">
-</head>
+    <link rel="stylesheet" href="{{ css_href }}" />
+  </head>
 
-<body>
-    <div class="wallpaper {{color_class}}">
-        <div class="exito-final">
-            <p class="exito-principales">{{ tipo }} registrada para</p>
-            <picture>
-                <source srcset="{{ image }}" type="image/webp">
-                <img src="{{ image }}" alt="Imagen de usuario" loading="lazy">
-            </picture>
-            <p class="exito-principales">{{ user }}</p>
-            <p class="exito-principales capitalize">
-                {{ line }} estación {{station}} 
-            </p>
+  <body>
+    <div class="wallpaper {{color_class}} {{ animation_type }}">
+      <div class="overlay-effect"></div>
+      <div class="exito-final">
+        <div class="message-box">
+          <h2 class="success-message">{{ message }}</h2>
         </div>
+        <p class="exito-principales">{{ tipo }} registrada para</p>
+        <picture>
+          <source srcset="{{ image }}" type="image/webp" />
+          <img src="{{ image }}" alt="Imagen de usuario" loading="lazy" />
+        </picture>
+        <p class="exito-principales">{{ user }}</p>
+        <p class="exito-principales capitalize">
+          {{ line }} estación {{station}}
+        </p>
+      </div>
     </div>
-</body>
+  </body>
 
-<script>
-    setTimeout(function() {
-        window.location.href = "/";
+  <script>
+    setTimeout(function () {
+      window.location.href = "/";
     }, 3000);
-</script>
+  </script>
 </html>
