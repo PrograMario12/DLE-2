@@ -1,0 +1,43 @@
+{% extends "base/base_dashboards.html" %} {% block title %} Líneas - {{
+area_name }} {% endblock %} {% block styles %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/dashboard_styles.css') }}"
+/>
+{% endblock %} {% block header %}
+<h1>
+  <a
+    href="{{ url_for('dashboards.show_lines_dashboard') }}"
+    style="text-decoration: none; color: inherit"
+    >←</a
+  >
+  {{ area_name }}
+</h1>
+{% endblock %} {% block content %}
+<div class="content-wrapper">
+  <div class="information">
+    <p>Falta personal</p>
+    <p>Dentro del estándar</p>
+    <p>Excede el estándar</p>
+    <p>Personal mal posicionado</p>
+  </div>
+
+  <div class="area-grid">
+    {% for line in lines %}
+    <a
+      href="{{ url_for('dashboards.show_stations_dashboard') }}?line={{ line.id }}"
+      class="card-dashboard capitalize {{line.class}}"
+    >
+      <div>
+        <h2>{{ line.name }}</h2>
+        <h1>
+          {{ line.percentage }}% {% if line.status == False %}
+          <span class="warning-icon">⚠️</span>
+          {% endif %}
+        </h1>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

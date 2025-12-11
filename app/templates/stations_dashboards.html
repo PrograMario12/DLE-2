@@ -1,115 +1,143 @@
-{#stations_dashboards.html#}
+{# stations_dashboards.html #} {% extends "base/base_dashboards.html" %} {%
+block title %}Dashboard Estaciones - {{ line }}{% endblock %} {% block styles
+%}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/dashboard_styles.css') }}"
+/>
+<!-- Iconos de Flaticon -->
+<link
+  rel="stylesheet"
+  href="https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css"
+/>
+{% endblock %} {% block header %}
+<h1>
+  <a
+    href="javascript:history.back()"
+    style="text-decoration: none; color: inherit; margin-right: 0.5rem"
+    title="Volver"
+    >←</a
+  >
+  {{ line }}
+</h1>
+<script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+{% endblock %} {% block content %}
+<div class="content-wrapper">
+  <!-- Loading Screen -->
+  <div class="loading-screen">
+    <div class="loading-spinner"></div>
+  </div>
 
-{% extends "base/base_dashboards.html" %}
-
-{%block title%}Dashboard estaciones{%endblock%}
-
-{%block styles%}
-    <!-- Enlace a la hoja de estilos específica para este dashboard -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/stations_styles.css') }}">
-{%endblock%}
-
-{%block header%}
-    <!-- Título del dashboard -->
-    <h1>Dashboard estaciones</h1>
-    <!-- Inclusión correcta del script para manejar modales -->
-    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
-{%endblock%}
-
-{%block content%}
-    <!-- Pantalla de carga que se muestra mientras se carga el contenido -->
-    <div class="loading-screen">
-        <div class="loading-spinner"></div>
-        <p>Loading...</p>
+  <!-- Summary Section -->
+  {% if totals %}
+  <div class="operators-summary">
+    <div class="summary-item">
+      <i class="fi fi-rr-user"></i> Necesarios:
+      <strong>{{ totals.capacity }}</strong>
+    </div>
+    <div class="summary-item">
+      <i class="fi fi-sr-user"></i> Activos:
+      <strong>{{ totals.active }}</strong>
     </div>
 
-        <!-- Resumen de Operadores (barra superior) -->
-    {% if totals %}
-    <div class="operators-topbar">
-      <div class="operators-topbar__numbers">
-        <div class="num"><i class="fi fi-rr-user"></i> Necesarios: <strong>{{ totals.capacity }}</strong></div>
-        <div class="num"><i class="fi fi-sr-user"></i> Activos: <strong>{{ totals.active }}</strong></div>
-        <div class="num">Cobertura: <strong>{{ totals.pct_active }}%</strong></div>
-      </div>
-
-      <div class="operators-topbar__bar" title="Cobertura de operadores">
-        <div class="operators-topbar__fill" style="width: {{ totals.pct_active }}%;"></div>
-        {% if totals.overflow_pct and totals.overflow_pct > 0 %}
-          <div class="operators-topbar__overflow" style="width: {{ totals.overflow_pct }}%;"></div>
-        {% endif %}
-      </div>
-
-      {% if totals.overflow_pct and totals.overflow_pct > 0 %}
-        <small class="operators-topbar__note">
-          Sobre asignación: +{{ totals.overflow_pct }}% por encima de la capacidad.
-        </small>
+    <div class="progress-container">
+      <div class="progress-bar" style="width: {{ totals.pct_active }}%;"></div>
+      {% if totals.overflow_pct > 0 %}
+      <div
+        class="progress-bar"
+        style="width: {{ totals.overflow_pct }}%; background-color: var(--status-red); position: absolute; top:0; left: 100%;"
+      ></div>
       {% endif %}
     </div>
-    {% endif %}
 
-
-    <!-- Título principal del dashboard, con formato capitalizado -->
-    <h1 class="capitalize">{{line}}</h1>
-
-    <!-- Contenedor del menú principal -->
-    <div class="menu">
-      {% for card in cards_main %}
-        <div class="card uppercase {{ card.class }} {% if card.status == false %} hidden {% endif %}">
-          <h2>
-            {{ tipo }} {{ card.position_name }}
-          </h2>
-          <div class="select-position">
-            {% for side in card.sides %}
-              <div class="card-dashboard small-card-dashboard uppercase {{ side.class }}"
-                   onclick="openModal({{ side.side_id or side.id }})">
-                <h3>{{ side.side_title }}</h3>
-                <p><i class="fi fi-rr-user"></i>{{ side.employee_capacity }}
-                   <i class="fi fi-sr-user"></i> {{ side.employees_working }}</p>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      {% endfor %}
+    <div class="summary-item">
+      <strong>{{ totals.pct_active }}%</strong>
     </div>
+  </div>
+  {% endif %}
 
-    {% if has_afe %}
-      <div class="menu-separator"><span>Estaciones AFE</span></div>
-      <div class="menu menu--afe">
-        {% for card in cards_afe %}
-          <div class="card uppercase {{ card.class }} {% if card.status == false %} hidden {% endif %}">
-            <h2>
-              {{ card.position_name }}
-            </h2>
-            <div class="select-position">
-              {% for side in card.sides %}
-                <div class="card-dashboard small-card-dashboard uppercase {{ side.class }}"
-                     onclick="openModal({{ side.side_id or side.id }})">
-                  <h3>{{ side.side_title }}</h3>
-                  <p><i class="fi fi-rr-user"></i>{{ side.employee_capacity }}
-                     <i class="fi fi-sr-user"></i> {{ side.employees_working }}</p>
-                </div>
-              {% endfor %}
-            </div>
-          </div>
+  <!-- Main Stations Grid -->
+  <div class="station-grid">
+    {% for card in cards_main %}
+    <div class="station-card {% if card.status == false %} hidden {% endif %}">
+      <div class="station-header">{{ tipo }} {{ card.position_name }}</div>
+
+      <div class="sides-container">
+        {% for side in card.sides %}
+        <!-- Using side.class if available, or calculating it (but route usually provides it) -->
+        <!-- The route actually provides 'class' on specific sidedict? Route logic puts class on SIDE dict? 
+                   Lets check routes. Yes, side_status_class is called and assigned to side['class'].
+              -->
+        <div
+          class="side-card {{ side.class }}"
+          onclick="openModal({{ side.side_id or side.id }})"
+        >
+          <h3>{{ side.side_title }}</h3>
+          <p>
+            <i class="fi fi-rr-user"></i> {{ side.employee_capacity }}
+            <span>/</span>
+            {{ side.employees_working }} <i class="fi fi-sr-user"></i>
+          </p>
+        </div>
         {% endfor %}
       </div>
-    {% endif %}
-
-
-    <!-- Modal para mostrar información adicional -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-          <!-- Botón para cerrar el modal -->
-          <span class="close" onclick="closeModal()">❎</span>
-          <!-- Contenido dinámico del modal -->
-          <div id="modal-content"></div>
-        </div>
     </div>
+    {% endfor %}
+  </div>
 
-    <script>
-        // Ocultar la pantalla de carga una vez que la página ha terminado de cargar
-        window.addEventListener('load', function() {
-            document.querySelector('.loading-screen').style.display = 'none';
-        });
-    </script>
-{%endblock%}
+  {% if has_afe %}
+  <h2
+    style="
+      margin-top: 3rem;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      color: var(--color-text-secondary);
+      border-bottom: 2px solid #e2e8f0;
+    "
+  >
+    Estaciones AFE
+  </h2>
+  <div class="station-grid">
+    {% for card in cards_afe %}
+    <div class="station-card {% if card.status == false %} hidden {% endif %}">
+      <div class="station-header">{{ card.position_name }}</div>
+      <div class="sides-container">
+        {% for side in card.sides %}
+        <div
+          class="side-card {{ side.class }}"
+          onclick="openModal({{ side.side_id or side.id }})"
+        >
+          <h3>{{ side.side_title }}</h3>
+          <p>
+            <i class="fi fi-rr-user"></i> {{ side.employee_capacity }}
+            <span>/</span>
+            {{ side.employees_working }} <i class="fi fi-sr-user"></i>
+          </p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Modal -->
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener("load", function () {
+    const loader = document.querySelector(".loading-screen");
+    if (loader) loader.style.display = "none";
+  });
+</script>
+{% endblock %}

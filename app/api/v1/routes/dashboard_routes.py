@@ -13,22 +13,57 @@ from itertools import groupby
 @dashboards_bp.route('/lines')
 def show_lines_dashboard():
     """
-    Renderiza la página principal que muestra el resumen de todas las
-    líneas.
-    (Reemplaza la antigua ruta /visualizaciones_lines)
+    Renderiza la página PRINCIPAL (nivel 1) que muestra las tarjetas de las ÁREAS.
     """
-
     lines_data = dashboards_bp.dashboard_service.get_lines_summary()
     
-    # Sort by area first (groupby needs sorted input)
-    # The SQL query already sorts by bu_name, but good to be safe.
+    # Sort by area
     lines_data.sort(key=lambda x: x.get('area', 'Sin Area'))
     
-    grouped_lines = {}
+    areas_summary = []
+    
+    # Group by area to calculate stats
     for area, group in groupby(lines_data, key=lambda x: x.get('area', 'Sin Area')):
-        grouped_lines[area] = list(group)
+        lines_in_group = list(group)
+        total_cap = sum((l.get('capacity') or 0) for l in lines_in_group)
+        total_ops = sum((l.get('operators') or 0) for l in lines_in_group)
+        area_id = lines_in_group[0].get('area_id') if lines_in_group else 0
         
-    return render_template('lines_dashboards.html', grouped_lines=grouped_lines)
+        pct = round((total_ops / total_cap) * 100) if total_cap > 0 else 0
+        
+        # Determine strict class
+        status_class = "employee-ok"
+        if pct < 90: # Umbral ejemplo
+             status_class = "employee-nook"
+        elif pct > 100:
+             status_class = "employee-warning"
+
+        areas_summary.append({
+            "name": area,
+            "id": area_id,
+            "percentage": pct,
+            "class": status_class,
+            "lines_count": len(lines_in_group)
+        })
+        
+    return render_template('lines_dashboards.html', areas=areas_summary)
+
+@dashboards_bp.route('/area/<int:area_id>')
+def show_area_dashboard(area_id):
+    """
+    Renderiza la página DETALLE (nivel 2) que muestra las líneas de UNA ÁREA específica.
+    """
+    lines_data = dashboards_bp.dashboard_service.get_lines_summary()
+    
+    # Filter by area_id
+    filtered_lines = [l for l in lines_data if l.get('area_id') == area_id]
+    
+    if not filtered_lines:
+         return "Area not found or empty", 404
+         
+    area_name = filtered_lines[0].get('area')
+    
+    return render_template('area_lines_dashboard.html', lines=filtered_lines, area_name=area_name)
 
 @dashboards_bp.route('/stations')
 def show_stations_dashboard():

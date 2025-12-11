@@ -88,35 +88,27 @@ body {
 }
 
 /* --- 4. Menú de Tarjetas (Grid Layout) --- */
-/* --- 4. Menú de Tarjetas (Grid Layout) --- */
-.menu-container {
+/* --- 4. Menú de Tarjetas --- */
+
+/* Contenedor principal para las Áreas (Pantalla 1) */
+.menu {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 5rem; /* Separación vertical amplia para pantalla touch */
   width: 100%;
+  max-width: 800px; /* Evitar que se estiren demasiado en pantallas muy anchas */
+  margin: 0 auto; /* Centrado */
+  padding-bottom: 4rem;
 }
 
-.area-section {
-  /* background-color: #fff;  Opcional: envolver cada área en una caja */
-  /* padding: 1.5rem; */
-  /* border-radius: var(--border-radius); */
-  /* box-shadow: var(--shadow-md); */
-}
-
-.area-title {
-  font-size: 1.8rem;
-  color: var(--color-text-secondary);
-  margin-bottom: 1.5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  border-bottom: 2px solid #e2e8f0;
-  padding-bottom: 0.5rem;
-}
-
+/* Contenedor para las Líneas de un Área (Pantalla 2) */
 .area-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(280px, 1fr)
+  ); /* Tarjetas más anchas */
+  gap: 2.5rem; /* Más espacio entre tarjetas */
   width: 100%;
 }
 
@@ -135,23 +127,80 @@ body {
 }
 
 .card-dashboard:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px); /* Más elevación */
   box-shadow: var(--shadow-lg);
+  cursor: pointer;
+}
+
+.card-main-content {
+  flex-grow: 1;
 }
 
 .card-dashboard h2 {
-  font-size: 1.125rem; /* 18px */
-  font-weight: 600;
+  font-size: 1.25rem; /* 20px */
+  font-weight: 700;
   color: var(--color-text-secondary);
   margin-bottom: 0.5rem;
   text-align: left;
+  text-transform: uppercase;
 }
 
 .card-dashboard h1 {
-  font-size: 3rem; /* 48px */
-  font-weight: 700;
+  font-size: 3.5rem; /* 56px - Más grande */
+  font-weight: 800;
   color: var(--color-text-primary);
   text-align: left;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Footer de la tarjeta */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.action-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline; /* Parece un enlace */
+}
+
+/* Icono de flecha */
+.action-icon {
+  font-size: 1.2rem;
+  color: var(--color-text-secondary);
+  transition: transform 0.2s;
+}
+
+.card-dashboard:hover .action-icon {
+  transform: translateX(5px);
+  color: var(--color-primary);
+}
+
+/* Cambios para tarjetas NO-BLANCAS (coloreadas por estado) */
+.employee-ok h2,
+.employee-ok .action-icon,
+.employee-ok .action-text,
+.employee-warning h2,
+.employee-warning .action-icon,
+.employee-warning .action-text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.employee-ok h1,
+.employee-warning h1 {
+  color: #fff;
+}
+
+.employee-ok .card-footer,
+.employee-warning .card-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* --- 5. Clases de Estado para las Tarjetas --- */
@@ -220,4 +269,193 @@ body {
 .employee-nook h1,
 .employee-nook h2 {
   color: var(--color-text-primary);
+}
+
+/* --- 6. Estilos Específicos para Dashboard de Estaciones (Nivel 3) --- */
+
+.station-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  width: 100%;
+}
+
+.station-card {
+  background-color: #fff;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  padding: 1.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.station-header {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sides-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Tarjeta individual de Lado (Side) - El botón que se clickea */
+.side-card {
+  flex: 1;
+  min-width: 120px;
+  background-color: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.side-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.side-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: var(--color-text-secondary);
+}
+
+.side-card.employee-ok {
+  background-color: var(--status-green);
+  border-color: var(--status-green);
+  color: white;
+}
+.side-card.employee-nook {
+  background-color: var(--status-yellow);
+  border-color: var(--status-yellow);
+  color: var(--color-text-primary);
+}
+.side-card.employee-warning {
+  background-color: var(--status-red);
+  border-color: var(--status-red);
+  color: white;
+}
+
+.side-card.employee-ok h3,
+.side-card.employee-warning h3 {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.side-card p {
+  font-size: 1.2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Iconos dentro de la side-card */
+.side-card i {
+  font-size: 1rem;
+}
+
+/* Resumen superior */
+.operators-summary {
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+}
+
+.summary-item strong {
+  font-size: 1.1rem;
+  color: var(--color-text-primary);
+}
+
+.progress-container {
+  flex-grow: 1;
+  background-color: #e2e8f0;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  min-width: 200px;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 0.5s ease;
+}
+
+/* Modal Styling Improvements */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  width: 90%;
+  max-width: 500px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #aaa;
+}
+.close:hover {
+  color: #000;
 }

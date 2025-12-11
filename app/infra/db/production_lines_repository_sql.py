@@ -44,13 +44,14 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                    pl.type_zone || ' ' || pl.name  as line_name,
                    COUNT(DISTINCT r.id_employee) as current_operators,
                    SUM(s.employee_capacity)      as total_capacity,
-                   bu.bu_name
+                   bu.bu_name,
+                   bu.bu_id
             FROM {schema}.production_lines pl
             JOIN {schema}.business_unit bu ON pl.business_unit_fk = bu.bu_id
             LEFT JOIN {schema}.positions p ON pl.line_id = p.line_id
             LEFT JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
-            LEFT JOIN {schema}.registers r ON s.side_id = r.position_id_fk AND r.exit_hour IS NULL
-            GROUP BY pl.line_id, line_name, bu.bu_name
+            LEFT JOIN {schema}.registers r ON p.position_id = r.position_id_fk AND r.exit_hour IS NULL
+            GROUP BY pl.line_id, line_name, bu.bu_name, bu.bu_id
             ORDER BY bu.bu_name, pl.line_id;
         """).format(schema=sql.Identifier(self.schema))
 
@@ -65,7 +66,8 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                 "name": row[1], 
                 "operators": row[2], 
                 "capacity": row[3],
-                "area": row[4] # Added area
+                "area": row[4],
+                "area_id": row[5] # Added area_id
             }
             for row in results
         ]
@@ -86,7 +88,7 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                    COALESCE(ew.employee_count, 0) as operators
             FROM {schema}.positions p
             JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
-            LEFT JOIN employees_working ew ON s.side_id = ew.position_id_fk
+            LEFT JOIN employees_working ew ON p.position_id = ew.position_id_fk
             WHERE p.line_id = %s
             ORDER BY p.position_name, s.side_title;
         """).format(schema=sql.Identifier(self.schema))

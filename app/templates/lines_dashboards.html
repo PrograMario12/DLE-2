@@ -18,30 +18,21 @@ aplicar el padding y max-width #}
     <p>Personal mal posicionado</p>
   </div>
 
-  <div class="menu-container">
-    {% for area, lines in grouped_lines.items() %}
-    <div class="area-section">
-      <h2 class="area-title">{{ area }}</h2>
-      <div class="area-grid">
-        {% for line in lines %} {# Asumimos que `line.class` es una de las
-        clases de estado (employee-ok, etc.) #}
-        <a
-          href="{{ url_for('dashboards.show_stations_dashboard') }}?line={{ line.id }}"
-          class="card-dashboard capitalize {{line.class}}"
-        >
-          <div>
-            <h2>{{ line.name }}</h2>
-            <h1>
-              {{ line.percentage }}% {# Usamos una clase para el icono de
-              advertencia #} {% if line.status == False %}
-              <span class="warning-icon">⚠️</span>
-              {% endif %}
-            </h1>
-          </div>
-        </a>
-        {% endfor %}
+  <div class="menu">
+    {% for area in areas %}
+    <a
+      href="{{ url_for('dashboards.show_area_dashboard', area_id=area.id) }}"
+      class="card-dashboard capitalize {{area.class}}"
+    >
+      <div class="card-main-content">
+        <h2>{{ area.name }}</h2>
+        <h1>{{ area.percentage }}%</h1>
       </div>
-    </div>
+      <div class="card-footer">
+        <span class="action-text">Ver {{ area.lines_count }} líneas</span>
+        <span class="action-icon">➜</span>
+      </div>
+    </a>
     {% endfor %}
   </div>
 </div>
