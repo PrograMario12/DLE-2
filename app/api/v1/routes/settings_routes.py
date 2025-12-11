@@ -43,15 +43,33 @@ def create_settings_bp(user_service: UserService) -> Blueprint:
         if request.method == 'POST':
             action = request.form.get('action')
 
-            if action == 'save_positions':
-                # Logic to update toggles
-                all_ids = request.form.getlist('all_positions')
-                for pid in all_ids:
-                    is_checked = request.form.get(f'position_status_{pid}') is not None
-                    user_service.update_position_status(int(pid), is_checked)
+            if action and action.startswith('select_area'):
+                with open('debug_log.txt', 'a', encoding='utf-8') as f:
+                    f.write(f"\n--- SELECT AREA ACTION: {action} ---\n")
+                    f.write(f"Form Keys: {list(request.form.keys())}\n")
+                    all_ids = request.form.getlist('all_positions')
+                    
+                    for pid in all_ids:
+                        if pid and pid.strip().isdigit():
+                            key = f'position_status_{pid}'
+                            val = request.form.get(key)
+                            is_checked = val is not None
+                            user_service.update_position_status(int(pid), is_checked)
+                        else:
+                            f.write(f"Date invalid PID: {pid}\n")
                 
-                # Reload page to show changes
-                return redirect(url_for('settings.configure_line_and_station'))
+                # Determine Cookie Logic
+                response = make_response(redirect(url_for('main.home')))
+                
+                parts = action.split('select_area_')
+                if len(parts) > 1:
+                    target_group = parts[1].lower()
+                    if 'inyección' in target_group:
+                        response.set_cookie('line', '-1')
+                    elif 'metalizado' in target_group:
+                        response.set_cookie('line', '-2')
+                
+                return response
 
             # Fallback / Default: Line Selection
             selected_line = request.form.get('line')
@@ -63,28 +81,33 @@ def create_settings_bp(user_service: UserService) -> Blueprint:
             return response
 
         # GET Logic
-        available_lines = user_service.get_all_lines_for_settings()
+        with open('debug_log.txt', 'a', encoding='utf-8') as f:
+            f.write("\n--- GET REQUEST ---\n")
+            available_lines = user_service.get_all_lines_for_settings()
+            f.write(f"Available lines count: {len(available_lines)}\n")
 
-        grouped_lines: dict[str, list[dict]] = {}
-        for line in available_lines:
-            group = line.get("group") or "Otras"
-            grouped_lines.setdefault(group, []).append(line)
-
-        # Update specific groups with detailed status
-        # Note: keys in grouped_lines come from DB (business_unit.bu_name)
-        # We need to match precise naming.
-        # Typically: 'Inyección', 'Metalizado', 'Ensamble'
-        for special_group in ['Inyección', 'Metalizado']:
-            # Check if group exists in fetched lines (case sensitive check usually required for dict keys)
-            # We try to find the key case-insensitively just in case
-            found_key = next((k for k in grouped_lines.keys() if k.lower() == special_group.lower()), None)
+            grouped_lines: dict[str, list[dict]] = {}
+            for line in available_lines:
+                group = line.get("group") or "Otras"
+                grouped_lines.setdefault(group, []).append(line)
             
-            if found_key:
-                # Fetch enriched data
-                detailed_lines = user_service.get_lines_with_position_status(special_group)
-                if detailed_lines:
-                    grouped_lines[found_key] = detailed_lines
+            f.write(f"Groups found: {list(grouped_lines.keys())}\n")
 
-        return render_template("ajustes.html", grouped_lines=grouped_lines)
+            # Update specific groups with detailed status
+            for special_group in ['Inyección', 'Metalizado']:
+                found_key = next((k for k in grouped_lines.keys() if k.lower() == special_group.lower()), None)
+                f.write(f"Looking for '{special_group}' -> Found key: '{found_key}'\n")
+                
+                if found_key:
+                    detailed_lines = user_service.get_lines_with_position_status(special_group)
+                    f.write(f"Detailed lines fetched for '{special_group}': {len(detailed_lines) if detailed_lines else 0}\n")
+                    if detailed_lines:
+                        grouped_lines[found_key] = detailed_lines
+                    else:
+                        f.write(f"WARNING: No detailed lines for {special_group}\n")
+                else:
+                    f.write(f"WARNING: Group {special_group} not found in {list(grouped_lines.keys())}\n")
+
+            return render_template("ajustes.html", grouped_lines=grouped_lines)
 
     return settings_bp

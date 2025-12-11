@@ -40,24 +40,55 @@ class DashboardService:
 
     def get_station_details_for_line(self, line_id: int) -> dict:
         """
-        Prepara los detalles de las estaciones para una línea específica.
-
-        Args:
-            line_id (int): El identificador único de la línea.
-
-        Returns:
-            dict: Un diccionario que contiene:
-                - "line" (str): El nombre de la línea.
-                - "cards" (list): Una lista de tarjetas asociadas a la línea.
-                - "tipo" (str): El tipo de estación basado en la línea.
+        Prepara los detalles de las estaciones para una línea o grupo específico.
         """
-        # Obtiene las tarjetas asociadas a la línea desde el repositorio de líneas
-        cards = self._production_line_repo.get_station_cards_for_line(line_id)
+        if line_id < 0:
+            # Logic for Groups (Inyección=-1, Metalizado=-2)
+            group_name = "Inyección" if line_id == -1 else "Metalizado" if line_id == -2 else ""
+            
+            # Fetch config status
+            lines_status = self._production_line_repo.get_lines_with_position_status(group_name)
+            # Fetch operational data
+            lines_summary = self._production_line_repo.get_all_lines_summary()
+            
+            # Map summary by ID
+            summary_map = {l['id']: l for l in lines_summary}
+            
+            cards = []
+            for l in lines_status:
+                if l['is_visible']: # Only show enabled lines
+                    # Restore summ definition for operators check
+                    lid = l['id']
+                    summ = summary_map.get(lid, {})
+                    
+                    # Use retrieved side_id and capacity (which might have been auto-created)
+                    real_side_id = l.get('side_id')
+                    real_capacity = l.get('capacity') or 0
+                    operators = summ.get('operators') or 0 # Ops still come from summary until we link registers properly
+                    
+                    cards.append({
+                        "position_name": l['name'],
+                        "status": True,
+                        "sides": [{
+                            "side_id": real_side_id, 
+                            "side_title": "BP", 
+                            "name_side": "BP",
+                            "employee_capacity": real_capacity,
+                            "employees_working": operators
+                        }], 
+                        "is_afe": "afe" in l['name'].lower()
+                    })
+            
+            return {
+                "line": group_name,
+                "cards": cards,
+                "tipo": "Inyectora" if line_id == -1 else "Metalizadora"
+            }
 
-        # Obtiene el nombre de la línea desde el repositorio de líneas
+        # Original Logic
+        cards = self._production_line_repo.get_station_cards_for_line(line_id)
         line_name = self._production_line_repo.get_line_name_by_id(line_id)
 
-        # Retorna un diccionario con los detalles de la línea y las estaciones asociadas
         return {
             "line": line_name,
             "cards": cards,

@@ -17,7 +17,7 @@ class LineCookie(BaseModel):
     Atributos:
         line (int): Número de línea. Debe ser un entero mayor o igual a 1.
     """
-    line: int = Field(ge=1)
+    line: int = Field()
 
 class MenuStationForm(BaseModel):
     """

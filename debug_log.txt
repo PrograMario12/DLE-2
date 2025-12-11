@@ -1,0 +1,271 @@
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 0
+WARNING: No detailed lines for Inyección
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 0
+WARNING: No detailed lines for Metalizado
+
+--- SAVE POSITIONS ACTION ---
+Form Keys: ['all_positions', 'position_status_', 'action']
+All IDs count: 36
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+Date invalid PID: 
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 0
+WARNING: No detailed lines for Inyección
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 0
+WARNING: No detailed lines for Metalizado
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- SAVE POSITIONS ACTION ---
+Form Keys: ['all_positions', 'position_status_347', 'position_status_348', 'position_status_349', 'position_status_350', 'position_status_351', 'position_status_352', 'position_status_353', 'position_status_354', 'position_status_355', 'position_status_356', 'position_status_357', 'position_status_358', 'position_status_359', 'position_status_360', 'position_status_361', 'position_status_362', 'position_status_363', 'position_status_364', 'position_status_365', 'position_status_366', 'position_status_375', 'action', 'position_status_382']
+All IDs count: 36
+PID: 347 | Key: position_status_347 | Value: on | Checked: True
+PID: 348 | Key: position_status_348 | Value: on | Checked: True
+PID: 349 | Key: position_status_349 | Value: on | Checked: True
+PID: 350 | Key: position_status_350 | Value: on | Checked: True
+PID: 351 | Key: position_status_351 | Value: on | Checked: True
+PID: 352 | Key: position_status_352 | Value: on | Checked: True
+PID: 353 | Key: position_status_353 | Value: on | Checked: True
+PID: 354 | Key: position_status_354 | Value: on | Checked: True
+PID: 355 | Key: position_status_355 | Value: on | Checked: True
+PID: 356 | Key: position_status_356 | Value: on | Checked: True
+PID: 357 | Key: position_status_357 | Value: on | Checked: True
+PID: 358 | Key: position_status_358 | Value: on | Checked: True
+PID: 359 | Key: position_status_359 | Value: on | Checked: True
+PID: 360 | Key: position_status_360 | Value: on | Checked: True
+PID: 361 | Key: position_status_361 | Value: on | Checked: True
+PID: 362 | Key: position_status_362 | Value: on | Checked: True
+PID: 363 | Key: position_status_363 | Value: on | Checked: True
+PID: 364 | Key: position_status_364 | Value: on | Checked: True
+PID: 365 | Key: position_status_365 | Value: on | Checked: True
+PID: 366 | Key: position_status_366 | Value: on | Checked: True
+PID: 367 | Key: position_status_367 | Value: None | Checked: False
+PID: 368 | Key: position_status_368 | Value: None | Checked: False
+PID: 369 | Key: position_status_369 | Value: None | Checked: False
+PID: 370 | Key: position_status_370 | Value: None | Checked: False
+PID: 371 | Key: position_status_371 | Value: None | Checked: False
+PID: 372 | Key: position_status_372 | Value: None | Checked: False
+PID: 373 | Key: position_status_373 | Value: None | Checked: False
+PID: 374 | Key: position_status_374 | Value: None | Checked: False
+PID: 375 | Key: position_status_375 | Value: on | Checked: True
+PID: 376 | Key: position_status_376 | Value: None | Checked: False
+PID: 377 | Key: position_status_377 | Value: None | Checked: False
+PID: 378 | Key: position_status_378 | Value: None | Checked: False
+PID: 379 | Key: position_status_379 | Value: None | Checked: False
+PID: 380 | Key: position_status_380 | Value: None | Checked: False
+PID: 381 | Key: position_status_381 | Value: None | Checked: False
+PID: 382 | Key: position_status_382 | Value: on | Checked: True
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- SAVE POSITIONS ACTION ---
+Form Keys: ['all_positions', 'position_status_347', 'position_status_348', 'position_status_349', 'position_status_350', 'position_status_351', 'position_status_352', 'position_status_353', 'position_status_354', 'position_status_355', 'position_status_356', 'position_status_357', 'position_status_358', 'position_status_359', 'position_status_360', 'position_status_361', 'position_status_362', 'position_status_363', 'position_status_364', 'position_status_365', 'position_status_366', 'position_status_375', 'action', 'position_status_382']
+All IDs count: 36
+PID: 347 | Key: position_status_347 | Value: on | Checked: True
+PID: 348 | Key: position_status_348 | Value: on | Checked: True
+PID: 349 | Key: position_status_349 | Value: on | Checked: True
+PID: 350 | Key: position_status_350 | Value: on | Checked: True
+PID: 351 | Key: position_status_351 | Value: on | Checked: True
+PID: 352 | Key: position_status_352 | Value: on | Checked: True
+PID: 353 | Key: position_status_353 | Value: on | Checked: True
+PID: 354 | Key: position_status_354 | Value: on | Checked: True
+PID: 355 | Key: position_status_355 | Value: on | Checked: True
+PID: 356 | Key: position_status_356 | Value: on | Checked: True
+PID: 357 | Key: position_status_357 | Value: on | Checked: True
+PID: 358 | Key: position_status_358 | Value: on | Checked: True
+PID: 359 | Key: position_status_359 | Value: on | Checked: True
+PID: 360 | Key: position_status_360 | Value: on | Checked: True
+PID: 361 | Key: position_status_361 | Value: on | Checked: True
+PID: 362 | Key: position_status_362 | Value: on | Checked: True
+PID: 363 | Key: position_status_363 | Value: on | Checked: True
+PID: 364 | Key: position_status_364 | Value: on | Checked: True
+PID: 365 | Key: position_status_365 | Value: on | Checked: True
+PID: 366 | Key: position_status_366 | Value: on | Checked: True
+PID: 367 | Key: position_status_367 | Value: None | Checked: False
+PID: 368 | Key: position_status_368 | Value: None | Checked: False
+PID: 369 | Key: position_status_369 | Value: None | Checked: False
+PID: 370 | Key: position_status_370 | Value: None | Checked: False
+PID: 371 | Key: position_status_371 | Value: None | Checked: False
+PID: 372 | Key: position_status_372 | Value: None | Checked: False
+PID: 373 | Key: position_status_373 | Value: None | Checked: False
+PID: 374 | Key: position_status_374 | Value: None | Checked: False
+PID: 375 | Key: position_status_375 | Value: on | Checked: True
+PID: 376 | Key: position_status_376 | Value: None | Checked: False
+PID: 377 | Key: position_status_377 | Value: None | Checked: False
+PID: 378 | Key: position_status_378 | Value: None | Checked: False
+PID: 379 | Key: position_status_379 | Value: None | Checked: False
+PID: 380 | Key: position_status_380 | Value: None | Checked: False
+PID: 381 | Key: position_status_381 | Value: None | Checked: False
+PID: 382 | Key: position_status_382 | Value: on | Checked: True
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- SAVE POSITIONS ACTION ---
+Form Keys: ['all_positions', 'position_status_347', 'position_status_348', 'position_status_349', 'position_status_350', 'position_status_351', 'position_status_352', 'position_status_353', 'position_status_354', 'position_status_355', 'position_status_356', 'position_status_357', 'position_status_358', 'position_status_359', 'position_status_360', 'position_status_361', 'position_status_362', 'position_status_363', 'position_status_364', 'position_status_365', 'position_status_366', 'position_status_375', 'position_status_376', 'position_status_377', 'position_status_378', 'position_status_379', 'position_status_380', 'position_status_381', 'position_status_382', 'action']
+All IDs count: 36
+PID: 347 | Key: position_status_347 | Value: on | Checked: True
+PID: 348 | Key: position_status_348 | Value: on | Checked: True
+PID: 349 | Key: position_status_349 | Value: on | Checked: True
+PID: 350 | Key: position_status_350 | Value: on | Checked: True
+PID: 351 | Key: position_status_351 | Value: on | Checked: True
+PID: 352 | Key: position_status_352 | Value: on | Checked: True
+PID: 353 | Key: position_status_353 | Value: on | Checked: True
+PID: 354 | Key: position_status_354 | Value: on | Checked: True
+PID: 355 | Key: position_status_355 | Value: on | Checked: True
+PID: 356 | Key: position_status_356 | Value: on | Checked: True
+PID: 357 | Key: position_status_357 | Value: on | Checked: True
+PID: 358 | Key: position_status_358 | Value: on | Checked: True
+PID: 359 | Key: position_status_359 | Value: on | Checked: True
+PID: 360 | Key: position_status_360 | Value: on | Checked: True
+PID: 361 | Key: position_status_361 | Value: on | Checked: True
+PID: 362 | Key: position_status_362 | Value: on | Checked: True
+PID: 363 | Key: position_status_363 | Value: on | Checked: True
+PID: 364 | Key: position_status_364 | Value: on | Checked: True
+PID: 365 | Key: position_status_365 | Value: on | Checked: True
+PID: 366 | Key: position_status_366 | Value: on | Checked: True
+PID: 367 | Key: position_status_367 | Value: None | Checked: False
+PID: 368 | Key: position_status_368 | Value: None | Checked: False
+PID: 369 | Key: position_status_369 | Value: None | Checked: False
+PID: 370 | Key: position_status_370 | Value: None | Checked: False
+PID: 371 | Key: position_status_371 | Value: None | Checked: False
+PID: 372 | Key: position_status_372 | Value: None | Checked: False
+PID: 373 | Key: position_status_373 | Value: None | Checked: False
+PID: 374 | Key: position_status_374 | Value: None | Checked: False
+PID: 375 | Key: position_status_375 | Value: on | Checked: True
+PID: 376 | Key: position_status_376 | Value: on | Checked: True
+PID: 377 | Key: position_status_377 | Value: on | Checked: True
+PID: 378 | Key: position_status_378 | Value: on | Checked: True
+PID: 379 | Key: position_status_379 | Value: on | Checked: True
+PID: 380 | Key: position_status_380 | Value: on | Checked: True
+PID: 381 | Key: position_status_381 | Value: on | Checked: True
+PID: 382 | Key: position_status_382 | Value: on | Checked: True
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- SELECT AREA ACTION: select_area_inyección ---
+Form Keys: ['all_positions', 'position_status_347', 'position_status_348', 'position_status_349', 'position_status_350', 'position_status_351', 'position_status_352', 'position_status_353', 'position_status_354', 'position_status_355', 'position_status_356', 'position_status_357', 'position_status_358', 'position_status_359', 'position_status_360', 'position_status_361', 'position_status_362', 'position_status_363', 'position_status_364', 'position_status_365', 'position_status_366', 'position_status_375', 'action', 'position_status_376', 'position_status_377', 'position_status_378', 'position_status_379', 'position_status_380', 'position_status_381', 'position_status_382']
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- SELECT AREA ACTION: select_area_inyección ---
+Form Keys: ['all_positions', 'position_status_347', 'position_status_348', 'position_status_349', 'position_status_350', 'position_status_351', 'position_status_352', 'position_status_353', 'position_status_354', 'position_status_355', 'position_status_356', 'position_status_357', 'position_status_358', 'position_status_359', 'position_status_360', 'position_status_361', 'position_status_362', 'position_status_363', 'position_status_364', 'position_status_365', 'position_status_366', 'position_status_375', 'action', 'position_status_376', 'position_status_377', 'position_status_378', 'position_status_379', 'position_status_380', 'position_status_381', 'position_status_382']
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- SELECT AREA ACTION: select_area_inyección ---
+Form Keys: ['all_positions', 'position_status_347', 'position_status_348', 'position_status_349', 'position_status_350', 'position_status_351', 'position_status_352', 'position_status_353', 'position_status_354', 'position_status_355', 'position_status_356', 'position_status_357', 'position_status_358', 'position_status_359', 'position_status_360', 'position_status_361', 'position_status_362', 'position_status_363', 'position_status_364', 'position_status_365', 'position_status_366', 'position_status_367', 'position_status_368', 'position_status_369', 'position_status_375', 'action', 'position_status_376', 'position_status_377', 'position_status_378', 'position_status_379', 'position_status_380', 'position_status_381', 'position_status_382']

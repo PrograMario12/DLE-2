@@ -31,7 +31,7 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                 "id": row[0],
                 "name": row[1],
                 "type_zone": row[2],
-                "group": row[3],       # metalizado / inyección / ensamble
+                "group": row[3],
             }
             for row in cursor.fetchall()
         ]
@@ -165,11 +165,14 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                 pl.name, 
                 pl.type_zone,
                 p.position_id,
-                ps.is_active
+                ps.is_active,
+                s.side_id,
+                s.employee_capacity
             FROM {schema}.production_lines pl
             JOIN {schema}.business_unit bu ON pl.business_unit_fk = bu.bu_id
-            JOIN {schema}.positions p ON pl.line_id = p.line_id
+            LEFT JOIN {schema}.positions p ON pl.line_id = p.line_id
             LEFT JOIN {schema}.position_status ps ON p.position_id = ps.position_id_fk
+            LEFT JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
             WHERE LOWER(bu.bu_name) = LOWER(%s)
             ORDER BY 
                 CASE WHEN LOWER(pl.name) = 'afe' THEN 1 ELSE 0 END ASC,
@@ -181,23 +184,103 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
         try:
             cursor.execute(query, (group_name,))
             rows = cursor.fetchall()
+            print(f"DEBUG: Retrieved {len(rows)} lines for group {group_name} (Raw)")
             
             results = []
             for r in rows:
-                is_visible = r[4] if r[4] is not None else False 
+                line_id = r[0]
+                line_name = r[1]
+                type_zone = r[2]
+                pos_id = r[3]
+                is_active = r[4]
+                side_id = r[5]
+                capacity = r[6]
+
+                # Auto-create position if missing
+                if pos_id is None:
+                    print(f"DEBUG: Missing position for Line {line_name} (ID: {line_id}). Creating default...")
+                    pos_id = self._create_default_position(line_id)
+                
+                # Auto-create Side if missing (requires position)
+                if side_id is None and pos_id is not None:
+                     print(f"DEBUG: Missing side for Position {pos_id}. Creating default Side...")
+                     side_id = self._create_default_side(pos_id)
+                     capacity = 1 # Default
+
+                is_visible = is_active if is_active is not None else False 
                 
                 results.append({
-                    "id": r[0],
-                    "name": r[1],
-                    "type_zone": r[2],
-                    "position_id": r[3],
+                    "id": line_id,
+                    "name": line_name,
+                    "type_zone": type_zone,
+                    "position_id": pos_id,
+                    "side_id": side_id,
+                    "capacity": capacity,
                     "is_visible": is_visible
                 })
+            
             return results
         finally:
             cursor.close()
 
+    def _create_default_position(self, line_id: int) -> int:
+        """Crea una posición por defecto para una línea y retorna su ID."""
+        cursor = self._get_cursor()
+        try:
+            insert_q = sql.SQL("""
+                INSERT INTO {schema}.positions (line_id, position_name)
+                VALUES (%s, 'Default')
+                RETURNING position_id
+            """).format(schema=sql.Identifier(self.schema))
+            cursor.execute(insert_q, (line_id,))
+            new_id = cursor.fetchone()[0]
+            cursor.connection.commit()
+            print(f"DEBUG: Created Position {new_id} for Line {line_id}")
+            return new_id
+        except Exception as e:
+            cursor.connection.rollback()
+            print(f"ERROR creating default position: {e}")
+            raise
+        finally:
+            cursor.close()
+
+    def _create_default_side(self, position_id: int) -> int:
+        """Crea un Side por defecto para una posición y retorna su ID (idempotente)."""
+        cursor = self._get_cursor()
+        try:
+            # 1. Check if already exists to avoid duplicates
+            check_q = sql.SQL("""
+                SELECT side_id FROM {schema}.tbl_sides_of_positions
+                WHERE position_id_fk = %s
+                LIMIT 1
+            """).format(schema=sql.Identifier(self.schema))
+            cursor.execute(check_q, (position_id,))
+            existing = cursor.fetchone()
+            
+            if existing:
+                print(f"DEBUG: Side already exists for Position {position_id} (ID: {existing[0]})")
+                return existing[0]
+
+            # 2. Insert if not exists
+            insert_q = sql.SQL("""
+                INSERT INTO {schema}.tbl_sides_of_positions (position_id_fk, side_title, employee_capacity)
+                VALUES (%s, 'BP', 1)
+                RETURNING side_id
+            """).format(schema=sql.Identifier(self.schema))
+            cursor.execute(insert_q, (position_id,))
+            new_id = cursor.fetchone()[0]
+            cursor.connection.commit()
+            print(f"DEBUG: Created Side {new_id} for Position {position_id}")
+            return new_id
+        except Exception as e:
+            cursor.connection.rollback()
+            print(f"ERROR creating default side: {e}")
+            raise
+        finally:
+            cursor.close()
+
     def update_position_status(self, position_id: int, is_true: bool) -> None:
+        print(f"DEBUG: update_position_status called for PID {position_id} with {is_true}")
         cursor = self._get_cursor()
         try:
             # Check if exists
@@ -209,6 +292,7 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
             res = cursor.fetchone()
 
             if res:
+                print(f"DEBUG: Record exists for PID {position_id}. Updating...")
                 # Update
                 q_update = sql.SQL("""
                     UPDATE {schema}.position_status 
@@ -217,6 +301,7 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                 """).format(schema=sql.Identifier(self.schema))
                 cursor.execute(q_update, (is_true, position_id))
             else:
+                print(f"DEBUG: No record for PID {position_id}. Inserting...")
                 # Insert
                 q_insert = sql.SQL("""
                     INSERT INTO {schema}.position_status (is_active, position_id_fk)
@@ -225,7 +310,9 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                 cursor.execute(q_insert, (is_true, position_id))
             
             cursor.connection.commit()
-        except Exception:
+            print(f"DEBUG: Commit successful for PID {position_id}")
+        except Exception as e:
+            print(f"ERROR in update_position_status for PID {position_id}: {e}")
             cursor.connection.rollback()
             raise
         finally:

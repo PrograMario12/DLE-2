@@ -43,8 +43,19 @@ def register_home(bp: Blueprint, user_service: UserService,
         line_int = request.cookies.get("line")
 
         # Si la cookie "line" existe, obtiene el nombre de la línea usando el servicio de usuario
-        line_name = production_lines_service.get_line_name_by_id(int(line_int)) if line_int else \
-            None
+        if line_int:
+            try:
+                lid = int(line_int)
+                if lid == -1:
+                    line_name = "Inyección"
+                elif lid == -2:
+                    line_name = "Metalizado"
+                else:
+                    line_name = production_lines_service.get_line_name_by_id(lid)
+            except:
+                line_name = None
+        else:
+            line_name = None
 
         # Renderiza la plantilla "index.html" con el nombre de la línea
         resp = make_response(
