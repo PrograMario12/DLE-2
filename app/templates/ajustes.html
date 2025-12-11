@@ -39,9 +39,11 @@ principal #}
         name="line"
         value="{{ line['id'] }}"
       >
-        {# Puedes decidir aquí cómo se forma el texto visible #} {% if
-        line['type_zone'] == 'línea' %} Línea {{ line['name'] }} {% else %} {{
-        line['name'] }} {% endif %}
+        {# Lógica de visualización del nombre #} {% if line['type_zone'] and
+        line['type_zone']|lower != 'no definida' %} {{
+        line['type_zone']|capitalize }} {{ "AFE" if line['name']|lower == "afe"
+        else line['name'] }} {% else %} {{ "AFE" if line['name']|lower == "afe"
+        else line['name'] }} {% endif %}
       </button>
       {% endfor %}
     </div>

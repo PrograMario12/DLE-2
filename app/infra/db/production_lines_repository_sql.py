@@ -19,6 +19,7 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
             "FROM {schema}.production_lines pl "
             "LEFT JOIN {schema}.business_unit bu ON pl.business_unit_fk = bu.bu_id "
             "ORDER BY bu.bu_name, "
+            "CASE WHEN LOWER(name) = 'afe' THEN 1 ELSE 0 END ASC, "
             "CAST(SUBSTRING(name FROM '^[0-9]+') AS INTEGER) ASC, "
             "name ASC"
         ).format(schema=sql.Identifier(self.schema))
@@ -123,7 +124,13 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
 
     def get_line_name_by_id(self, line_id: int) -> Optional[str]:
         query = sql.SQL("""
-            SELECT TRIM(CONCAT_WS(' ', type_zone, name)) AS full_name
+            SELECT 
+                CASE 
+                    WHEN LOWER(type_zone) = 'no definida' THEN 
+                        CASE WHEN LOWER(name) = 'afe' THEN UPPER(name) ELSE name END
+                    ELSE 
+                        TRIM(CONCAT_WS(' ', type_zone, CASE WHEN LOWER(name) = 'afe' THEN UPPER(name) ELSE name END))
+                END AS full_name
             FROM {schema}.production_lines
             WHERE line_id = %s
             LIMIT 1
