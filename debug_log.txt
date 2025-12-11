@@ -323,3 +323,30 @@ Detailed lines fetched for 'Metalizado': 7
 
 --- SELECT AREA ACTION: select_area_inyección ---
 Form Keys: ['all_positions', 'position_status_347', 'position_status_348', 'position_status_349', 'position_status_350', 'position_status_351', 'position_status_352', 'position_status_353', 'position_status_354', 'position_status_355', 'position_status_356', 'position_status_357', 'position_status_358', 'position_status_359', 'position_status_360', 'position_status_361', 'position_status_362', 'position_status_363', 'position_status_364', 'position_status_365', 'position_status_366', 'position_status_367', 'position_status_368', 'position_status_369', 'position_status_375', 'action', 'position_status_376', 'position_status_377', 'position_status_378', 'position_status_379', 'position_status_380', 'position_status_381', 'position_status_382']
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- SELECT AREA ACTION: select_area_metalizado ---
+Form Keys: ['all_positions', 'position_status_347', 'position_status_348', 'position_status_349', 'position_status_350', 'position_status_351', 'position_status_352', 'position_status_353', 'position_status_354', 'position_status_355', 'position_status_356', 'position_status_357', 'position_status_358', 'position_status_359', 'position_status_360', 'position_status_361', 'position_status_362', 'position_status_363', 'position_status_364', 'position_status_365', 'position_status_366', 'position_status_367', 'position_status_368', 'position_status_369', 'position_status_375', 'position_status_376', 'position_status_377', 'position_status_378', 'position_status_379', 'position_status_380', 'position_status_381', 'position_status_382', 'action']
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7
