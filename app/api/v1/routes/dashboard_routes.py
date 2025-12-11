@@ -8,6 +8,8 @@ dashboards_bp = Blueprint('dashboards', __name__, url_prefix='/dashboards')
 dashboard_service: DashboardService
 
 
+from itertools import groupby
+
 @dashboards_bp.route('/lines')
 def show_lines_dashboard():
     """
@@ -17,7 +19,16 @@ def show_lines_dashboard():
     """
 
     lines_data = dashboards_bp.dashboard_service.get_lines_summary()
-    return render_template('lines_dashboards.html', lines=lines_data)
+    
+    # Sort by area first (groupby needs sorted input)
+    # The SQL query already sorts by bu_name, but good to be safe.
+    lines_data.sort(key=lambda x: x.get('area', 'Sin Area'))
+    
+    grouped_lines = {}
+    for area, group in groupby(lines_data, key=lambda x: x.get('area', 'Sin Area')):
+        grouped_lines[area] = list(group)
+        
+    return render_template('lines_dashboards.html', grouped_lines=grouped_lines)
 
 @dashboards_bp.route('/stations')
 def show_stations_dashboard():

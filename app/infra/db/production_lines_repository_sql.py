@@ -43,13 +43,15 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
             SELECT pl.line_id,
                    pl.type_zone || ' ' || pl.name  as line_name,
                    COUNT(DISTINCT r.id_employee) as current_operators,
-                   SUM(s.employee_capacity)      as total_capacity
+                   SUM(s.employee_capacity)      as total_capacity,
+                   bu.bu_name
             FROM {schema}.production_lines pl
+            JOIN {schema}.business_unit bu ON pl.business_unit_fk = bu.bu_id
             LEFT JOIN {schema}.positions p ON pl.line_id = p.line_id
             LEFT JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
             LEFT JOIN {schema}.registers r ON s.side_id = r.position_id_fk AND r.exit_hour IS NULL
-            GROUP BY pl.line_id, line_name
-            ORDER BY pl.line_id;
+            GROUP BY pl.line_id, line_name, bu.bu_name
+            ORDER BY bu.bu_name, pl.line_id;
         """).format(schema=sql.Identifier(self.schema))
 
         cursor = self._get_cursor()
@@ -58,7 +60,13 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
         cursor.close()
 
         return [
-            {"id": row[0], "name": row[1], "operators": row[2], "capacity": row[3]}
+            {
+                "id": row[0], 
+                "name": row[1], 
+                "operators": row[2], 
+                "capacity": row[3],
+                "area": row[4] # Added area
+            }
             for row in results
         ]
 
