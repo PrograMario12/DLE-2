@@ -140,3 +140,5 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
             raise
         finally:
             cur.close()
+
+

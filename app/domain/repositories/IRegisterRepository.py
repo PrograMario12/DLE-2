@@ -22,3 +22,5 @@ class IRegisterRepository(ABC):
         Cierra registro abierto si existe, o crea uno nuevo.
         """
         pass
+
+

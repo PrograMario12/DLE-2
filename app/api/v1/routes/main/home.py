@@ -58,3 +58,4 @@ def register_home(bp: Blueprint, user_service: UserService,
         resp.set_cookie("employee_number", "0", httponly=True, samesite="Lax")
 
         return resp
+

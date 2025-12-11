@@ -77,3 +77,4 @@ class UserService:
 
     def get_line_name_by_id(self, line_int: int) -> Optional[str]:
         return self._production_line_repo.get_line_name_by_id(line_int)
+
