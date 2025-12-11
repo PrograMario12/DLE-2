@@ -46,7 +46,8 @@ def register_successful(
             return redirect(url_for("main.home"))
 
         side_id = request.args.get("id", type=int)
-        print("En successful el side_id es:", side_id)
+        logger.info("EN SUCCESSFUL: side_id recibido = %s", side_id)
+        
         if side_id:
             try:
                 user_service.register_entry_or_assignment(
@@ -54,6 +55,7 @@ def register_successful(
                     side_id=side_id,
                 )
             except Exception as e:
+                logger.error("Error al registrar entrada: %s", e)
                 traceback.print_exc()
                 return redirect(url_for("main.home"))
         else:

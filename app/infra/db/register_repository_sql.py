@@ -86,59 +86,47 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
             now_time = datetime.now().strftime("%H:%M:%S")
             today_date = datetime.now().strftime("%Y-%m-%d")
 
-            # Escenario 1: El usuario tiene un registro abierto.
-            # Acción esperada: Cerrar ese registro (Salida).
+            # Si hay un registro abierto, lo cerramos primero
             if open_row:
                 q_close = sql.SQL("""
                     UPDATE {schema}.registers
                     SET exit_hour = %s WHERE id_register = %s
                 """).format(schema=sql.Identifier(self.schema))
                 cur.execute(q_close, (now_time, open_row[0]))
-                cur.connection.commit()
-                # Nota: Si se quisiera permitir "cambio de estación" directo, aquí se podría
-                # verificar si side_id > 0 y crear un nuevo registro inmediatamente.
-                # Por ahora, asumimos que el flujo es estricto: Entrar -> Salir -> Entrar.
-                return
+                # NO hacemos return aquí para permitir el "Clock In" inmediato en la nueva estación
+                print(f"DEBUG_REPO: Closed previous register {open_row[0]}")
 
-            # Escenario 2: El usuario NO tiene registro abierto.
-            # Acción esperada: Crear un nuevo registro (Entrada).
-            # Validamos que se haya proporcionado un side_id válido para entrar.
-            if side_id <= 0:
-                 # Si no hay side_id y no hay registro abierto, no se puede hacer nada (o es un error).
-                 # Sin embargo, para evitar crashes si la UI manda 0, simplemente retornamos.
-                 # Opcionalmente podríamos lanzar un error: raise ValueError("Se requiere una estación para registrar entrada")
-                 return
+            # Si se proporcionó un side_id válido, creamos el NUEVO registro de entrada
+            if side_id > 0:
+                q_side = sql.SQL("""
+                    SELECT p.line_id, p.position_id
+                    FROM {schema}.tbl_sides_of_positions s
+                    JOIN {schema}.positions p ON p.position_id = s.position_id_fk
+                    WHERE s.side_id = %s
+                    LIMIT 1
+                """).format(schema=sql.Identifier(self.schema))
+                cur.execute(q_side, (side_id,))
+                side_row = cur.fetchone()
+                
+                if not side_row:
+                    raise ValueError(f"Side con ID {side_id} no encontrado")
 
-            q_side = sql.SQL("""
-                SELECT p.line_id, p.position_id
-                FROM {schema}.tbl_sides_of_positions s
-                JOIN {schema}.positions p ON p.position_id = s.position_id_fk
-                WHERE s.side_id = %s
-                LIMIT 1
-            """).format(schema=sql.Identifier(self.schema))
-            cur.execute(q_side, (side_id,))
-            side_row = cur.fetchone()
+                line_id, position_id = side_row[0], side_row[1]
+
+                q_insert = sql.SQL("""
+                    INSERT INTO {schema}.registers
+                        (id_employee, date_register, entry_hour, line_id_fk, position_id_fk)
+                    VALUES (%s, %s, %s, %s, %s)
+                    RETURNING id_register
+                """).format(schema=sql.Identifier(self.schema))
+                cur.execute(q_insert, (user_id, today_date, now_time, line_id, position_id))
+                new_id = cur.fetchone()[0]
+                print(f"DEBUG_REPO: Inserted new register with ID: {new_id}")
             
-            if not side_row:
-                raise ValueError(f"Side con ID {side_id} no encontrado")
-
-            line_id, position_id = side_row[0], side_row[1]
-
-            q_insert = sql.SQL("""
-                INSERT INTO {schema}.registers
-                    (id_employee, date_register, entry_hour, line_id_fk, position_id_fk)
-                VALUES (%s, %s, %s, %s, %s)
-                RETURNING id_register
-            """).format(schema=sql.Identifier(self.schema))
-            cur.execute(q_insert, (user_id, today_date, now_time, line_id, position_id))
-            new_id = cur.fetchone()[0]
             cur.connection.commit()
-            print(f"DEBUG_REPO: Inserted new register with ID: {new_id}")
 
         except Exception:
             cur.connection.rollback()
             raise
         finally:
             cur.close()
-
-
