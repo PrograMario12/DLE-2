@@ -77,4 +77,8 @@ class UserService:
 
     def get_line_name_by_id(self, line_int: int) -> Optional[str]:
         return self._production_line_repo.get_line_name_by_id(line_int)
+    def get_lines_with_position_status(self, group_name: str) -> list[dict]:
+        return self._production_line_repo.get_lines_with_position_status(group_name)
 
+    def update_position_status(self, position_id: int, is_true: bool) -> None:
+        self._production_line_repo.update_position_status(position_id, is_true)

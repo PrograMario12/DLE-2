@@ -157,3 +157,76 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
             return cursor.fetchone()
         finally:
             cursor.close()
+
+    def get_lines_with_position_status(self, group_name: str) -> list[dict]:
+        query = sql.SQL("""
+            SELECT 
+                pl.line_id, 
+                pl.name, 
+                pl.type_zone,
+                p.position_id,
+                ps.is_active
+            FROM {schema}.production_lines pl
+            JOIN {schema}.business_unit bu ON pl.business_unit_fk = bu.bu_id
+            JOIN {schema}.positions p ON pl.line_id = p.line_id
+            LEFT JOIN {schema}.position_status ps ON p.position_id = ps.position_id_fk
+            WHERE LOWER(bu.bu_name) = LOWER(%s)
+            ORDER BY 
+                CASE WHEN LOWER(pl.name) = 'afe' THEN 1 ELSE 0 END ASC,
+                CAST(SUBSTRING(pl.name FROM '^[0-9]+') AS INTEGER) ASC, 
+                pl.name ASC
+        """).format(schema=sql.Identifier(self.schema))
+
+        cursor = self._get_cursor()
+        try:
+            cursor.execute(query, (group_name,))
+            rows = cursor.fetchall()
+            
+            results = []
+            for r in rows:
+                is_visible = r[4] if r[4] is not None else False 
+                
+                results.append({
+                    "id": r[0],
+                    "name": r[1],
+                    "type_zone": r[2],
+                    "position_id": r[3],
+                    "is_visible": is_visible
+                })
+            return results
+        finally:
+            cursor.close()
+
+    def update_position_status(self, position_id: int, is_true: bool) -> None:
+        cursor = self._get_cursor()
+        try:
+            # Check if exists
+            q_check = sql.SQL("""
+                SELECT position_status_id FROM {schema}.position_status 
+                WHERE position_id_fk = %s
+            """).format(schema=sql.Identifier(self.schema))
+            cursor.execute(q_check, (position_id,))
+            res = cursor.fetchone()
+
+            if res:
+                # Update
+                q_update = sql.SQL("""
+                    UPDATE {schema}.position_status 
+                    SET is_active = %s 
+                    WHERE position_id_fk = %s
+                """).format(schema=sql.Identifier(self.schema))
+                cursor.execute(q_update, (is_true, position_id))
+            else:
+                # Insert
+                q_insert = sql.SQL("""
+                    INSERT INTO {schema}.position_status (is_active, position_id_fk)
+                    VALUES (%s, %s)
+                """).format(schema=sql.Identifier(self.schema))
+                cursor.execute(q_insert, (is_true, position_id))
+            
+            cursor.connection.commit()
+        except Exception:
+            cursor.connection.rollback()
+            raise
+        finally:
+            cursor.close()

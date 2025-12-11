@@ -31,6 +31,80 @@ principal #}
       <span class="accordion-icon"></span>
     </summary>
 
+    {% if group|lower in ['inyección', 'metalizado'] %}
+    <div class="checkbox-group">
+      {% for line in lines_in_group %}
+      <div class="check-group">
+        <span class="label-right">
+          {% if line['type_zone'] and line['type_zone']|lower != 'no definida'
+          %} {{ line['type_zone']|capitalize }} {{ "AFE" if line['name']|lower
+          == "afe" else line['name'] }} {% else %} {{ "AFE" if
+          line['name']|lower == "afe" else line['name'] }} {% endif %}
+        </span>
+
+        <input
+          type="hidden"
+          name="all_positions"
+          value="{{ line['position_id'] }}"
+        />
+
+        {% if line['name']|lower == 'afe' %}
+        <input
+          type="hidden"
+          name="position_status_{{ line['position_id'] }}"
+          value="on"
+        />
+        <input
+          type="checkbox"
+          id="pos_{{ line['position_id'] }}_{{ loop.index }}"
+          class="toggle-input"
+          checked
+          disabled
+        />
+        <label
+          for="pos_{{ line['position_id'] }}_{{ loop.index }}"
+          class="label-c"
+          style="cursor: not-allowed; opacity: 0.7"
+          >Toggle</label
+        >
+        {% else %} <input type="checkbox" id="pos_{{ line['position_id'] }}_{{
+        loop.index }}" class="toggle-input" name="position_status_{{
+        line['position_id'] }}" {% if line['is_visible'] %}checked{% endif %}
+        />
+        <label
+          for="pos_{{ line['position_id'] }}_{{ loop.index }}"
+          class="label-c"
+          >Toggle</label
+        >
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div
+      style="
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin: 2rem 0;
+      "
+    >
+      <button
+        type="submit"
+        name="action"
+        value="save_positions"
+        class="button-4"
+        style="
+          background-color: #6c757d;
+          color: white;
+          width: 50%;
+          border-color: #6c757d;
+        "
+      >
+        Guardar selección
+      </button>
+    </div>
+    {% else %}
     <div class="settings-group-grid">
       {% for line in lines_in_group %}
       <button
@@ -47,6 +121,7 @@ principal #}
       </button>
       {% endfor %}
     </div>
+    {% endif %}
   </details>
   {% endfor %}
 

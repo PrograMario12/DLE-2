@@ -40,26 +40,50 @@ def create_settings_bp(user_service: UserService) -> Blueprint:
             - En POST: Redirige a la página principal con la línea
             seleccionada almacenada en una cookie.
         """
-        if request.method == 'POST':  # Se verifica si la petición es POST para saber si el usuario envió datos.
-            selected_line = request.form.get(
-                'line')  # Se obtiene la línea seleccionada del formulario para procesar la preferencia del usuario.
+        if request.method == 'POST':
+            action = request.form.get('action')
 
-            response = make_response(redirect(url_for(
-                'main.home')))  # Se prepara una respuesta que redirige al usuario, indicando que la acción fue exitosa.
+            if action == 'save_positions':
+                # Logic to update toggles
+                all_ids = request.form.getlist('all_positions')
+                for pid in all_ids:
+                    is_checked = request.form.get(f'position_status_{pid}') is not None
+                    user_service.update_position_status(int(pid), is_checked)
+                
+                # Reload page to show changes
+                return redirect(url_for('settings.configure_line_and_station'))
 
-            if selected_line:  # Se comprueba que el usuario haya seleccionado una línea para evitar guardar valores nulos.
-                response.set_cookie('line',
-                                    selected_line)  # Se almacena la selección en una cookie para recordar la preferencia en futuras visitas.
+            # Fallback / Default: Line Selection
+            selected_line = request.form.get('line')
+            response = make_response(redirect(url_for('main.home')))
 
-            return response  # Se retorna la respuesta para finalizar el flujo POST y redirigir al usuario.
+            if selected_line:
+                response.set_cookie('line', selected_line)
 
-        # Si la petición es GET, se ejecuta el siguiente bloque:
+            return response
+
+        # GET Logic
         available_lines = user_service.get_all_lines_for_settings()
 
         grouped_lines: dict[str, list[dict]] = {}
         for line in available_lines:
             group = line.get("group") or "Otras"
             grouped_lines.setdefault(group, []).append(line)
+
+        # Update specific groups with detailed status
+        # Note: keys in grouped_lines come from DB (business_unit.bu_name)
+        # We need to match precise naming.
+        # Typically: 'Inyección', 'Metalizado', 'Ensamble'
+        for special_group in ['Inyección', 'Metalizado']:
+            # Check if group exists in fetched lines (case sensitive check usually required for dict keys)
+            # We try to find the key case-insensitively just in case
+            found_key = next((k for k in grouped_lines.keys() if k.lower() == special_group.lower()), None)
+            
+            if found_key:
+                # Fetch enriched data
+                detailed_lines = user_service.get_lines_with_position_status(special_group)
+                if detailed_lines:
+                    grouped_lines[found_key] = detailed_lines
 
         return render_template("ajustes.html", grouped_lines=grouped_lines)
 

@@ -184,3 +184,79 @@
     padding: 1rem;
   }
 }
+/* Toggle / Checkbox Styles */
+.checkbox-group {
+  display: grid !important; /* Force grid over inline styles if any */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  background-color: var(--color-bg-light);
+  align-items: center;
+}
+
+.check-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-white);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.check-group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.label-right {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+  margin-right: 1rem;
+}
+
+/* Hide the default checkbox */
+.toggle-input {
+  display: none;
+}
+
+/* The toggle switch container */
+.label-c {
+  width: 60px;
+  height: 32px;
+  background-color: #888b8d; /* Default Gray */
+  display: block;
+  border-radius: 32px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0; /* Prevent shrinking */
+  text-indent: -9999px;
+  overflow: hidden;
+}
+
+/* The circle knob */
+.label-c::after {
+  content: "";
+  width: 26px;
+  height: 26px;
+  background-color: #ffffff;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  border-radius: 50%;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Checked State - Yellow/Orange (Magna-ish or Warning-ish) */
+/* Using #ffc107 (Amber) or #f9b115 closer to screenshot */
+.toggle-input:checked + .label-c {
+  background-color: #ffc107;
+}
+
+.toggle-input:checked + .label-c::after {
+  transform: translateX(28px);
+}

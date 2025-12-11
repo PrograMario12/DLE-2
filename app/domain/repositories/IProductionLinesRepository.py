@@ -33,3 +33,16 @@ class IProductionLinesRepository(ABC):
     def get_line_by_id(self, line_id: int) -> Optional[dict]:
         """Obtiene los detalles de una línea dado su ID."""
         pass
+
+    @abstractmethod
+    def get_lines_with_position_status(self, group_name: str) -> list[dict]:
+        """
+        Obtiene líneas de un grupo con el estado de sus posiciones.
+        Útil para áreas como Inyección y Metalizado donde se configuran visibilidades.
+        """
+        pass
+
+    @abstractmethod
+    def update_position_status(self, position_id: int, is_true: bool) -> None:
+        """Actualiza o inserta el estado (visible/no visible) de una posición."""
+        pass
