@@ -60,10 +60,24 @@ def show_area_dashboard(area_id):
     
     if not filtered_lines:
          return "Area not found or empty", 404
-         
+
+    # Separate AFE lines
+    main_lines = []
+    afe_lines = []
+    
+    for l in filtered_lines:
+        lname = (l.get('name') or '').lower()
+        if 'afe' in lname:
+             afe_lines.append(l)
+        else:
+             main_lines.append(l)
+
     area_name = filtered_lines[0].get('area')
     
-    return render_template('area_lines_dashboard.html', lines=filtered_lines, area_name=area_name)
+    return render_template('area_lines_dashboard.html', 
+                          lines=main_lines, 
+                          afe_lines=afe_lines,
+                          area_name=area_name)
 
 @dashboards_bp.route('/stations')
 def show_stations_dashboard():

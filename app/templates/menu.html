@@ -72,7 +72,8 @@ Date: [2024-07-16]
         >
           <div class="card-header">
             <h3 class="station-name">
-              {{ card.position_name }} {{ side.side_title }}
+              {{ card.position_name }} {% if 'BP' not in side.side_title and
+              'bp' not in side.side_title %}{{ side.side_title }}{% endif %}
             </h3>
           </div>
 
@@ -121,7 +122,8 @@ Date: [2024-07-16]
           >
             <div class="card-header">
               <h3 class="station-name">
-                {{ card.position_name }} {{ side.side_title }}
+                {{ card.position_name }} {% if 'BP' not in side.side_title and
+                'bp' not in side.side_title %}{{ side.side_title }}{% endif %}
               </h3>
             </div>
             <div class="card-body">

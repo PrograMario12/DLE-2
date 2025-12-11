@@ -28,7 +28,7 @@ area_name }} {% endblock %} {% block styles %}
       href="{{ url_for('dashboards.show_stations_dashboard') }}?line={{ line.id }}"
       class="card-dashboard capitalize {{line.class}}"
     >
-      <div>
+      <div class="card-main-content">
         <h2>{{ line.name }}</h2>
         <h1>
           {{ line.percentage }}% {% if line.status == False %}
@@ -36,8 +36,41 @@ area_name }} {% endblock %} {% block styles %}
           {% endif %}
         </h1>
       </div>
+      <div class="card-footer">
+        <span class="action-text">Ver detalle</span>
+        <span class="action-icon">➜</span>
+      </div>
     </a>
     {% endfor %}
   </div>
+
+  {% if afe_lines %}
+  <div class="menu-separator" style="margin-top: 3rem; margin-bottom: 2rem">
+    <span>LÍNEAS AFE</span>
+  </div>
+
+  <div class="area-grid">
+    {% for line in afe_lines %}
+    <a
+      href="{{ url_for('dashboards.show_stations_dashboard') }}?line={{ line.id }}"
+      class="card-dashboard capitalize {{line.class}}"
+      style="border: 2px solid #e2e8f0"
+    >
+      <div class="card-main-content">
+        <h2>{{ line.name }}</h2>
+        <h1>
+          {{ line.percentage }}% {% if line.status == False %}
+          <span class="warning-icon">⚠️</span>
+          {% endif %}
+        </h1>
+      </div>
+      <div class="card-footer">
+        <span class="action-text">Ver detalle</span>
+        <span class="action-icon">➜</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

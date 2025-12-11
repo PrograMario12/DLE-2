@@ -41,7 +41,10 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
     def get_all_lines_summary(self) -> list[dict]:
         query = sql.SQL("""
             SELECT pl.line_id,
-                   pl.type_zone || ' ' || pl.name  as line_name,
+                   CASE 
+                        WHEN LOWER(pl.type_zone) LIKE 'no definida%' OR pl.type_zone IS NULL THEN pl.name 
+                        ELSE pl.type_zone || ' ' || pl.name 
+                   END as line_name,
                    COUNT(DISTINCT r.id_employee) as current_operators,
                    SUM(s.employee_capacity)      as total_capacity,
                    bu.bu_name,
@@ -52,7 +55,9 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
             LEFT JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
             LEFT JOIN {schema}.registers r ON p.position_id = r.position_id_fk AND r.exit_hour IS NULL
             GROUP BY pl.line_id, line_name, bu.bu_name, bu.bu_id
-            ORDER BY bu.bu_name, pl.line_id;
+            ORDER BY bu.bu_name, 
+                     CAST(SUBSTRING(pl.name FROM '[0-9]+') AS INTEGER) ASC NULLS LAST,
+                     pl.name ASC;
         """).format(schema=sql.Identifier(self.schema))
 
         cursor = self._get_cursor()
