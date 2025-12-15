@@ -392,3 +392,11 @@ Looking for 'Metalizado' -> Found key: 'metalizado'
 Detailed lines fetched for 'Metalizado': 7
 
 --- GET REQUEST ---
+
+--- GET REQUEST ---
+Available lines count: 62
+Groups found: ['antifog', 'ensamble', 'inyección', 'metalizado']
+Looking for 'Inyección' -> Found key: 'inyección'
+Detailed lines fetched for 'Inyección': 29
+Looking for 'Metalizado' -> Found key: 'metalizado'
+Detailed lines fetched for 'Metalizado': 7

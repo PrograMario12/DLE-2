@@ -82,29 +82,23 @@
     </div>
 
     <nav class="admin-actions">
-      <button
-        class="btn-industrial"
-        type="button"
-        onclick="location.href = '{{ url_for('main.employees_list') }}';"
-      >
+      <a class="btn-industrial" href="{{ url_for('main.employees_list') }}">
         👤 Personal
-      </button>
+      </a>
 
-      <button
+      <a
         class="btn-industrial"
-        type="button"
-        onclick="location.href = '{{ url_for('settings.configure_line_and_station') }}';"
+        href="{{ url_for('settings.configure_line_and_station') }}"
       >
         🛠️ Cambiar línea de producción
-      </button>
+      </a>
 
-      <button
+      <a
         class="btn-industrial"
-        type="button"
-        onclick="location.href = '{{ url_for('dashboards.show_lines_dashboard') }}';"
+        href="{{ url_for('dashboards.show_lines_dashboard') }}"
       >
         📊 Tableros
-      </button>
+      </a>
     </nav>
   </footer>
 
