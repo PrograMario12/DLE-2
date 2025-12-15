@@ -126,8 +126,8 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
         query = sql.SQL("""
             SELECT e.nombre_empleado, e.apellidos_empleado
             FROM {schema}.registers r
-            JOIN {schema}.table_empleados_tarjeta e ON r.id_employee = e.numero_tarjeta
-            WHERE r.position_id_fk = %s AND r.exit_hour IS NULL;
+            JOIN {schema}.table_empleados_tarjeta e ON r.id_employee = CAST(e.numero_tarjeta AS BIGINT)
+            WHERE r.side_id_fk = %s AND r.exit_hour IS NULL;
         """).format(schema=sql.Identifier(self.schema))
 
         cursor = self._get_cursor()

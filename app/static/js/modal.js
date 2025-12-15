@@ -18,20 +18,39 @@ function openModal(id) {
     .then(async (response) => {
       if (!response.ok) {
         const text = await response.text().catch(() => "");
-        throw new Error(
-          `Error ${response.status}: ${text || "No encontrado"}`
-        );
+        throw new Error(`Error ${response.status}: ${text || "No encontrado"}`);
       }
       return response.json();
     })
     .then((data) => {
       var modalContent = document.getElementById("modal-content");
-      // Render sencillo de lista
-      var htmlContent = "<h3>Operadores activos</h3><ul>";
-      (Array.isArray(data) ? data : []).forEach((item) => {
-        htmlContent += "<li><p>" + item + "</p></li>";
-      });
-      htmlContent += "</ul>";
+
+      // Industrial Render
+      var htmlContent = `
+        <div class="modal-header">
+          <h2>Operadores activos</h2>
+        </div>
+        <div class="modal-body">
+          <ul class="operator-list">
+      `;
+
+      var listItems = Array.isArray(data) ? data : [];
+      if (listItems.length === 0) {
+        htmlContent += `<li class="operator-item" style="justify-content:center; color: #a0aec0;">No hay operadores activos</li>`;
+      } else {
+        listItems.forEach((item) => {
+          htmlContent += `
+              <li class="operator-item">
+                <i class="fi fi-sr-user operator-icon"></i>
+                <span>${item}</span>
+              </li>`;
+        });
+      }
+
+      htmlContent += `
+          </ul>
+        </div>
+      `;
       if (modalContent) modalContent.innerHTML = htmlContent;
       if (modal) modal.style.display = "block";
     })
