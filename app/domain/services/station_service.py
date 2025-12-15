@@ -33,23 +33,28 @@ class StationService:
         """
         user = self._user_repo.find_user_by_card_number(card_number)
         if not user:
-            return {"error": "User not found"}
+             # Basic handling for unknown user
+             full_name = "Usuario desconocido"
+             user_id_str = str(card_number)
+        else:
+             full_name = user.full_name
+             user_id_str = f"{user.id}.png"
 
         last_register = self._register_repo.get_last_register_type(card_number)
         station_info = self._register_repo.get_last_station_for_user(card_number)
 
-        line_name = station_info.get("line_name") if station_info else None
-        station_name = station_info.get("station_name") if station_info else None
+        line_name = station_info.get("line_name") if station_info else "Línea desconocida"
+        station_name = station_info.get("station_name") if station_info else "Estación desconocida"
 
         if last_register == 'Exit':
             return {
-                "user": user.full_name, "type": "Entrada",
-                "color": "employee-ok", "image": f"{user.id}.png",
+                "user": full_name, "type": "Entrada",
+                "color": "employee-ok", "image": user_id_str if user else None,
                 "line_name": line_name, "station_name": station_name
             }
 
         return {
-            "user": user.full_name, "type": "Salida",
-            "color": "employee-warning", "image": f"{user.id}.png",
+            "user": full_name, "type": "Salida",
+            "color": "employee-warning", "image": user_id_str if user else None,
             "line_name": line_name, "station_name": station_name
         }
