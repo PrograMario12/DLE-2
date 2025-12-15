@@ -128,7 +128,9 @@ principal #}
     <button type="button" class="button-4" id="btnGeneralExit">
       Salida general de línea
     </button>
-    <button class="button-4" disabled>Configuración de estación</button>
+    <button type="button" class="button-4" id="btnStationConfig">
+      Configuración de estación
+    </button>
   </div>
 </form>
 
@@ -182,6 +184,41 @@ principal #}
       </button>
       <button class="btn-modal btn-danger" id="btnExecuteLogout">
         CONTINUAR
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 3: Admin Auth -->
+<div id="modalAuth" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">🔒 ACCESO RESTRINGIDO</div>
+    <div class="modal-body">
+      <p>Esta sección modifica la configuración operativa del sistema.</p>
+      <p style="margin-top: 1rem">Ingresa la contraseña para continuar:</p>
+      <input
+        type="password"
+        id="inputAdminPass"
+        class="modal-select"
+        placeholder="********"
+        style="text-align: center"
+      />
+      <p
+        id="authError"
+        style="
+          color: var(--color-primary);
+          font-weight: bold;
+          margin-top: 1rem;
+          display: none;
+        "
+      >
+        Contraseña incorrecta.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" id="btnCloseAuth">Cancelar</button>
+      <button class="btn-modal btn-confirm" id="btnVerifyAuth">
+        Verificar
       </button>
     </div>
   </div>
@@ -285,7 +322,7 @@ principal #}
       btnConfirmSelection.addEventListener("click", () => {
         selectedLineId = dropdown.value;
         if (!selectedLineId) {
-          alert("Por favor selecciona una línea.");
+          showToast("Por favor selecciona una línea.", false);
           return;
         }
         selectedLineName = dropdown.options[dropdown.selectedIndex].text.trim();
@@ -345,6 +382,68 @@ principal #}
             console.error(err);
             btnExecuteLogout.disabled = false;
             btnExecuteLogout.textContent = "CONTINUAR";
+          });
+      });
+    }
+
+    // --- Station Config Auth Logic ---
+    const btnStationConfig = document.getElementById("btnStationConfig");
+    const modalAuth = document.getElementById("modalAuth");
+    const btnCloseAuth = document.getElementById("btnCloseAuth");
+    const btnVerifyAuth = document.getElementById("btnVerifyAuth");
+    const inputAdminPass = document.getElementById("inputAdminPass");
+    const authError = document.getElementById("authError");
+
+    if (btnStationConfig) {
+      btnStationConfig.addEventListener("click", () => {
+        modalAuth.style.display = "flex";
+        inputAdminPass.value = "";
+        authError.style.display = "none";
+        inputAdminPass.focus();
+      });
+    }
+
+    if (btnCloseAuth) {
+      btnCloseAuth.addEventListener("click", () => {
+        modalAuth.style.display = "none";
+      });
+    }
+
+    if (btnVerifyAuth) {
+      btnVerifyAuth.addEventListener("click", () => {
+        const password = inputAdminPass.value;
+        if (!password) {
+          authError.textContent = "Ingresa la contraseña";
+          authError.style.display = "block";
+          return;
+        }
+
+        btnVerifyAuth.disabled = true;
+        btnVerifyAuth.textContent = "Verificando...";
+
+        fetch("{{ url_for('settings.verify_admin') }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: password }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              // Redirect
+              window.location.href = data.redirect;
+            } else {
+              authError.textContent = "Contraseña incorrecta. Acceso denegado.";
+              authError.style.display = "block";
+              btnVerifyAuth.disabled = false;
+              btnVerifyAuth.textContent = "Verificar";
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            authError.textContent = "Error de conexión.";
+            authError.style.display = "block";
+            btnVerifyAuth.disabled = false;
+            btnVerifyAuth.textContent = "Verificar";
           });
       });
     }

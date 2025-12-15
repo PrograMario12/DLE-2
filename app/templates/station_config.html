@@ -1,0 +1,485 @@
+{% extends 'base/base_dashboards.html' %} {% block title %} Configuración de
+Estación {% endblock %} {% block styles %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/ajustes_styles.css') }}"
+/>
+<style>
+  /* Local Overrides for Config Layout */
+  .config-layout {
+    display: flex;
+    height: calc(100vh - 100px); /* Adjust based on header */
+    gap: 2rem;
+    padding: 2rem;
+  }
+
+  /* Sidebar */
+  .config-sidebar {
+    width: 300px;
+    background-color: var(--color-white);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-industrial);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-header {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    padding: 1.5rem;
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .sidebar-list {
+    flex: 1;
+    overflow-y: auto;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar-item {
+    padding: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .sidebar-item:hover {
+    background-color: #f0f0f0;
+  }
+
+  .sidebar-item.active {
+    background-color: var(--color-accent);
+    color: white;
+  }
+
+  /* Main Content */
+  .config-main {
+    flex: 1;
+    background-color: var(--color-bg-light);
+    border: var(--border-thick);
+    box-shadow: var(--shadow-industrial);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  .main-header {
+    border-bottom: 2px solid var(--color-black);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .breadcrumb {
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--color-gray);
+  }
+
+  .breadcrumb span.current {
+    color: var(--color-black);
+    text-decoration: underline;
+    text-decoration-color: var(--color-primary);
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+
+  /* Config Card */
+  .config-card {
+    background-color: var(--color-white);
+    border: var(--border-thick);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px;
+    box-shadow: var(--shadow-industrial);
+    transition: transform 0.1s;
+    cursor: pointer;
+  }
+
+  .config-card:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000;
+  }
+
+  .card-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .card-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+  }
+
+  .card-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #000;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .btn-icon:hover {
+    background-color: var(--color-accent);
+    color: white;
+  }
+
+  .add-card {
+    border: 2px dashed #888;
+    background-color: transparent;
+    box-shadow: none;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+  }
+
+  .add-card:hover {
+    border-color: var(--color-black);
+    color: var(--color-black);
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  .add-icon {
+    font-size: 4rem;
+    font-weight: 100;
+  }
+</style>
+{% endblock %} {% block header %}
+<h1>Configuración de Estación</h1>
+<div style="font-size: 1.2rem; margin-top: 0.5rem; color: #555">
+  Administración de jerarquía operativa
+</div>
+{% endblock %} {% block content %}
+<div class="config-layout">
+  <!-- Left: Sidebar (Areas) -->
+  <aside class="config-sidebar">
+    <div class="sidebar-header">Áreas</div>
+    <ul class="sidebar-list" id="areaList">
+      <!-- Populated by JS -->
+      <li class="sidebar-item" style="justify-content: center">Cargando...</li>
+    </ul>
+    <div
+      class="sidebar-item add-area-btn"
+      id="btnAddArea"
+      style="justify-content: center; background: #eee; font-weight: 800"
+    >
+      + NUEVA ÁREA
+    </div>
+  </aside>
+
+  <!-- Right: Main Content (Lines -> Stations -> Positions) -->
+  <main class="config-main">
+    <div class="main-header">
+      <div class="breadcrumb" id="breadcrumb">
+        <!-- Populated by JS e.g. INYECCIÓN > LÍNEAS -->
+        Selecciona un área
+      </div>
+    </div>
+
+    <div class="grid-container" id="contentGrid">
+      <!-- Tiles go here -->
+      <div
+        style="
+          grid-column: 1/-1;
+          text-align: center;
+          color: #888;
+          font-size: 1.4rem;
+          margin-top: 5rem;
+        "
+      >
+        👈 Selecciona un área para comenzar la configuración.
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Config Modal (Generic for Add/Edit) -->
+<div id="modalConfig" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header" id="modalConfigTitle">NUEVO ITEM</div>
+    <div class="modal-body">
+      <input type="hidden" id="configItemId" />
+      <input type="hidden" id="configItemType" />
+      <input type="hidden" id="configParentId" />
+
+      <label
+        class="warning-text"
+        style="text-align: left; color: #000; margin-bottom: 0.5rem"
+        >Nombre:</label
+      >
+      <input
+        type="text"
+        id="configItemName"
+        class="modal-select"
+        placeholder="Ej. Línea 1"
+      />
+
+      <!-- Conditional Inputs -->
+      <div id="extraInputs" style="margin-top: 1rem"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" id="btnConfigCancel">
+        Cancelar
+      </button>
+      <button class="btn-modal btn-confirm" id="btnConfigSave">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // State
+    let hierarchyData = {};
+    let currentArea = null;
+    let currentLine = null;
+    let currentLevel = "areas"; // areas, lines, stations
+
+    const areaList = document.getElementById("areaList");
+    const contentGrid = document.getElementById("contentGrid");
+    const breadcrumb = document.getElementById("breadcrumb");
+
+    // Modal Elements
+    const modalConfig = document.getElementById("modalConfig");
+    const modalTitle = document.getElementById("modalConfigTitle");
+    const itemName = document.getElementById("configItemName");
+    const btnSave = document.getElementById("btnConfigSave");
+    const btnCancel = document.getElementById("btnConfigCancel");
+
+    // Initial Load
+    fetchHierarchy();
+
+    function fetchHierarchy() {
+      fetch("{{ url_for('settings.get_hierarchy') }}")
+        .then((r) => r.json())
+        .then((data) => {
+          hierarchyData = data.hierarchy;
+          renderAreas();
+        })
+        .catch((err) => {
+          areaList.innerHTML =
+            '<li class="sidebar-item" style="color:red">Error cargando datos</li>';
+          console.error(err);
+        });
+    }
+
+    function renderAreas() {
+      areaList.innerHTML = "";
+      Object.keys(hierarchyData).forEach((area) => {
+        const li = document.createElement("li");
+        li.className = "sidebar-item";
+        li.textContent = area;
+        li.onclick = () => selectArea(area, li);
+        areaList.appendChild(li);
+      });
+    }
+
+    function selectArea(areaName, liElement) {
+      currentArea = areaName;
+      currentLine = null;
+      currentLevel = "lines";
+
+      // Highlight logic
+      document
+        .querySelectorAll(".sidebar-item")
+        .forEach((el) => el.classList.remove("active"));
+      if (liElement) liElement.classList.add("active");
+
+      updateBreadcrumb();
+      renderLines(areaName);
+    }
+
+    function renderLines(areaName) {
+      contentGrid.innerHTML = "";
+      const lines = hierarchyData[areaName] || [];
+
+      lines.forEach((line) => {
+        const card = createCard(line.name, "Línea de Producción", () =>
+          selectLine(line)
+        );
+        contentGrid.appendChild(card);
+      });
+
+      // Add New Line Button
+      const addCard = createAddCard("Nueva Línea", () => openModal("add_line"));
+      contentGrid.appendChild(addCard);
+    }
+
+    function selectLine(lineObj) {
+      currentLine = lineObj;
+      currentLevel = "stations";
+      updateBreadcrumb();
+      renderStations(lineObj);
+    }
+
+    function renderStations(lineObj) {
+      contentGrid.innerHTML =
+        '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; font-size:1.4rem;">Cargando estaciones...</div>';
+
+      fetch(
+        `{{ url_for('settings.get_line_stations', line_id=0) }}`.replace(
+          "0",
+          lineObj.line_id
+        )
+      )
+        .then((r) => r.json())
+        .then((data) => {
+          contentGrid.innerHTML = "";
+          const stations = data.stations || [];
+
+          if (stations.length === 0) {
+            contentGrid.innerHTML =
+              '<div style="grid-column: 1/-1; text-align: center; color: #888; font-size: 1.4rem; margin-top: 2rem;">No hay estaciones configuradas.</div>';
+          }
+
+          stations.forEach((st) => {
+            // Calculate total capacity
+            let totalCap = 0;
+            if (st.sides && st.sides.length > 0) {
+              totalCap = st.sides.reduce(
+                (acc, side) => acc + (side.employee_capacity || 0),
+                0
+              );
+            }
+
+            const card = createCard(
+              st.position_name,
+              `Capacidad: ${totalCap} pers.`,
+              () => selectStation(st)
+            );
+            contentGrid.appendChild(card);
+          });
+
+          const addCard = createAddCard("Nueva Estación", () =>
+            openModal("add_station")
+          );
+          contentGrid.appendChild(addCard);
+        })
+        .catch((err) => {
+          console.error(err);
+          contentGrid.innerHTML =
+            '<div style="grid-column: 1/-1; text-align: center; color: red; font-size: 1.4rem;">Error al cargar estaciones.</div>';
+        });
+    }
+
+    function selectStation(stationObj) {
+      // Implement logic for station drill-down (Positions)
+      // For MVP, maybe show details or allow edit positions
+      alert(
+        `Station Selected: ${stationObj.position_name}\n(Impl. futura: editar posiciones/sides)`
+      );
+    }
+
+    function updateBreadcrumb() {
+      if (!currentArea) {
+        breadcrumb.innerHTML = "Selecciona un área";
+        return;
+      }
+
+      let html = `<span style="cursor:pointer" onclick="resetView()">AREAS</span> > `;
+      html += `<span class="${
+        currentLevel === "lines" ? "current" : ""
+      }">${currentArea}</span>`;
+
+      if (currentLine) {
+        html += ` > <span class="current">${currentLine.name}</span>`;
+      }
+
+      breadcrumb.innerHTML = html;
+    }
+
+    // UI Helpers
+    function createCard(title, subtitle, onClick) {
+      const div = document.createElement("div");
+      div.className = "config-card";
+      div.innerHTML = `
+            <div>
+                <div class="card-title">${title}</div>
+                <div class="card-subtitle">${subtitle}</div>
+            </div>
+            <div class="card-actions">
+                <div class="btn-icon">✏️</div>
+                <div class="btn-icon">🗑️</div>
+            </div>
+        `;
+      div.onclick = (e) => {
+        if (!e.target.classList.contains("btn-icon")) {
+          onClick();
+        }
+      };
+      return div;
+    }
+
+    function createAddCard(label, onClick) {
+      const div = document.createElement("div");
+      div.className = "config-card add-card";
+      div.innerHTML = `
+            <div class="add-icon">+</div>
+            <div style="font-weight:700; margin-top:1rem;">${label}</div>
+        `;
+      div.onclick = onClick;
+      return div;
+    }
+
+    function openModal(mode) {
+      modalConfig.style.display = "flex";
+      itemName.value = "";
+
+      if (mode === "add_line")
+        modalTitle.textContent = "NUEVA LÍNEA EN " + currentArea;
+      if (mode === "add_station")
+        modalTitle.textContent = "NUEVA ESTACIÓN EN " + currentLine.name;
+    }
+
+    btnCancel.onclick = () => (modalConfig.style.display = "none");
+    btnSave.onclick = () => {
+      alert("Guardado simulado. Implementar endpoint backend.");
+      modalConfig.style.display = "none";
+    };
+
+    window.resetView = () => {
+      currentLine = null;
+      currentArea = null;
+      currentLevel = "areas";
+      renderAreas(); // Just re-renders list, clears grid?
+      contentGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #888; font-size: 1.4rem; margin-top: 5rem;">👈 Selecciona un área</div>`;
+      breadcrumb.innerHTML = "Selecciona un área";
+      document
+        .querySelectorAll(".sidebar-item")
+        .forEach((el) => el.classList.remove("active"));
+    };
+  });
+</script>
+{% endblock %}

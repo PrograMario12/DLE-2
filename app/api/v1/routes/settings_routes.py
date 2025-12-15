@@ -132,4 +132,70 @@ def create_settings_bp(user_service: UserService) -> Blueprint:
         except Exception as e:
             return {"success": False, "message": str(e)}, 500
 
+    @settings_bp.route('/verify-admin', methods=['POST'])
+    def verify_admin():
+        """
+        Valida la contraseña administrativa.
+        """
+        data = request.get_json()
+        password = data.get('password')
+        
+        # Hardcoded for demo/MVP purposes as per requirement "Contraseña administrativa"
+        # In production this should be in env or DB
+        ADMIN_PASS = "Magna2024!" 
+        
+        if password == ADMIN_PASS:
+            return {"success": True, "redirect": url_for("settings.station_config")}, 200
+        else:
+            return {"success": False, "message": "Invalid password"}, 401
+
+    @settings_bp.route('/station-config')
+    def station_config():
+        """
+        Renderiza la página de configuración de estaciones.
+        """
+        return render_template("station_config.html")
+
+    @settings_bp.route('/api/hierarchy', methods=['GET'])
+    def get_hierarchy():
+        """
+        Retorna la estructura jerárquica: Áreas -> Líneas -> Estaciones -> Posiciones
+        Para el árbol de configuración.
+        """
+        # Fetch raw lines
+        all_lines = user_service.get_all_lines_for_settings()
+        
+        # Build hierarchy
+        # Structure: { "AreaName": { "lines": [ { "id": 1, "name": "...", "stations": [] } ] } }
+        # Note: fetching full hierarchy might require a specific repository method if 'all_lines' is shallow.
+        # Currently 'get_all_lines_for_settings' returns lines dictionary.
+        # We might need to augment this or create a new service method.
+        # For now, let's return what we have and structure it by group (Area).
+        
+        hierarchy = {}
+        
+        for line in all_lines:
+            area = line.get('type_zone') or line.get('group') or "General"
+            if area not in hierarchy:
+                hierarchy[area] = []
+            
+            hierarchy[area].append({
+                "line_id": line.get('id'),
+                "name": line.get('name'),
+                # "stations": [] # We would need to fetch stations lazily or eagerly.
+                # Lazy loading is probably better for UI performance if dataset is large, 
+                # but eagerness is easier for "Guided Interface".
+                # For this step, we'll request stations on demand in frontend.
+            })
+            
+        return {"hierarchy": hierarchy}, 200
+
+    @settings_bp.route('/api/stations/<int:line_id>', methods=['GET'])
+    def get_line_stations(line_id):
+        """
+        Retorna las estaciones asociadas a una línea.
+        """
+        stations = user_service.get_station_cards_for_line(line_id)
+        return {"stations": stations}, 200
+
     return settings_bp

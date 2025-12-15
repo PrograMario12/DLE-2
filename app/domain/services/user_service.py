@@ -90,3 +90,6 @@ class UserService:
         :return: Número de registros actualizados.
         """
         return self._register_repo.logout_active_users_in_line(line_id)
+
+    def get_station_cards_for_line(self, line_id: int) -> list[dict]:
+        return self._production_line_repo.get_station_cards_for_line(line_id)
