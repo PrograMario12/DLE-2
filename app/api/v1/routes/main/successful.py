@@ -83,12 +83,27 @@ def register_successful(
 
         print(display)
 
-        # 4) Resolver imagen: prioriza la venida de display; si no, usa id de usuario
+        # 4) Resolver imagen
         image_filename = display.get("image")
         if not image_filename and "id" in info:
             image_filename = f"{info['id']}.png"
 
-        # 5) Contexto unificado (mantiene claves de ambas implementaciones)
+        import os
+        from flask import current_app
+
+        image_url = None
+        if image_filename:
+             # Construir ruta absoluta para verificar existencia
+             static_folder = current_app.static_folder or "app/static"
+             media_path = os.path.join(static_folder, "img", "media", image_filename)
+             
+             if os.path.exists(media_path):
+                 image_url = url_for("static", filename=f"img/media/{image_filename}")
+             else:
+                 # Si no existe, dejamos image_url en None para activar el placeholder
+                 logger.warning("Imagen no encontrada: %s", media_path)
+
+        # 5) Contexto unificado
         ctx: Dict[str, Any] = {
             "css_href": url_for("static", filename="css/styles.css"),
             "user": info.get("name"),
@@ -96,11 +111,7 @@ def register_successful(
             "station": display.get("station_name"),
             "tipo": display.get("type"),
             "color_class": display.get("color"),
-            "image": (
-                url_for("static", filename=f"img/media/{image_filename}")
-                if image_filename
-                else None
-            ),
+            "image": image_url,
             "message": "¡Bienvenido, buen turno!" if display.get("type") == "Entrada" else "Gracias por tu esfuerzo hoy.",
             "animation_type": "anim-entry" if display.get("type") == "Entrada" else "anim-exit",
         }

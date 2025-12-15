@@ -15,10 +15,16 @@
           <h2 class="success-message">{{ message }}</h2>
         </div>
         <p class="exito-principales">{{ tipo }} registrada para</p>
+        {% if image %}
         <picture>
-          <source srcset="{{ image }}" type="image/webp" />
           <img src="{{ image }}" alt="Imagen de usuario" loading="lazy" />
         </picture>
+        {% else %}
+        <div class="no-photo-container">
+          <i class="fi fi-sr-user no-photo-icon"></i>
+          <div class="no-photo-text">Sin foto<br />registrada</div>
+        </div>
+        {% endif %}
         <p class="exito-principales">{{ user }}</p>
         <p class="exito-principales capitalize">
           {{ line }} estación {{station}}
