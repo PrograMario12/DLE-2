@@ -46,4 +46,10 @@ def create_app(config=settings):
         container.production_lines_service()
     )
 
+    # Middleware to handle URL Prefix
+    if app.config.get('URL_PREFIX'):
+        prefix = app.config['URL_PREFIX'].rstrip('/')
+        from .infra.http.middleware import ForceScriptName
+        app.wsgi_app = ForceScriptName(app.wsgi_app, prefix)
+
     return app

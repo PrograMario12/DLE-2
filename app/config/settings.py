@@ -36,5 +36,8 @@ class Settings:
     PORT = int(os.getenv('FLASK_RUN_PORT', 5000))
     DEBUG = os.getenv('FLASK_DEBUG', 'False').lower() in ('true', '1')
     TESTING = False
+    
+    # URL Prefix for deployment (e.g., /dle)
+    URL_PREFIX = os.getenv('URL_PREFIX', None)
 
 settings = Settings()
