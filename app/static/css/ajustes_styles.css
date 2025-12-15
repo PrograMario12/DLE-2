@@ -1,81 +1,90 @@
-/* ajustes_styles.css: Estilos específicos para ajustes.html */
+/* ajustes_styles.css: Estilos industriales para ajustes.html */
 
 :root {
-  --color-primary: #da291c;
+  --color-primary: #da291c; /* Red */
   --color-black: #000000;
   --color-white: #ffffff;
   --color-gray: #888b8d;
-  --color-accent: #4298b5;
-  --color-bg-light: #f4f4f4;
-  --shadow-soft: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --color-accent: #4298b5; /* Blue */
+  --color-bg-light: #eaeaea;
+
+  --shadow-industrial: 4px 4px 0px rgba(0, 0, 0, 1);
+  --border-thick: 2px solid #000000;
 }
 
 .settings-container {
   display: flex;
   flex-direction: column;
-  width: 90%;
-  max-width: 1200px;
+  width: 95%;
+  max-width: 1400px;
   margin: 2rem auto;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 /* Search Bar Styles */
 .search-container {
   position: relative;
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto 1rem;
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
 }
 
 .search-input {
   width: 100%;
   font-size: 1.6rem;
-  border: 2px solid var(--color-gray);
-  border-radius: 50px;
+  font-weight: 700;
+  border: var(--border-thick);
+  border-radius: 0;
   outline: none;
-  transition: all 0.3s ease;
   color: var(--color-black);
+  padding: 1rem;
+  background-color: var(--color-white);
+  box-shadow: var(--shadow-industrial);
 }
 
 .search-input:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 4px rgba(66, 152, 181, 0.2);
+  border-color: var(--color-primary);
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 1); /* Shift shadow on focus */
 }
 
 /* Accordion Styles */
 .group-accordion {
   background-color: var(--color-white);
-  border-radius: 12px;
-  box-shadow: var(--shadow-soft);
+  border-radius: 0;
+  box-shadow: var(--shadow-industrial);
   overflow: hidden;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  border: var(--border-thick);
 }
 
 .group-accordion[open] {
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 1);
 }
 
 .group-summary {
-  background-color: var(--color-gray);
-  color: var(--color-white);
+  background-color: #f0f0f0;
+  color: var(--color-black);
   padding: 1.5rem 2rem;
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: 800;
+  text-transform: uppercase;
   cursor: pointer;
   list-style: none; /* Hide default marker */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
+  border-bottom: 2px solid transparent;
 }
 
 .group-summary:hover {
-  background-color: #666;
+  background-color: #ddd;
 }
 
 .group-accordion[open] .group-summary {
-  background-color: var(--color-primary);
+  background-color: var(--color-black);
+  color: var(--color-white);
+  border-bottom: var(--border-thick);
 }
 
 .group-summary::-webkit-details-marker {
@@ -85,10 +94,10 @@
 /* Custom Accordion Icon */
 .accordion-icon::after {
   content: "+";
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 2.5rem;
+  font-weight: 900;
   display: inline-block;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .group-accordion[open] .accordion-icon::after {
@@ -99,17 +108,17 @@
 /* Grid Layout for Buttons */
 .settings-group-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
-  padding: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 2.5rem;
   background-color: var(--color-bg-light);
-  animation: slideDown 0.3s ease-out;
+  animation: slideDown 0.2s ease-out;
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
   to {
     opacity: 1;
@@ -120,36 +129,43 @@
 /* Button Styles */
 .button-4 {
   background-color: var(--color-white);
-  color: var(--color-gray);
-  border: 2px solid var(--color-gray);
-  border-radius: 8px;
-  font-size: 1.5rem;
-  padding: 1rem;
+  color: var(--color-black);
+  border: var(--border-thick);
+  border-radius: 0;
+  font-size: 1.4rem;
+  padding: 1.2rem;
   width: 100%;
   min-height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  transition: all 0.2s ease;
+  transition: all 0.1s ease;
   cursor: pointer;
-  font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 1);
 }
 
 .button-4:hover,
 .button-4-select {
   background-color: var(--color-accent);
   color: var(--color-white);
-  border-color: var(--color-accent);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-black);
+  transform: translate(2px, 2px); /* Click effect */
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 1);
+}
+
+/* Override for specific select button color if needed, but accent blue is good */
+.button-4-select {
+  background-color: var(--color-primary) !important; /* Red for selected */
+  color: white !important;
 }
 
 .button-4:disabled {
   background-color: #e0e0e0;
   color: #a0a0a0;
-  border-color: #e0e0e0;
+  border-color: #a0a0a0;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -160,7 +176,7 @@
   display: flex;
   justify-content: center;
   gap: 2rem;
-  margin-top: 2rem;
+  margin-top: 3rem;
   flex-wrap: wrap;
 }
 
@@ -187,9 +203,9 @@
 /* Toggle / Checkbox Styles */
 .checkbox-group {
   display: grid !important; /* Force grid over inline styles if any */
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
-  padding: 2rem;
+  padding: 2.5rem;
   background-color: var(--color-bg-light);
   align-items: center;
 }
@@ -199,22 +215,24 @@
   justify-content: space-between;
   align-items: center;
   background-color: var(--color-white);
-  padding: 1rem 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s;
+  padding: 1.2rem 1.5rem;
+  border-radius: 0;
+  border: var(--border-thick);
+  box-shadow: var(--shadow-industrial);
+  transition: transform 0.1s;
 }
 
 .check-group:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000;
 }
 
 .label-right {
   font-size: 1.4rem;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: #000;
   margin-right: 1rem;
+  text-transform: uppercase;
 }
 
 /* Hide the default checkbox */
@@ -224,20 +242,21 @@
 
 /* The toggle switch container */
 .label-c {
-  width: 60px;
-  height: 32px;
-  background-color: #888b8d; /* Default Gray */
+  width: 70px;
+  height: 36px;
+  background-color: var(--color-gray); /* Default Gray */
   display: block;
-  border-radius: 32px;
+  border-radius: 0; /* Square toggle */
+  border: 2px solid #000;
   position: relative;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.2s ease;
   flex-shrink: 0; /* Prevent shrinking */
   text-indent: -9999px;
   overflow: hidden;
 }
 
-/* The circle knob */
+/* The square knob */
 .label-c::after {
   content: "";
   width: 26px;
@@ -246,17 +265,17 @@
   position: absolute;
   top: 3px;
   left: 3px;
-  border-radius: 50%;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0; /* Square knob */
+  border: 2px solid #000;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2);
 }
 
-/* Checked State - Yellow/Orange (Magna-ish or Warning-ish) */
-/* Using #ffc107 (Amber) or #f9b115 closer to screenshot */
+/* Checked State - Yellow (matches dashboard status) */
 .toggle-input:checked + .label-c {
   background-color: #ffc107;
 }
 
 .toggle-input:checked + .label-c::after {
-  transform: translateX(28px);
+  transform: translateX(34px);
 }

@@ -28,8 +28,11 @@
             <select name="line_id" class="line-select" onchange="this.form.submit()">
                 <option value="">Todas las líneas</option>
                 {% for line in lines %}
-                <option value="{{ line[0] }}" {% if line_id == line[0] %}selected{% endif %}>
-                    {{ line[2] }} {{ line[1] }}
+                <option value="{{ line.id }}" {% if line_id == line.id %}selected{% endif %}>
+                    {% if line.type_zone and 'no definida' not in line.type_zone.lower() %}
+                        {{ line.type_zone }}
+                    {% endif %}
+                    {{ line.name }}
                 </option>
                 {% endfor %}
             </select>
@@ -58,7 +61,7 @@
                     </a>
                 </th>
                 <th>Estado</th>
-                <th>Acciones</th>
+                <!-- <th>Acciones</th> -->
             </tr>
         </thead>
         <tbody>
@@ -80,11 +83,13 @@
                         </span>
                     </div>
                 </td>
+                <!--
                 <td>
                     <button class="action-button" title="Ver Detalles">
                         <i class="fi fi-rr-eye"></i>
                     </button>
                 </td>
+                -->
             </tr>
             {% endfor %}
         </tbody>

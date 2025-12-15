@@ -1,27 +1,26 @@
 /* ==========================================================================
    dashboard_styles.css
-   Estilos para el tablero de visualización de líneas.
+   Estilos industriales para el tablero de visualización de líneas.
    ========================================================================== */
 
 /* --- 1. Variables y Estilos Globales de la Página --- */
 :root {
-  --color-background: #f4f7fa; /* Un gris azulado muy claro para el fondo */
-  --color-primary: #005a9c; /* Azul corporativo */
-  --color-text-primary: #1a202c; /* Texto principal oscuro */
-  --color-text-secondary: #718096; /* Texto secundario más claro */
+  --color-background: #eaeaea;
+  --color-primary: #da291c; /* Industrial Red */
+  --color-text-primary: #000000;
+  --color-text-secondary: #000000;
+  --color-accent-blue: #4298b5;
+  --color-white: #ffffff;
 
   --status-green: #28a745;
   --status-yellow: #ffc107;
   --status-red: #dc3545;
-  --status-orange-warning: #fd7e14; /* Naranja para la advertencia 'mal posicionado' */
+  --status-orange-warning: #fd7e14;
 
-  --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Helvetica, Arial, sans-serif;
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --border-radius: 12px;
+  --font-family-sans: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  --shadow-industrial: 4px 4px 0px rgba(0, 0, 0, 1);
+  --border-thick: 2px solid #000000;
 }
 
 /* Aplicamos la fuente y el color de fondo a toda la página */
@@ -33,45 +32,53 @@ body {
 
 /* --- 2. Contenedor Principal y Encabezado --- */
 .content-wrapper {
-  width: 100%;
+  width: 95%; /* Wider like the other page */
   margin: 0 auto;
-  padding: 0.5rem;
+  padding: 1rem;
 }
 
 .dashboard-header h1 {
-  font-size: 2rem; /* 32px */
-  font-weight: 700;
-  color: var(--color-primary);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #000;
+  text-transform: uppercase;
   margin-bottom: 2rem;
   text-align: left;
+  border-bottom: 3px solid var(--color-primary);
+  padding-bottom: 10px;
 }
 
 /* --- 3. Leyenda de Información --- */
 .information {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 1.5rem;
+  padding: 1.5rem;
   margin-bottom: 2rem;
   background-color: #fff;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-  font-size: 0.875rem; /* 14px */
+  border: var(--border-thick);
+  box-shadow: var(--shadow-industrial);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 0;
 }
 
 .information p {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: var(--color-text-secondary);
+  gap: 0.8rem;
+  color: var(--color-text-primary);
+  margin: 0;
 }
 
 /* Círculos de color para la leyenda */
 .information p::before {
   content: "";
   display: inline-block;
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #000;
   border-radius: 50%;
 }
 .information p:nth-child(1)::before {
@@ -88,27 +95,23 @@ body {
 }
 
 /* --- 4. Menú de Tarjetas (Grid Layout) --- */
-/* --- 4. Menú de Tarjetas --- */
 
-/* Contenedor principal para las Áreas (Pantalla 1) */
+/* Contenedor principal para las Áreas */
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 5rem; /* Separación vertical amplia para pantalla touch */
+  gap: 3rem;
   width: 100%;
-  max-width: 800px; /* Evitar que se estiren demasiado en pantallas muy anchas */
-  margin: 0 auto; /* Centrado */
+  max-width: 900px;
+  margin: 0 auto;
   padding-bottom: 4rem;
 }
 
-/* Contenedor para las Líneas de un Área (Pantalla 2) */
+/* Contenedor para las Líneas de un Área */
 .area-grid {
   display: grid;
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(280px, 1fr)
-  ); /* Tarjetas más anchas */
-  gap: 2.5rem; /* Más espacio entre tarjetas */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2.5rem;
   width: 100%;
 }
 
@@ -116,19 +119,19 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1.5rem;
+  padding: 2rem;
   background-color: #ffffff;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
+  border: var(--border-thick);
+  border-radius: 0; /* Square corners */
+  box-shadow: var(--shadow-industrial);
   text-decoration: none;
   color: var(--color-text-primary);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  /* border-left: 5px solid transparent; <-- ELIMINA ESTA LÍNEA */
+  transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
 }
 
 .card-dashboard:hover {
-  transform: translateY(-8px); /* Más elevación */
-  box-shadow: var(--shadow-lg);
+  transform: translate(2px, 2px); /* Industrial click effect */
+  box-shadow: 2px 2px 0px #000;
   cursor: pointer;
 }
 
@@ -137,21 +140,21 @@ body {
 }
 
 .card-dashboard h2 {
-  font-size: 1.25rem; /* 20px */
-  font-weight: 700;
-  color: var(--color-text-secondary);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #000;
   margin-bottom: 0.5rem;
   text-align: left;
   text-transform: uppercase;
 }
 
 .card-dashboard h1 {
-  font-size: 3.5rem; /* 56px - Más grande */
-  font-weight: 800;
-  color: var(--color-text-primary);
+  font-size: 4rem;
+  font-weight: 900;
+  color: #000;
   text-align: left;
   margin: 0;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 /* Footer de la tarjeta */
@@ -161,49 +164,27 @@ body {
   align-items: center;
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  border-top: 2px solid rgba(0, 0, 0, 0.1);
 }
 
 .action-text {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--color-primary);
-  text-decoration: underline; /* Parece un enlace */
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #000;
+  text-decoration: underline;
 }
 
 /* Icono de flecha */
 .action-icon {
-  font-size: 1.2rem;
-  color: var(--color-text-secondary);
-  transition: transform 0.2s;
-}
-
-.card-dashboard:hover .action-icon {
-  transform: translateX(5px);
-  color: var(--color-primary);
+  font-size: 1.5rem;
+  color: #000;
+  font-weight: bold;
 }
 
 /* Cambios para tarjetas NO-BLANCAS (coloreadas por estado) */
-.employee-ok h2,
-.employee-ok .action-icon,
-.employee-ok .action-text,
-.employee-warning h2,
-.employee-warning .action-icon,
-.employee-warning .action-text {
-  color: rgba(255, 255, 255, 0.9);
-}
+/* In industrial theme, we keep high contrast logic */
 
-.employee-ok h1,
-.employee-warning h1 {
-  color: #fff;
-}
-
-.employee-ok .card-footer,
-.employee-warning .card-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* --- 5. Clases de Estado para las Tarjetas --- */
 .employee-ok {
   background-color: var(--status-green);
 }
@@ -214,35 +195,34 @@ body {
   background-color: var(--status-red);
 }
 
-/* Icono de advertencia para personal mal posicionado */
+/* Icono de advertencia */
 .card-dashboard h1 .warning-icon {
-  font-size: 1.5rem;
-  color: var(--status-orange-warning);
+  font-size: 2rem;
+  color: #000; /* Black contrast on warning */
   margin-left: 0.5rem;
   vertical-align: middle;
 }
 
-/* --- 6. Pantalla de Carga (Opcional pero recomendado) --- */
+/* --- 6. Pantalla de Carga --- */
 .loading-screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(5px);
 }
 
 .loading-spinner {
-  border: 5px solid var(--color-background);
-  border-top: 5px solid var(--color-primary);
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  border: 6px solid #ccc;
+  border-top: 6px solid var(--color-primary);
+  border-radius: 50%; /* Spinners can stay round */
+  width: 60px;
+  height: 60px;
   animation: spin 1s linear infinite;
 }
 
@@ -255,48 +235,60 @@ body {
   }
 }
 
-/* Cambia el color del texto a blanco dentro de las tarjetas con estado */
+/* Text Colors corrections for colored cards */
 .employee-ok h1,
 .employee-ok h2,
+.employee-ok .action-text,
+.employee-ok .action-icon,
+.employee-warning h1,
+.employee-warning h2,
+.employee-warning .action-text,
+.employee-warning .action-icon {
+  color: #fff; /* White text on Green/Red cards */
+}
+
 .employee-nook h1,
 .employee-nook h2,
-.employee-warning h1,
-.employee-warning h2 {
-  color: #fff;
+.employee-nook .action-text,
+.employee-nook .action-icon {
+  color: #000; /* Black text on Yellow cards */
 }
 
-/* El amarillo necesita texto oscuro para ser legible */
-.employee-nook h1,
-.employee-nook h2 {
-  color: var(--color-text-primary);
+.employee-ok .card-footer,
+.employee-warning .card-footer {
+  border-top: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-/* --- 6. Estilos Específicos para Dashboard de Estaciones (Nivel 3) --- */
+.employee-nook .card-footer {
+  border-top: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+/* --- 7. Estilos para Dashboard de Estaciones --- */
 
 .station-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 2rem;
   width: 100%;
 }
 
 .station-card {
   background-color: #fff;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
+  border-radius: 0;
+  box-shadow: var(--shadow-industrial);
   padding: 1.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: var(--border-thick);
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
 .station-header {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #000;
   text-transform: uppercase;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid #000;
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
 }
@@ -307,76 +299,71 @@ body {
   gap: 1rem;
 }
 
-/* Tarjeta individual de Lado (Side) - El botón que se clickea */
+/* Tarjeta individual de Lado (Side) */
 .side-card {
   flex: 1;
   min-width: 120px;
-  background-color: #f8fafc;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
+  background-color: #fff;
+  border: 2px solid #000;
+  border-radius: 0;
   padding: 1rem;
   text-align: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.1s ease;
   position: relative;
-  overflow: hidden;
+  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.2);
 }
 
 .side-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--color-primary);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transform: translate(2px, 2px);
+  box-shadow: none;
+  border-color: #000;
 }
 
 .side-card h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-  color: var(--color-text-secondary);
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #000;
+  text-transform: uppercase;
 }
 
 .side-card.employee-ok {
   background-color: var(--status-green);
-  border-color: var(--status-green);
   color: white;
 }
 .side-card.employee-nook {
   background-color: var(--status-yellow);
-  border-color: var(--status-yellow);
-  color: var(--color-text-primary);
+  color: black;
 }
 .side-card.employee-warning {
   background-color: var(--status-red);
-  border-color: var(--status-red);
   color: white;
 }
 
 .side-card.employee-ok h3,
 .side-card.employee-warning h3 {
-  color: rgba(255, 255, 255, 0.9);
+  color: #fff;
 }
 
 .side-card p {
-  font-size: 1.2rem;
-  font-weight: 800;
+  font-size: 1.4rem;
+  font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-}
-
-/* Iconos dentro de la side-card */
-.side-card i {
-  font-size: 1rem;
+  margin: 0;
 }
 
 /* Resumen superior */
 .operators-summary {
   background: white;
-  padding: 1rem 1.5rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border-radius: 0;
+  box-shadow: var(--shadow-industrial);
+  border: 2px solid #000;
+  margin-bottom: 3rem;
   display: flex;
   align-items: center;
   gap: 2rem;
@@ -386,21 +373,24 @@ body {
 .summary-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-  color: var(--color-text-secondary);
+  gap: 0.8rem;
+  font-size: 1.1rem;
+  color: #000;
+  font-weight: 600;
 }
 
 .summary-item strong {
-  font-size: 1.1rem;
-  color: var(--color-text-primary);
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #000;
 }
 
 .progress-container {
   flex-grow: 1;
-  background-color: #e2e8f0;
-  height: 12px;
-  border-radius: 6px;
+  background-color: #ddd;
+  height: 20px; /* Thicker bar */
+  border-radius: 0;
+  border: 2px solid #000;
   overflow: hidden;
   position: relative;
   min-width: 200px;
@@ -421,35 +411,32 @@ body {
   top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
 }
 
 .modal-content {
   background-color: #fff;
   margin: 10% auto;
   padding: 0;
-  border-radius: 8px; /* Slightly sharper styling */
-  border: 1px solid #cbd5e0;
+  border-radius: 0;
+  border: 3px solid #000;
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 10px 10px 0px rgba(0, 0, 0, 1);
   position: relative;
-  /* Removed animation for "static" feel */
 }
-
-/* @keyframes slideIn removed */
 
 .close {
   position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 2rem;
-  line-height: 1;
+  top: 20px;
+  right: 25px;
+  font-size: 2.5rem;
+  line-height: 0.8;
   cursor: pointer;
-  color: #718096;
+  color: #000;
   z-index: 10;
+  font-weight: bold;
 }
 .close:hover {
   color: var(--color-primary);
@@ -457,19 +444,19 @@ body {
 
 /* Industrial Modal Internals */
 .modal-header {
-  background-color: #f7fafc;
+  background-color: #f0f0f0;
   padding: 1.5rem 2rem;
-  border-bottom: 2px solid #e2e8f0;
-  border-radius: 8px 8px 0 0;
+  border-bottom: 3px solid #000;
+  border-radius: 0;
 }
 
 .modal-header h2 {
   margin: 0;
-  color: var(--color-primary);
-  font-size: 1.5rem;
+  color: #000;
+  font-size: 1.8rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 800;
+  letter-spacing: 1px;
+  font-weight: 900;
 }
 
 .modal-body {
@@ -489,18 +476,18 @@ body {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem;
+  padding: 1.2rem;
   background-color: white;
-  border: 1px solid #e2e8f0;
-  border-left: 5px solid var(--status-green); /* Green indicator line */
-  border-radius: 4px;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 2px solid #000;
+  border-left: 8px solid var(--status-green); /* Thicker indicator */
+  border-radius: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #000;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
 }
 
 .operator-icon {
-  color: var(--color-text-secondary);
-  font-size: 1.4rem;
+  color: #000;
+  font-size: 1.6rem;
 }
