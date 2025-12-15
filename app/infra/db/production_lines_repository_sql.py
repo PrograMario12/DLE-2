@@ -90,9 +90,10 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                    s.side_id,
                    s.side_title,
                    s.employee_capacity,
-                   COALESCE(ew.employee_count, 0) as operators
+                   COALESCE(ew.employee_count, 0) as operators,
+                   p.position_id
             FROM {schema}.positions p
-            JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
+            LEFT JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
             LEFT JOIN employees_working ew ON s.side_id = ew.side_id_fk
             WHERE p.line_id = %s
             ORDER BY p.position_name, s.side_title;
@@ -104,21 +105,24 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
         cursor.close()
 
         cards = {}
-        for station_name, side_id, side_title, capacity, operators in results:
+        for station_name, side_id, side_title, capacity, operators, pos_id in results:
             if station_name not in cards:
                 cards[station_name] = {
                     "position_name": station_name,
+                    "position_id": pos_id,
                     "status": True,
                     "sides": []
                 }
 
-            cards[station_name]["sides"].append({
-                "side_id": side_id,
-                "side_title": side_title,
-                "name_side": side_title,
-                "employee_capacity": capacity,
-                "employees_working": operators
-            })
+            # Only add side if it exists (side_id will be None if no sides)
+            if side_id is not None:
+                cards[station_name]["sides"].append({
+                    "side_id": side_id,
+                    "side_title": side_title,
+                    "name_side": side_title,
+                    "employee_capacity": capacity,
+                    "employees_working": operators
+                })
 
         return list(cards.values())
 
@@ -240,21 +244,25 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
 
     def _create_default_position(self, line_id: int) -> int:
         """Crea una posición por defecto para una línea y retorna su ID."""
+        return self.create_position(line_id, 'Default')
+
+    def create_position(self, line_id: int, name: str) -> int:
+        """Crea una posición (estación) en la base de datos."""
         cursor = self._get_cursor()
         try:
             insert_q = sql.SQL("""
                 INSERT INTO {schema}.positions (line_id, position_name)
-                VALUES (%s, 'Default')
+                VALUES (%s, %s)
                 RETURNING position_id
             """).format(schema=sql.Identifier(self.schema))
-            cursor.execute(insert_q, (line_id,))
+            cursor.execute(insert_q, (line_id, name))
             new_id = cursor.fetchone()[0]
             cursor.connection.commit()
-            print(f"DEBUG: Created Position {new_id} for Line {line_id}")
+            print(f"DEBUG: Created Position {new_id} ({name}) for Line {line_id}")
             return new_id
         except Exception as e:
             cursor.connection.rollback()
-            print(f"ERROR creating default position: {e}")
+            print(f"ERROR creating position: {e}")
             raise
         finally:
             cursor.close()
@@ -329,6 +337,97 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
         except Exception as e:
             print(f"ERROR in update_position_status for PID {position_id}: {e}")
             cursor.connection.rollback()
+            raise
+        finally:
+            cursor.close()
+
+    # --- Side CRUD Operations ---
+    def create_side(self, position_id: int, title: str, capacity: int) -> int:
+        cursor = self._get_cursor()
+        try:
+            q = sql.SQL("""
+                INSERT INTO {schema}.tbl_sides_of_positions (position_id_fk, side_title, employee_capacity)
+                VALUES (%s, %s, %s)
+                RETURNING side_id
+            """).format(schema=sql.Identifier(self.schema))
+            cursor.execute(q, (position_id, title, capacity))
+            new_id = cursor.fetchone()[0]
+            cursor.connection.commit()
+            print(f"DEBUG: Created Side {new_id} for Position {position_id}")
+            return new_id
+        except Exception as e:
+            cursor.connection.rollback()
+            print(f"ERROR creating side: {e}")
+            raise
+        finally:
+            cursor.close()
+
+    def update_side(self, side_id: int, title: str, capacity: int) -> None:
+        cursor = self._get_cursor()
+        try:
+            q = sql.SQL("""
+                UPDATE {schema}.tbl_sides_of_positions
+                SET side_title = %s, employee_capacity = %s
+                WHERE side_id = %s
+            """).format(schema=sql.Identifier(self.schema))
+            cursor.execute(q, (title, capacity, side_id))
+            cursor.connection.commit()
+            print(f"DEBUG: Updated Side {side_id}")
+        except Exception as e:
+            cursor.connection.rollback()
+            print(f"ERROR updating side: {e}")
+            raise
+        finally:
+            cursor.close()
+
+    def delete_side(self, side_id: int) -> None:
+        cursor = self._get_cursor()
+        try:
+            q = sql.SQL("DELETE FROM {schema}.tbl_sides_of_positions WHERE side_id = %s").format(schema=sql.Identifier(self.schema))
+            cursor.execute(q, (side_id,))
+            cursor.connection.commit()
+            print(f"DEBUG: Deleted Side {side_id}")
+        except Exception as e:
+            cursor.connection.rollback()
+            print(f"ERROR deleting side: {e}")
+            raise
+        finally:
+            cursor.close()
+
+    # --- Position CRUD Operations ---
+    def update_position(self, position_id: int, new_name: str) -> None:
+        cursor = self._get_cursor()
+        try:
+            q = sql.SQL("""
+                UPDATE {schema}.positions
+                SET position_name = %s
+                WHERE position_id = %s
+            """).format(schema=sql.Identifier(self.schema))
+            cursor.execute(q, (new_name, position_id))
+            cursor.connection.commit()
+            print(f"DEBUG: Updated Position {position_id} name to {new_name}")
+        except Exception as e:
+            cursor.connection.rollback()
+            print(f"ERROR updating position: {e}")
+            raise
+        finally:
+            cursor.close()
+
+    def delete_position(self, position_id: int) -> None:
+        cursor = self._get_cursor()
+        try:
+            # Note: Database constraints might block this if registers exist.
+            # Assuming cascade on sides is desired or handled by DB FKs.
+            # If not, we might need to delete sides first manually.
+            # Let's try direct delete and let DB constraints logic apply (or error out).
+            
+            q = sql.SQL("DELETE FROM {schema}.positions WHERE position_id = %s").format(schema=sql.Identifier(self.schema))
+            cursor.execute(q, (position_id,))
+            cursor.connection.commit()
+            print(f"DEBUG: Deleted Position {position_id}")
+        except Exception as e:
+            cursor.connection.rollback()
+            print(f"ERROR deleting position: {e}")
             raise
         finally:
             cursor.close()

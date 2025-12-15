@@ -93,3 +93,21 @@ class UserService:
 
     def get_station_cards_for_line(self, line_id: int) -> list[dict]:
         return self._production_line_repo.get_station_cards_for_line(line_id)
+
+    def create_side(self, position_id: int, title: str, capacity: int) -> int:
+        return self._production_line_repo.create_side(position_id, title, capacity)
+
+    def update_side(self, side_id: int, title: str, capacity: int) -> None:
+        self._production_line_repo.update_side(side_id, title, capacity)
+
+    def delete_side(self, side_id: int) -> None:
+        self._production_line_repo.delete_side(side_id)
+
+    def update_position(self, position_id: int, new_name: str) -> None:
+        self._production_line_repo.update_position(position_id, new_name)
+
+    def delete_position(self, position_id: int) -> None:
+        self._production_line_repo.delete_position(position_id)
+
+    def create_position(self, line_id: int, name: str) -> int:
+        return self._production_line_repo.create_position(line_id, name)

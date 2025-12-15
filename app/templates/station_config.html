@@ -259,24 +259,59 @@ Estación {% endblock %} {% block styles %}
   </div>
 </div>
 
+<!-- Modal Delete Confirmation (Generic) -->
+<div id="modalConfirmDelete" class="modal-overlay">
+  <div class="modal-content" style="border-color: var(--color-primary)">
+    <div class="modal-header" style="background-color: var(--color-primary)">
+      ⚠️ CONFIRMAR ELIMINACIÓN
+    </div>
+    <div class="modal-body">
+      <p>Estás a punto de eliminar:</p>
+      <h2 id="deleteTargetName" style="margin: 1rem 0; font-size: 2rem">
+        ITEM
+      </h2>
+      <span class="warning-text">
+        Esta acción es irreversible y podría afectar datos históricos.
+      </span>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" id="btnCancelDelete">
+        Cancelar
+      </button>
+      <button class="btn-modal btn-danger" id="btnConfirmDelete">
+        ELIMINAR
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     // State
     let hierarchyData = {};
     let currentArea = null;
     let currentLine = null;
-    let currentLevel = "areas"; // areas, lines, stations
+    let currentStation = null;
+    let currentLevel = "areas"; // areas, lines, stations, sides
 
     const areaList = document.getElementById("areaList");
     const contentGrid = document.getElementById("contentGrid");
     const breadcrumb = document.getElementById("breadcrumb");
 
-    // Modal Elements
+    // Config Modal Elements
     const modalConfig = document.getElementById("modalConfig");
     const modalTitle = document.getElementById("modalConfigTitle");
     const itemName = document.getElementById("configItemName");
     const btnSave = document.getElementById("btnConfigSave");
     const btnCancel = document.getElementById("btnConfigCancel");
+
+    // Delete Modal Elements
+    const modalDelete = document.getElementById("modalConfirmDelete");
+    const deleteTargetName = document.getElementById("deleteTargetName");
+    const btnCancelDelete = document.getElementById("btnCancelDelete");
+    const btnConfirmDelete = document.getElementById("btnConfirmDelete");
+
+    let deleteCallback = null; // Function to execute on confirm
 
     // Initial Load
     fetchHierarchy();
@@ -306,9 +341,11 @@ Estación {% endblock %} {% block styles %}
       });
     }
 
-    function selectArea(areaName, liElement) {
+    // Make visible to global scope for breadcrumbs
+    window.selectArea = (areaName, liElement) => {
       currentArea = areaName;
       currentLine = null;
+      currentStation = null;
       currentLevel = "lines";
 
       // Highlight logic
@@ -316,10 +353,16 @@ Estación {% endblock %} {% block styles %}
         .querySelectorAll(".sidebar-item")
         .forEach((el) => el.classList.remove("active"));
       if (liElement) liElement.classList.add("active");
+      else {
+        // Find by text if not passed directly
+        const items = document.querySelectorAll(".sidebar-item");
+        for (let i of items)
+          if (i.textContent === areaName) i.classList.add("active");
+      }
 
       updateBreadcrumb();
       renderLines(areaName);
-    }
+    };
 
     function renderLines(areaName) {
       contentGrid.innerHTML = "";
@@ -337,12 +380,13 @@ Estación {% endblock %} {% block styles %}
       contentGrid.appendChild(addCard);
     }
 
-    function selectLine(lineObj) {
+    window.selectLine = (lineObj) => {
       currentLine = lineObj;
+      currentStation = null;
       currentLevel = "stations";
       updateBreadcrumb();
       renderStations(lineObj);
-    }
+    };
 
     function renderStations(lineObj) {
       contentGrid.innerHTML =
@@ -374,10 +418,12 @@ Estación {% endblock %} {% block styles %}
               );
             }
 
-            const card = createCard(
+            const card = createConfigurableCard(
               st.position_name,
               `Capacidad: ${totalCap} pers.`,
-              () => selectStation(st)
+              () => selectStation(st), // Main click
+              () => openModal("edit_station", st), // Edit click
+              () => confirmDelete("station", st.position_name, st.position_id) // Delete click
             );
             contentGrid.appendChild(card);
           });
@@ -395,11 +441,108 @@ Estación {% endblock %} {% block styles %}
     }
 
     function selectStation(stationObj) {
-      // Implement logic for station drill-down (Positions)
-      // For MVP, maybe show details or allow edit positions
-      alert(
-        `Station Selected: ${stationObj.position_name}\n(Impl. futura: editar posiciones/sides)`
-      );
+      currentStation = stationObj;
+      currentLevel = "sides";
+      updateBreadcrumb();
+      renderSides(stationObj);
+    }
+
+    function renderSides(stationObj) {
+      contentGrid.innerHTML = "";
+      const sides = stationObj.sides || [];
+
+      sides.forEach((side) => {
+        const card = createConfigurableCard(
+          side.side_title,
+          `Capacidad: ${side.employee_capacity}`,
+          null, // No further drill-down
+          () => openModal("edit_side", side), // Edit click
+          () => confirmDelete("side", side.side_title, side.side_id) // Delete click
+        );
+        // Disable main click visual if null
+        if (!currentStation) card.onclick = null;
+
+        contentGrid.appendChild(card);
+      });
+
+      const addCard = createAddCard("Nuevo Side", () => openModal("add_side"));
+      contentGrid.appendChild(addCard);
+    }
+
+    // --- Delete Logic ---
+    function confirmDelete(type, name, id) {
+      modalDelete.style.display = "flex";
+      deleteTargetName.textContent = type.toUpperCase() + ": " + name;
+
+      btnConfirmDelete.onclick = () => {
+        btnConfirmDelete.disabled = true;
+        btnConfirmDelete.textContent = "Eliminando...";
+        let url = "";
+
+        if (type === "side")
+          url = `{{ url_for('settings.delete_side', side_id=0) }}`.replace(
+            "0",
+            id
+          );
+        if (type === "station")
+          url =
+            `{{ url_for('settings.delete_position', position_id=0) }}`.replace(
+              "0",
+              id
+            );
+
+        fetch(url, { method: "DELETE" })
+          .then((r) => r.json())
+          .then((d) => {
+            modalDelete.style.display = "none";
+            btnConfirmDelete.disabled = false;
+            btnConfirmDelete.textContent = "ELIMINAR";
+
+            if (d.success) {
+              if (type === "side") refreshStations();
+              if (type === "station") selectLine(currentLine); // Refresh station list
+            } else {
+              alert("Error: " + d.message);
+            }
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Error de red");
+            modalDelete.style.display = "none";
+            btnConfirmDelete.disabled = false;
+            btnConfirmDelete.textContent = "ELIMINAR";
+          });
+      };
+    }
+
+    btnCancelDelete.onclick = () => {
+      modalDelete.style.display = "none";
+    };
+
+    function refreshStations() {
+      // Reload current line stations to refresh view
+      if (currentLevel === "sides" && currentLine) {
+        // Need to re-fetch line stations first to get updated data
+        fetch(
+          `{{ url_for('settings.get_line_stations', line_id=0) }}`.replace(
+            "0",
+            currentLine.line_id
+          )
+        )
+          .then((r) => r.json())
+          .then((data) => {
+            const updatedStations = data.stations || [];
+            const updatedStation = updatedStations.find(
+              (s) => s.position_id === currentStation.position_id
+            );
+            if (updatedStation) {
+              selectStation(updatedStation); // Re-render sides
+            } else {
+              // Fallback if station gone?
+              selectLine(currentLine);
+            }
+          });
+      }
     }
 
     function updateBreadcrumb() {
@@ -409,12 +552,14 @@ Estación {% endblock %} {% block styles %}
       }
 
       let html = `<span style="cursor:pointer" onclick="resetView()">AREAS</span> > `;
-      html += `<span class="${
-        currentLevel === "lines" ? "current" : ""
-      }">${currentArea}</span>`;
+      html += `<span style="cursor:pointer" onclick="selectArea('${currentArea}', null)">${currentArea}</span>`;
 
       if (currentLine) {
-        html += ` > <span class="current">${currentLine.name}</span>`;
+        html += ` > <span style="cursor:pointer" onclick="selectLine({line_id:${currentLine.line_id}, name:'${currentLine.name}'})">${currentLine.name}</span>`;
+      }
+
+      if (currentLevel === "sides" && currentStation) {
+        html += ` > <span class="current">Estación ${currentStation.position_name}</span>`;
       }
 
       breadcrumb.innerHTML = html;
@@ -422,6 +567,7 @@ Estación {% endblock %} {% block styles %}
 
     // UI Helpers
     function createCard(title, subtitle, onClick) {
+      // Simple card without strict actions (Used for Areas/Lines currently)
       const div = document.createElement("div");
       div.className = "config-card";
       div.innerHTML = `
@@ -430,8 +576,7 @@ Estación {% endblock %} {% block styles %}
                 <div class="card-subtitle">${subtitle}</div>
             </div>
             <div class="card-actions">
-                <div class="btn-icon">✏️</div>
-                <div class="btn-icon">🗑️</div>
+                <!-- Actions not implemented for Areas/Lines yet -->
             </div>
         `;
       div.onclick = (e) => {
@@ -439,6 +584,56 @@ Estación {% endblock %} {% block styles %}
           onClick();
         }
       };
+      return div;
+    }
+
+    function createConfigurableCard(
+      title,
+      subtitle,
+      onMainClick,
+      onEdit,
+      onDelete
+    ) {
+      const div = document.createElement("div");
+      div.className = "config-card";
+
+      // Prevent click if no main action (e.g. side drilldown ends)
+      const cursorStyle = onMainClick ? "cursor: pointer;" : "cursor: default;";
+      div.style.cssText = cursorStyle;
+
+      div.innerHTML = `
+            <div>
+                <div class="card-title">${title}</div>
+                <div class="card-subtitle">${subtitle}</div>
+            </div>
+            <div class="card-actions">
+                <div class="btn-icon btn-edit">✏️</div>
+                <div class="btn-icon btn-delete">🗑️</div>
+            </div>
+        `;
+
+      // Attach listeners safely
+      const btnEdit = div.querySelector(".btn-edit");
+      const btnDelete = div.querySelector(".btn-delete");
+
+      btnEdit.onclick = (e) => {
+        e.stopPropagation();
+        onEdit();
+      };
+      btnDelete.onclick = (e) => {
+        e.stopPropagation();
+        onDelete();
+      };
+
+      if (onMainClick) {
+        div.onclick = (e) => {
+          // Ignore clicks on buttons (already handled by stopPropagation, but extra safety)
+          if (!e.target.classList.contains("btn-icon")) {
+            onMainClick();
+          }
+        };
+      }
+
       return div;
     }
 
@@ -453,27 +648,181 @@ Estación {% endblock %} {% block styles %}
       return div;
     }
 
-    function openModal(mode) {
+    let editingSideId = null;
+    let editingStationId = null;
+
+    function openModal(mode, data = null) {
       modalConfig.style.display = "flex";
       itemName.value = "";
+      const extraInputs = document.getElementById("extraInputs");
+      extraInputs.innerHTML = "";
+
+      editingSideId = null;
+      editingStationId = null;
 
       if (mode === "add_line")
         modalTitle.textContent = "NUEVA LÍNEA EN " + currentArea;
-      if (mode === "add_station")
+
+      if (mode === "add_station") {
         modalTitle.textContent = "NUEVA ESTACIÓN EN " + currentLine.name;
+        itemName.placeholder = "Nombre (Ej. 30, Estación B)";
+        document.getElementById("configItemType").value = "station_create"; // To implement
+      }
+
+      if (mode === "edit_station") {
+        modalTitle.textContent = "EDITAR ESTACIÓN";
+        itemName.value = data.position_name;
+        editingStationId = data.position_id;
+        document.getElementById("configItemType").value = "station_update";
+      }
+
+      if (mode === "add_side") {
+        modalTitle.textContent =
+          "NUEVO SIDE EN " + currentStation.position_name;
+        itemName.style.display = "none"; // Hide the regular name input
+        extraInputs.innerHTML = `
+                 <label class="warning-text" style="color:black; margin-bottom:0.5rem;">Tipo de Side:</label>
+                 <select id="configSideType" class="modal-select">
+                   <option value="">-- Selecciona un tipo --</option>
+                   <option value="BP">BP</option>
+                   <option value="LH">LH</option>
+                   <option value="RH">RH</option>
+                 </select>
+                 <label class="warning-text" style="color:black; margin-top:1rem;">Personal Requerido:</label>
+                 <input type="number" id="configCapacity" class="modal-select" value="1" min="1">
+             `;
+        document.getElementById("configItemType").value = "side_create";
+      }
+
+      if (mode === "edit_side") {
+        modalTitle.textContent = "EDITAR SIDE " + data.side_title;
+        itemName.style.display = "none"; // Hide for edit too
+        extraInputs.innerHTML = `
+                 <label class="warning-text" style="color:black; margin-bottom:0.5rem;">Tipo de Side:</label>
+                 <select id="configSideType" class="modal-select">
+                   <option value="BP" ${
+                     data.side_title === "BP" ? "selected" : ""
+                   }>BP</option>
+                   <option value="LH" ${
+                     data.side_title === "LH" ? "selected" : ""
+                   }>LH</option>
+                   <option value="RH" ${
+                     data.side_title === "RH" ? "selected" : ""
+                   }>RH</option>
+                 </select>
+                 <label class="warning-text" style="color:black; margin-top:1rem;">Personal Requerido:</label>
+                 <input type="number" id="configCapacity" class="modal-select" value="${
+                   data.employee_capacity
+                 }" min="1">
+             `;
+        editingSideId = data.side_id;
+        document.getElementById("configItemType").value = "side_update";
+      }
     }
 
     btnCancel.onclick = () => (modalConfig.style.display = "none");
+
     btnSave.onclick = () => {
-      alert("Guardado simulado. Implementar endpoint backend.");
-      modalConfig.style.display = "none";
+      const type = document.getElementById("configItemType").value;
+      const nameVal = itemName.value;
+
+      if (type === "side_create") {
+        const sideType = document.getElementById("configSideType").value;
+        const cap = document.getElementById("configCapacity").value;
+
+        if (!sideType) {
+          alert("Por favor selecciona un tipo de side");
+          return;
+        }
+
+        fetch("{{ url_for('settings.create_side') }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            position_id: currentStation.position_id,
+            title: sideType,
+            capacity: cap,
+          }),
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.success) {
+              modalConfig.style.display = "none";
+              refreshStations();
+            } else alert(d.message);
+          });
+      } else if (type === "side_update") {
+        const sideType = document.getElementById("configSideType").value;
+        const cap = document.getElementById("configCapacity").value;
+        fetch(
+          `{{ url_for('settings.update_side', side_id=0) }}`.replace(
+            "0",
+            editingSideId
+          ),
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: sideType,
+              capacity: cap,
+            }),
+          }
+        )
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.success) {
+              modalConfig.style.display = "none";
+              refreshStations();
+            } else alert(d.message);
+          });
+      } else if (type === "station_create") {
+        fetch("{{ url_for('settings.create_position') }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            line_id: currentLine.line_id,
+            position_name: nameVal,
+          }),
+        })
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.success) {
+              modalConfig.style.display = "none";
+              selectLine(currentLine);
+            } else alert(d.message);
+          });
+      } else if (type === "station_update") {
+        fetch(
+          `{{ url_for('settings.update_position', position_id=0) }}`.replace(
+            "0",
+            editingStationId
+          ),
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              position_name: nameVal,
+            }),
+          }
+        )
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.success) {
+              modalConfig.style.display = "none";
+              selectLine(currentLine); // Refresh station list
+            } else alert(d.message);
+          });
+      } else {
+        alert("Guardado simulado para este tipo de item.");
+        modalConfig.style.display = "none";
+      }
     };
 
     window.resetView = () => {
       currentLine = null;
-      currentArea = null;
+      currentStation = null;
       currentLevel = "areas";
-      renderAreas(); // Just re-renders list, clears grid?
+      renderAreas();
       contentGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #888; font-size: 1.4rem; margin-top: 5rem;">👈 Selecciona un área</div>`;
       breadcrumb.innerHTML = "Selecciona un área";
       document

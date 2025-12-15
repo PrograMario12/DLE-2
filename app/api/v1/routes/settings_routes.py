@@ -198,4 +198,82 @@ def create_settings_bp(user_service: UserService) -> Blueprint:
         stations = user_service.get_station_cards_for_line(line_id)
         return {"stations": stations}, 200
 
+    @settings_bp.route('/api/sides', methods=['POST'])
+    def create_side():
+        data = request.get_json()
+        try:
+            # We need to find the position_id. 
+            # In the current 'station' view, the 'position_name' is used as ID in some logics OR we have the sides. 
+            # But to add a side to a station, we need the POSITION ID.
+            # The 'get_station_cards_for_line' returns 'position_name' but maybe not 'position_id'.
+            # CHECK repository: It selects p.position_name but NOT p.position_id explicitly in the group?
+            # actually it does GROUP BY position_name. Wait.
+            # The current repository method 'get_station_cards_for_line' might need to return position_id.
+            
+            # Let's assume for MVP we pass position_id. If missing in repo, we must add it.
+            # Re-checking repo code... 
+            # It queries: SELECT p.position_name, s.side_id...
+            # It DOES NOT return p.position_id. This is a blocker for creating a side attached to a position.
+            
+            # HOTFIX: We need to update the repository first to return position_id.
+            # However, I can try to fetch it or rely on existing flow?
+            # User wants to add, so we need position_id in frontend.
+            
+            position_id = data.get('position_id')
+            title = data.get('title')
+            capacity = int(data.get('capacity', 1))
+            
+            new_id = user_service.create_side(position_id, title, capacity)
+            return {"success": True, "side_id": new_id}, 201
+        except Exception as e:
+            return {"success": False, "message": str(e)}, 500
+
+    @settings_bp.route('/api/sides/<int:side_id>', methods=['PUT'])
+    def update_side(side_id):
+        data = request.get_json()
+        try:
+            title = data.get('title')
+            capacity = int(data.get('capacity', 1))
+            user_service.update_side(side_id, title, capacity)
+            return {"success": True}, 200
+        except Exception as e:
+            return {"success": False, "message": str(e)}, 500
+
+    @settings_bp.route('/api/sides/<int:side_id>', methods=['DELETE'])
+    def delete_side(side_id):
+        try:
+            user_service.delete_side(side_id)
+            return {"success": True}, 200
+        except Exception as e:
+            return {"success": False, "message": str(e)}, 500
+
+    @settings_bp.route('/api/positions/<int:position_id>', methods=['PUT'])
+    def update_position(position_id):
+        data = request.get_json()
+        try:
+            new_name = data.get('position_name')
+            user_service.update_position(position_id, new_name)
+            return {"success": True}, 200
+        except Exception as e:
+            return {"success": False, "message": str(e)}, 500
+
+    @settings_bp.route('/api/positions/<int:position_id>', methods=['DELETE'])
+    def delete_position(position_id):
+        try:
+            user_service.delete_position(position_id)
+            return {"success": True}, 200
+        except Exception as e:
+            return {"success": False, "message": str(e)}, 500
+
+    @settings_bp.route('/api/positions', methods=['POST'])
+    def create_position():
+        data = request.get_json()
+        try:
+            line_id = data.get('line_id')
+            name = data.get('position_name')
+            new_id = user_service.create_position(line_id, name)
+            return {"success": True, "position_id": new_id}, 201
+        except Exception as e:
+            return {"success": False, "message": str(e)}, 500
+
     return settings_bp
