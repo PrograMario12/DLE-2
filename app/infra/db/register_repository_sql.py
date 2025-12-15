@@ -115,11 +115,11 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
 
                 q_insert = sql.SQL("""
                     INSERT INTO {schema}.registers
-                        (id_employee, date_register, entry_hour, line_id_fk, position_id_fk)
-                    VALUES (%s, %s, %s, %s, %s)
+                        (id_employee, date_register, entry_hour, line_id_fk, position_id_fk, side_id_fk)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                     RETURNING id_register
                 """).format(schema=sql.Identifier(self.schema))
-                cur.execute(q_insert, (user_id, today_date, now_time, line_id, position_id))
+                cur.execute(q_insert, (user_id, today_date, now_time, line_id, position_id, side_id))
                 new_id = cur.fetchone()[0]
                 print(f"DEBUG_REPO: Inserted new register with ID: {new_id}")
             

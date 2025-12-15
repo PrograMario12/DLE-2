@@ -80,11 +80,11 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
     def get_station_cards_for_line(self, line_id: int) -> List[Dict[str, Any]]:
         query = sql.SQL("""
             WITH employees_working AS (
-                SELECT r.position_id_fk,
+                SELECT r.side_id_fk,
                        COUNT(r.id_register) as employee_count
                 FROM {schema}.registers r
-                WHERE r.exit_hour IS NULL
-                GROUP BY r.position_id_fk
+                WHERE r.exit_hour IS NULL AND r.side_id_fk IS NOT NULL
+                GROUP BY r.side_id_fk
             )
             SELECT p.position_name,
                    s.side_id,
@@ -93,7 +93,7 @@ class ProductionLineRepositorySQL(IProductionLinesRepository, ABC):
                    COALESCE(ew.employee_count, 0) as operators
             FROM {schema}.positions p
             JOIN {schema}.tbl_sides_of_positions s ON p.position_id = s.position_id_fk
-            LEFT JOIN employees_working ew ON p.position_id = ew.position_id_fk
+            LEFT JOIN employees_working ew ON s.side_id = ew.side_id_fk
             WHERE p.line_id = %s
             ORDER BY p.position_name, s.side_title;
         """).format(schema=sql.Identifier(self.schema))
