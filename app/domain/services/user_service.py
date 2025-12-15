@@ -82,3 +82,11 @@ class UserService:
 
     def update_position_status(self, position_id: int, is_true: bool) -> None:
         self._production_line_repo.update_position_status(position_id, is_true)
+
+    def perform_line_logout(self, line_id: int) -> int:
+        """
+        Realiza la salida general de todo el personal activo en una línea.
+        :param line_id: ID de la línea.
+        :return: Número de registros actualizados.
+        """
+        return self._register_repo.logout_active_users_in_line(line_id)

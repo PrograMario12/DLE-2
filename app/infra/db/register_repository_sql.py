@@ -130,3 +130,29 @@ class RegisterRepositorySQL(IRegisterRepository, ABC):
             raise
         finally:
             cur.close()
+
+    def logout_active_users_in_line(self, line_id: int) -> int:
+        cur = self._get_cursor()
+        try:
+            now_time = datetime.now().strftime("%H:%M:%S")
+            
+            # Update all active registers (exit_hour IS NULL) for the given line
+            query = sql.SQL("""
+                UPDATE {schema}.registers
+                SET exit_hour = %s
+                WHERE line_id_fk = %s AND exit_hour IS NULL
+            """).format(schema=sql.Identifier(self.schema))
+            
+            cur.execute(query, (now_time, line_id))
+            affected_rows = cur.rowcount
+            cur.connection.commit()
+            
+            print(f"DEBUG_REPO: Logout general line {line_id}. Affected rows: {affected_rows}")
+            return affected_rows
+            
+        except Exception as e:
+            cur.connection.rollback()
+            print(f"ERROR_REPO: logout_active_users_in_line failed: {e}")
+            raise
+        finally:
+            cur.close()

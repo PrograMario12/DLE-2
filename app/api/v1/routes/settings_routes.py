@@ -110,4 +110,26 @@ def create_settings_bp(user_service: UserService) -> Blueprint:
 
             return render_template("ajustes.html", grouped_lines=grouped_lines)
 
+    @settings_bp.route('/general-exit', methods=['POST'])
+    def general_exit():
+        """
+        Ejecuta la salida general para una línea específica.
+        Espera un JSON con { "line_id": int }.
+        """
+        try:
+            data = request.get_json()
+            line_id = data.get('line_id')
+            if not line_id:
+                return {"success": False, "message": "ID de línea no proporcionado"}, 400
+            
+            count = user_service.perform_line_logout(int(line_id))
+            
+            return {
+                "success": True, 
+                "message": f"Salida registrada exitosamente.",
+                "count": count
+            }, 200
+        except Exception as e:
+            return {"success": False, "message": str(e)}, 500
+
     return settings_bp

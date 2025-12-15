@@ -279,3 +279,150 @@
 .toggle-input:checked + .label-c::after {
   transform: translateX(34px);
 }
+
+/* --- Modal Styles (Industrial) --- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: var(--color-white);
+  width: 90%;
+  max-width: 600px;
+  border: 3px solid var(--color-black);
+  box-shadow: 10px 10px 0px rgba(0, 0, 0, 1);
+  padding: 0;
+  animation: modal-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modal-pop {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  background-color: var(--color-black);
+  color: var(--color-white);
+  padding: 1.5rem;
+  font-size: 1.8rem;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.modal-body {
+  padding: 2rem;
+  text-align: center;
+  font-size: 1.4rem;
+  color: var(--color-black);
+}
+
+.modal-footer {
+  padding: 2rem;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  background-color: var(--color-bg-light);
+  border-top: var(--border-thick);
+}
+
+.warning-text {
+  color: var(--color-primary);
+  font-weight: 800;
+  margin-top: 1rem;
+  display: block;
+}
+
+/* Modal specific inputs */
+.modal-select {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.4rem;
+  border: var(--border-thick);
+  border-radius: 0;
+  margin-top: 1rem;
+  background-color: white;
+  font-weight: 600;
+}
+
+/* Modal Buttons */
+.btn-modal {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: var(--border-thick);
+  cursor: pointer;
+  box-shadow: 4px 4px 0px #000;
+  transition: transform 0.1s;
+}
+
+.btn-modal:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000;
+}
+
+.btn-confirm {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+.btn-danger {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.btn-cancel {
+  background-color: var(--color-gray);
+  color: white;
+}
+
+/* --- Toast Styles --- */
+.toast-container {
+  display: flex;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: var(--color-black); /* High contrast */
+  color: var(--color-white);
+  padding: 1.5rem 2rem;
+  border-left: 8px solid var(--color-accent); /* Industrial accent */
+  border: 2px solid var(--color-white); /* White border for contrast on black bg */
+  border-left-width: 8px; /* Override left border */
+  box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none; /* Let clicks pass through while hidden */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-container.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-icon {
+  font-size: 1.8rem;
+}

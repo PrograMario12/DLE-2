@@ -69,8 +69,7 @@ principal #}
         >
         {% else %} <input type="checkbox" id="pos_{{ line['position_id'] }}_{{
         loop.index }}" class="toggle-input" name="position_status_{{
-        line['position_id'] }}" {% if line['is_visible'] %}checked{% endif %}
-        />
+        line['position_id'] }}" {% if line['is_visible'] %}checked{% endif %} />
         <label
           for="pos_{{ line['position_id'] }}_{{ loop.index }}"
           class="label-c"
@@ -126,45 +125,231 @@ principal #}
   {% endfor %}
 
   <div class="extra-actions">
-    <button class="button-4" disabled>Salida general de línea</button>
+    <button type="button" class="button-4" id="btnGeneralExit">
+      Salida general de línea
+    </button>
     <button class="button-4" disabled>Configuración de estación</button>
   </div>
 </form>
 
+<!-- Modal 1: Select Line -->
+<div id="modalSelectLine" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">Seleccionar Línea</div>
+    <div class="modal-body">
+      <p>Selecciona la línea que deseas desloguear:</p>
+      <select id="lineSelectDropdown" class="modal-select">
+        <option value="" disabled selected>-- Elige una línea --</option>
+        {% for group, lines in grouped_lines.items() %}
+        <optgroup label="{{ group }}">
+          {% for line in lines %}
+          <option value="{{ line.id }}">
+            {{ line.type_zone|capitalize if line.type_zone and 'no definida' not
+            in line.type_zone|lower else '' }} {{ line.name }}
+          </option>
+          {% endfor %}
+        </optgroup>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" id="btnCloseSelect">Cancelar</button>
+      <button class="btn-modal btn-confirm" id="btnConfirmSelection">
+        Aceptar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: Warning Confirmation -->
+<div id="modalConfirmLogout" class="modal-overlay">
+  <div class="modal-content" style="border-color: var(--color-primary)">
+    <div class="modal-header" style="background-color: var(--color-primary)">
+      ⚠️ ADVERTENCIA CRÍTICA
+    </div>
+    <div class="modal-body">
+      <p>Estás a punto de registrar la <strong>salida general</strong> de:</p>
+      <h2 id="targetLineName" style="margin: 1rem 0; font-size: 2rem">
+        LÍNEA X
+      </h2>
+      <span class="warning-text">
+        Todo el personal activo en esta línea será deslogueado inmediatamente.
+      </span>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-modal btn-cancel" id="btnCloseConfirm">
+        Cancelar
+      </button>
+      <button class="btn-modal btn-danger" id="btnExecuteLogout">
+        CONTINUAR
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast-container">
+  <span class="toast-icon">✅</span>
+  <span id="toastMessage">Operación Exitosa</span>
+</div>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    // --- Utility: Show Toast ---
+    function showToast(message, isSuccess = true, duration = 2000) {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toastMessage");
+      const icon = toast.querySelector(".toast-icon");
+
+      toastMsg.textContent = message;
+      icon.textContent = isSuccess ? "✅" : "❌";
+      toast.style.borderColor = isSuccess ? "#28a745" : "#dc3545"; // Green or Red border
+      toast.style.borderLeftColor = isSuccess ? "#28a745" : "#dc3545";
+
+      toast.classList.add("show");
+
+      setTimeout(() => {
+        toast.classList.remove("show");
+      }, duration);
+    }
+
+    // --- Accordion Logic ---
     const searchInput = document.getElementById("lineSearch");
     const accordions = document.querySelectorAll(".group-accordion");
 
-    searchInput.addEventListener("input", function (e) {
-      const searchTerm = e.target.value.toLowerCase().trim();
+    if (searchInput) {
+      searchInput.addEventListener("input", function (e) {
+        const searchTerm = e.target.value.toLowerCase().trim();
 
-      accordions.forEach((accordion) => {
-        const buttons = accordion.querySelectorAll(".button-4-settings");
-        let hasVisibleButtons = false;
+        accordions.forEach((accordion) => {
+          const buttons = accordion.querySelectorAll(".button-4-settings");
+          let hasVisibleButtons = false;
 
-        buttons.forEach((btn) => {
-          const text = btn.textContent.toLowerCase();
-          if (text.includes(searchTerm)) {
-            btn.style.display = ""; // Show
-            hasVisibleButtons = true;
+          buttons.forEach((btn) => {
+            const text = btn.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+              btn.style.display = ""; // Show
+              hasVisibleButtons = true;
+            } else {
+              btn.style.display = "none"; // Hide
+            }
+          });
+
+          // Show/Hide accordion based on matches
+          if (hasVisibleButtons) {
+            accordion.style.display = "";
+            // Open accordion if searching
+            if (searchTerm !== "") {
+              accordion.open = true;
+            }
           } else {
-            btn.style.display = "none"; // Hide
+            accordion.style.display = "none";
           }
         });
-
-        // Show/Hide accordion based on matches
-        if (hasVisibleButtons) {
-          accordion.style.display = "";
-          // Open accordion if searching
-          if (searchTerm !== "") {
-            accordion.open = true;
-          }
-        } else {
-          accordion.style.display = "none";
-        }
       });
-    });
+    }
+
+    // --- General Exit Logic ---
+    const btnGeneralExit = document.getElementById("btnGeneralExit");
+    const modalSelect = document.getElementById("modalSelectLine");
+    const modalConfirm = document.getElementById("modalConfirmLogout");
+
+    const dropdown = document.getElementById("lineSelectDropdown");
+    const targetLineNameDisplay = document.getElementById("targetLineName");
+
+    const btnCloseSelect = document.getElementById("btnCloseSelect");
+    const btnConfirmSelection = document.getElementById("btnConfirmSelection");
+
+    const btnCloseConfirm = document.getElementById("btnCloseConfirm");
+    const btnExecuteLogout = document.getElementById("btnExecuteLogout");
+
+    let selectedLineId = null;
+    let selectedLineName = "";
+
+    // Open Step 1
+    if (btnGeneralExit) {
+      btnGeneralExit.addEventListener("click", () => {
+        modalSelect.style.display = "flex";
+      });
+    }
+
+    // Close Step 1
+    if (btnCloseSelect) {
+      btnCloseSelect.addEventListener("click", () => {
+        modalSelect.style.display = "none";
+      });
+    }
+
+    // Go to Step 2
+    if (btnConfirmSelection) {
+      btnConfirmSelection.addEventListener("click", () => {
+        selectedLineId = dropdown.value;
+        if (!selectedLineId) {
+          alert("Por favor selecciona una línea.");
+          return;
+        }
+        selectedLineName = dropdown.options[dropdown.selectedIndex].text.trim();
+        targetLineNameDisplay.textContent = selectedLineName;
+
+        modalSelect.style.display = "none";
+        modalConfirm.style.display = "flex"; // Open confirmation
+      });
+    }
+
+    // Close Step 2
+    if (btnCloseConfirm) {
+      btnCloseConfirm.addEventListener("click", () => {
+        modalConfirm.style.display = "none";
+      });
+    }
+
+    // Execute API Call
+    if (btnExecuteLogout) {
+      btnExecuteLogout.addEventListener("click", () => {
+        if (!selectedLineId) return;
+
+        // Disable button to prevent double clicks
+        btnExecuteLogout.disabled = true;
+        btnExecuteLogout.textContent = "Procesando...";
+
+        fetch("{{ url_for('settings.general_exit') }}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ line_id: selectedLineId }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            modalConfirm.style.display = "none"; // Immediate close
+
+            if (data.success) {
+              showToast(
+                `Salida registrada. Registros: ${data.count}`,
+                true,
+                2000
+              );
+
+              // Reload after toast duration slightly
+              setTimeout(() => {
+                location.reload();
+              }, 2000);
+            } else {
+              showToast(`Error: ${data.message}`, false, 3000);
+              btnExecuteLogout.disabled = false;
+              btnExecuteLogout.textContent = "CONTINUAR";
+            }
+          })
+          .catch((err) => {
+            showToast("Error de comunicación con el servidor.", false, 3000);
+            console.error(err);
+            btnExecuteLogout.disabled = false;
+            btnExecuteLogout.textContent = "CONTINUAR";
+          });
+      });
+    }
+
+    // Auto-close overlay click? (Optional, skipping for safety)
   });
 </script>
 
