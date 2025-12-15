@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/base.css') }}"
+    />
     {% block styles %}{% endblock %}
     <title>{% block title %}{%endblock%}</title>
-</head>
+  </head>
 
-<body>
+  <body>
     <header>
-        <div class="header-ajustes"> <!-- Div de Header ajustes -->
-            <div class="title">
-                {% block header %}{% endblock %}
-            </div>
-            <div class="botones"> <!-- Div de botones -->
-                <button class="button-4 button-4-half" onclick="window.location.href = '/'">🏠</button>
-            </div>
+      <div class="header-ajustes">
+        <!-- Div de Header ajustes -->
+        <div class="title">{% block header %}{% endblock %}</div>
+        <div class="botones">
+          <!-- Div de botones -->
+          <button
+            class="button-4 button-4-half"
+            onclick="window.location.href = '{{ url_for('main.home') }}'"
+          >
+            🏠
+          </button>
         </div>
+      </div>
     </header>
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-
-</body>
+    <main>{% block content %}{% endblock %}</main>
+  </body>
 </html>

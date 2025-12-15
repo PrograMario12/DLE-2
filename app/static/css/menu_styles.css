@@ -146,6 +146,57 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  width: 100%;
+}
+
+.station-sides-grid {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.side-action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.side-action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-color: var(--color-primary);
+}
+
+.side-label-btn {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+
+/* Ensure staff info inside button is compact */
+.side-action-btn .staff-info {
+  padding: 0.5rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  background: transparent;
+}
+.side-action-btn .staff-value {
+  font-size: 1.2rem;
+}
+.side-action-btn .staff-icon {
+  font-size: 1.2rem;
 }
 
 /* Status Indicator */

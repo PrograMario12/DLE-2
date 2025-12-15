@@ -57,50 +57,71 @@ Date: [2024-07-16]
 
     <main class="main-content">
       <div class="stations-grid">
-        {% for card in cards_main %} {% for side in card.sides %} {% set
-        status_class = 'status-warning' %} {% if 'employee-ok' in side.class %}
-        {% set status_class = 'status-ok' %} {% elif 'employee-nook' in
-        side.class %} {% set status_class = 'status-warning' %} {% elif
-        'employee-warning' in side.class %} {% set status_class =
-        'status-danger' %} {% endif %}
-
-        <a
-          href="/successful?id={{ side.side_id }}"
-          class="station-card"
-          data-position="{{ card.position_name }}"
-          data-side-id="{{ side.side_id }}"
-        >
+        {% for card in cards_main %}
+        <div class="station-card" data-position="{{ card.position_name }}">
           <div class="card-header">
-            <h3 class="station-name">
-              {{ card.position_name }} {% if 'BP' not in side.side_title and
-              'bp' not in side.side_title %}{{ side.side_title }}{% endif %}
-            </h3>
+            <h3 class="station-name">{{ card.position_name }}</h3>
           </div>
 
           <div class="card-body">
-            <div class="status-indicator {{ status_class }}">
-              {% if status_class == 'status-ok' %}
-              <i class="fi fi-br-check"></i>
-              {% else %}
-              <i class="fi fi-br-exclamation"></i>
-              {% endif %}
-            </div>
+            <div class="station-sides-grid">
+              {% for side in card.sides %} {% set status_class =
+              'status-warning' %} {% if 'employee-ok' in side.class %} {% set
+              status_class = 'status-ok' %} {% elif 'employee-nook' in
+              side.class %} {% set status_class = 'status-warning' %} {% elif
+              'employee-warning' in side.class %} {% set status_class =
+              'status-danger' %} {% endif %}
 
-            <div class="staff-info">
-              <div class="staff-metric">
-                <i class="fi fi-rr-user staff-icon"></i>
-                <span class="staff-value">{{ side.employee_capacity }}</span>
-                <span class="staff-label">Estándar</span>
-              </div>
-              <div class="staff-metric">
-                <i class="fi fi-sr-user staff-icon"></i>
-                <span class="staff-value">{{ side.employees_working }}</span>
-                <span class="staff-label">Actual</span>
-              </div>
+              <a
+                href="{{ url_for('main.successful', id=side.side_id) }}"
+                class="side-action-btn"
+                data-side-id="{{ side.side_id }}"
+              >
+                <!-- Side Label (LH, RH, BP) -->
+                <div class="side-label-btn">
+                  {% if side.side_title == 'BP' or side.side_title == 'bp' %}
+                  {{ card.position_name }} {% else %} {{ side.side_title }} {%
+                  endif %}
+                </div>
+
+                <!-- Status Indicator -->
+                <div
+                  class="status-indicator {{ status_class }}"
+                  style="
+                    width: 40px;
+                    height: 40px;
+                    font-size: 1.2rem;
+                    margin-bottom: 0.5rem;
+                  "
+                >
+                  {% if status_class == 'status-ok' %}
+                  <i class="fi fi-br-check"></i>
+                  {% else %}
+                  <i class="fi fi-br-exclamation"></i>
+                  {% endif %}
+                </div>
+
+                <!-- Staff Info -->
+                <div class="staff-info">
+                  <div class="staff-metric">
+                    <i class="fi fi-rr-user staff-icon"></i>
+                    <span class="staff-value"
+                      >{{ side.employee_capacity }}</span
+                    >
+                  </div>
+                  <div class="staff-metric">
+                    <i class="fi fi-sr-user staff-icon"></i>
+                    <span class="staff-value"
+                      >{{ side.employees_working }}</span
+                    >
+                  </div>
+                </div>
+              </a>
+              {% endfor %}
             </div>
           </div>
-        </a>
-        {% endfor %} {% endfor %}
+        </div>
+        {% endfor %}
       </div>
 
       {% if has_afe %}
@@ -115,7 +136,7 @@ Date: [2024-07-16]
           'status-danger' %} {% endif %}
 
           <a
-            href="/successful?id={{ side.side_id }}"
+            href="{{ url_for('main.successful', id=side.side_id) }}"
             class="station-card"
             data-position="{{ card.position_name }}"
             data-side-id="{{ side.side_id }}"
@@ -155,7 +176,10 @@ Date: [2024-07-16]
     </main>
 
     <footer class="footer-actions">
-      <button onclick="window.location.href='/'" class="btn-cancel">
+      <button
+        onclick="window.location.href='{{ url_for('main.home') }}'"
+        class="btn-cancel"
+      >
         Cancelar
       </button>
     </footer>
@@ -170,7 +194,8 @@ Date: [2024-07-16]
               btn.dataset.position.trim().toUpperCase() === "AFE"
             ) {
               e.preventDefault();
-              window.location.href = "/afeMenu?side_id=" + btn.dataset.sideId;
+              window.location.href =
+                "{{ url_for('main.afe_menu') }}?side_id=" + btn.dataset.sideId;
             }
           });
         });
